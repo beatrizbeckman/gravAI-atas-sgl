@@ -16,6 +16,8 @@ RUN apt-get update &&\
 
 # RUN pulseaudio --start
 
+RUN apt-get update && apt-get install -y git
+
 RUN mkdir -p /run/dbus
 
 ADD https://astral.sh/uv/install.sh /uv-installer.sh

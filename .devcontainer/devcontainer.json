@@ -4,7 +4,7 @@
         "context": ".."
     },
     "runArgs": [
-        "--network=host",
+        "--network=host"
     ],
     "mounts": [
         // "source=/tmp/test-tshark,target=/host_tmp_t_shark,type=bind"
@@ -27,5 +27,8 @@
                 "python.linting.enabled": true
             }
         }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {}
     }
 }
