@@ -175,5 +175,5 @@ class Slicer():
     
     @staticmethod
     def save_session_data(session: Session, output_path: str):
-        with open(output_path, "w") as f:
-            json.dump(session.model_dump(), f, default=str)
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(session.model_dump(), f, default=str, ensure_ascii=False, indent=2)

@@ -32,6 +32,20 @@ GravAI is a privacy-first system designed to join online meetings, capture per-p
 cp .env.example .env
 ```
 
+2. Clone and set Whisper repository:
+```bash
+git clone https://github.com/ggml-org/whisper.cpp.git
+cd whisper.cpp
+# Runs the official script that downloads a Whisper model
+sh ./models/download-ggml-model.sh large-v3-turbo
+# Configures the build system
+cmake -B build
+# Compiles the code
+cmake --build build -j --config Release
+# Starts the whisper server
+./whisper.cpp/build/bin/whisper-server -m whisper.cpp/models/ggml-large-v3-turbo.bin --host 0.0.0.0 --language pt
+```
+
 2.a. Start your external whisper server for transcription and specify the WHISPER_HOST and WHISPER_PORT accordingly on .env file and the GravAI docker-compose without: (Optional)
 ```bash
 docker compose -f docker-compose.yaml up -d

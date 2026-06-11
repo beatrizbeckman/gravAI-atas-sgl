@@ -21,9 +21,9 @@ def transcribe_meeting_tracks(
         transcription_segments = transcription.get("segments", "")
         transcription_text_output_path = wav_file_path.split(".")[0] + "_transcription_text.txt"
         transcription_segments_output_path = wav_file_path.split(".")[0] + "_transcription_segments.txt"
-        with open(transcription_text_output_path, "w") as f:
+        with open(transcription_text_output_path, "w", encoding="utf-8") as f:
             f.write(transcription_text)
-        with open(transcription_segments_output_path, "w") as f:
+        with open(transcription_segments_output_path, "w", encoding="utf-8") as f:
             f.write(str(transcription_segments))
 
         print(f"Transcription for participant {participant_data.participant_name} (id: {participant_id}):\n{transcription}\n")

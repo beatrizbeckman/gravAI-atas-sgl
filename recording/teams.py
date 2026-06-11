@@ -200,7 +200,7 @@ class TeamsMeetingRecorder(MeetingRecorder):
                     input_box = page.locator("input").first
 
                 input_box.click(timeout=10_000)
-                input_box.fill("Bot de Gravação de Pedro Silva")
+                input_box.fill("GravAI Bot")
 
                 try:
                     page.get_by_role("button", name="Join now").click(timeout=5000)

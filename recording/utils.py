@@ -16,4 +16,4 @@ def _write_vad_timeline(path: str, meta: dict, events: list[dict]) -> None:
         "events": events,
     }
     with open(path, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
+        json.dump(payload, f, indent=2, ensure_ascii=False)
