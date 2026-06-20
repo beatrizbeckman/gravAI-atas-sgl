@@ -16,3 +16,9 @@ build-whisper:
 
 exec-whisper:
 	@cd ../whisper.cpp && ./build/bin/whisper-server -m models/ggml-$(MODELO).bin --host 0.0.0.0 --language pt
+
+install-groq:
+	uv pip install groq
+
+upgrade-pip:
+	uv pip install --upgrade pip
