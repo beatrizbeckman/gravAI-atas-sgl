@@ -1,4 +1,4 @@
-import re, json
+import os, re, json
 from pathlib import Path
 
 
@@ -24,7 +24,7 @@ def get_participant_id_from_filepath(filepath: str, vad_timeline_path: str) -> s
     raise ValueError(f"No participant found for element id: {element_id}")
 
 
-def load_and_filter_segments(filepath: str) -> tuple[str, list[dict]]:
+def get_speaker_info(filepath: str) -> tuple[str, list[dict]]:
     """
     Loads a Whisper output JSON file and keeps only id, text, start, end
     for each segment — discards tokens, words, temperature, avg_logprob,
@@ -48,3 +48,16 @@ def load_and_filter_segments(filepath: str) -> tuple[str, list[dict]]:
     ]
 
     return participant_id, participant_name, filtered_segments
+
+
+def get_all_speakers_info(path: str):
+    all_info = {}
+    
+    for filename in os.listdir(path):
+        match = re.search(r'track_speaking-element-(.*?)_transcription_segments\.json', filename)
+        
+        if match:
+            speaker_id, speaker, segments_speaker = get_speaker_info(f"{path}/{filename}")
+            all_info[speaker] = segments_speaker
+
+    return all_info
