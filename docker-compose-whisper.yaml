@@ -20,6 +20,7 @@ services:
       - "8080:8080"
     volumes:
       - .env:/app/.env
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
     entrypoint: ["./build/bin/whisper-server", "-m", "models/ggml-large-v3.bin", "--host", "0.0.0.0", "--language", $WHISPER_LANGUAGE, "--port", "8080"]
     

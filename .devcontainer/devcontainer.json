@@ -1,13 +1,15 @@
 {
     "build": {
-        "dockerfile": "../Dockerfile",
+        "dockerfile": "../Dockerfile.dev",
         "context": ".."
     },
     "runArgs": [
         "--network=host"
     ],
     "mounts": [
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
         // "source=/tmp/test-tshark,target=/host_tmp_t_shark,type=bind"
+
     ],
     "postStartCommand": "mkdir -p /run/dbus && dbus-daemon --system --fork",
 

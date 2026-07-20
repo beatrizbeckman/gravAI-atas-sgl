@@ -36,7 +36,7 @@ class Settings(BaseSettings, Singleton):
     )
 
     VAD_OBSERVER_TEAMS_JS_PATH: str = Field(
-        default_factory=lambda: os.path.join(os.path.dirname(__file__), "..", "recording", "teams", "vad_observer.js"),
+        default_factory=lambda: os.path.join(os.path.dirname(__file__), "..", "recording", "providers", "teams", "vad_observer.js"),
         description="Path to the VAD observer JavaScript file",
     )
 
@@ -60,6 +60,12 @@ class Settings(BaseSettings, Singleton):
         ...,
         description="Port for the Whisper transcription service",
         alias="WHISPER_PORT",
+    )
+
+    LOG_LEVEL: str = Field(
+        "INFO",
+        description="Logging verbosity (DEBUG, INFO, WARNING, ERROR)",
+        alias="LOG_LEVEL",
     )
 
     # DF_PATH: str = "df.pkl"

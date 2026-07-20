@@ -8,7 +8,7 @@ def get_participant_id_from_filepath(filepath: str, vad_timeline_path: str) -> s
     looks up the matching participantName in the vad_timeline (or
     session events) JSON.
     """
-    match = re.search(r"track_(speaking-element-[a-z0-9]+)_", filepath)
+    match = re.search(r"track_(.+)_transcription_segments\.json", filepath)
 
     if not match: raise ValueError(f"Could not extract element id from filepath: {filepath}")
 
@@ -18,10 +18,10 @@ def get_participant_id_from_filepath(filepath: str, vad_timeline_path: str) -> s
         timeline = json.load(f)
 
     for event in timeline["events"]:
-        if event["data"]["id"] == element_id:
+        if event["data"]["participantName"] == element_id:
             return (f"{event["data"]["participantName"]}", f"{element_id.split("-")[-1]}")
 
-    raise ValueError(f"No participant found for element id: {element_id}")
+    raise ValueError(f"No participant found for element participantName: {element_id}")
 
 
 def get_speaker_info(filepath: str) -> tuple[str, list[dict]]:
@@ -54,7 +54,7 @@ def get_all_speakers_info(path: str):
     all_info = {}
     
     for filename in os.listdir(path):
-        match = re.search(r'track_speaking-element-(.*?)_transcription_segments\.json', filename)
+        match = re.search(r'track_(.*?)_transcription_segments\.json', filename)
         
         if match:
             speaker_id, speaker, segments_speaker = get_speaker_info(f"{path}/{filename}")

@@ -4,11 +4,11 @@ from pydantic import BaseModel
 
 class Singleton(object):
     _instances = {}
-    def __new__(class_, *args, **kwargs):
-        if class_ not in class_._instances:
-            class_._instances[class_] = super(Singleton, class_).__new__(class_, *args, **kwargs)
-        return class_._instances[class_]
-    
+    def __new__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__new__(cls, *args, **kwargs)
+        return cls._instances[cls]
+
 class ActionType(Enum):
     START = 0
     END = 1

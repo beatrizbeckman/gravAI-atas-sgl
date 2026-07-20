@@ -10,6 +10,11 @@ wheels/
 .venv
 .env
 .pytest_cache
+*.png
+*.wav
+*.weba
+*.ipynb
+*.log
 
 /tmp
 llm_analyser/tests

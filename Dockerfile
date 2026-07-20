@@ -1,3 +1,5 @@
+FROM ghcr.io/astral-sh/uv:latest AS uv
+
 FROM python:3.12-slim-trixie
 
 WORKDIR /app
@@ -20,20 +22,20 @@ RUN apt-get update && apt-get install -y git
 
 RUN mkdir -p /run/dbus
 
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
+COPY --from=uv /uv /uvx /usr/local/bin/
 
-# Run the installer then remove it
-RUN sh /uv-installer.sh && rm /uv-installer.sh
-
-ENV PATH="/root/.local/bin/:$PATH"
 ENV PATH="/app/.venv/bin:${PATH}"
 
 COPY pyproject.toml uv.lock /app/
 
 RUN uv sync
 
-COPY . /app
-
-# Run this after container finished building
 RUN uv run playwright install-deps
 RUN uv run playwright install
+
+COPY api /app/api
+COPY config /app/config
+COPY models /app/models
+COPY recording /app/recording
+COPY slicing /app/slicing
+COPY transcribe /app/transcribe
