@@ -83,6 +83,7 @@
       "required": true,
       "allow_empty": true,
       "id_prefix": "D",
+      "id_label": "Nº",
       "columns": [
         {"key": "decisao", "label": "Decisão"},
         {"key": "aprovada_por", "label": "Aprovada por", "instructions": "Nome do professor que aprovou ou 'Grupo' quando foi consenso."}

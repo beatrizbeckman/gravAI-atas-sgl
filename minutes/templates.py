@@ -34,10 +34,13 @@ class Section(BaseModel):
     type: Literal["paragraph", "bullets", "topics", "table", "record"]
     instructions: str
     group: str | None = None
+    # How a grouped subsection is drawn in the docx: dark band (Dell, professores) or left bar (daily).
+    style: Literal["band", "bar"] = "band"
     required: bool = True
     allow_empty: bool = False
     min_items: int | None = None
     id_prefix: str | None = None
+    id_label: str = "ID"
     columns: list[Field] | None = None
     fields: list[Field] | None = None
 

@@ -1,0 +1,45 @@
+{
+  "template": "dell",
+  "header": {"projeto": "Portal de Suporte", "numero": "007", "data": "29/09/2026", "horario": "14:00 – 14:45"},
+  "participants": ["Ana", "Bruno", "Carla", "Diego"],
+  "minutes": {
+    "topicos": [
+      {"titulo": "Integração com a API de chamados", "resumo": "Bruno informou que os endpoints de criação e consulta estão concluídos e em homologação. O endpoint de anexos ficou pendente porque a documentação da API diverge do retorno real do servidor: o campo de tamanho do arquivo vem como string. Carla ficou de confirmar o formato com a equipe da Dell."},
+      {"titulo": "Testes de carga", "resumo": "Diego apresentou dois cenários. Com 200 usuários simultâneos o tempo de resposta ficou abaixo de um segundo. Com 500 usuários, cerca de 8% das requisições falharam por esgotamento do pool de conexões do banco, configurado com o valor padrão de dez. Carla destacou que 500 é o pico esperado no fechamento de mês."},
+      {"titulo": "Treinamento do time de suporte", "resumo": "Carla propôs duas sessões de duas horas, uma por turno, na semana de 13/10, para os 22 atendentes. Ana e Bruno assumiram o material e o ambiente de demonstração. A gravação das sessões depende de parecer do jurídico da Dell."},
+      {"titulo": "Certificado de homologação e migração de chamados", "resumo": "Diego alertou que o certificado do ambiente de homologação vence em 20/10 e não está claro quem o renova. Bruno relatou que o script de migração dos chamados antigos está em cerca de 40% e foi despriorizado."}
+    ],
+    "resumo": "Reunião de acompanhamento do projeto Portal de Suporte. A integração com a API de chamados foi concluída, exceto pelo endpoint de anexos, que aguarda confirmação de formato pela Dell. Os testes de carga revelaram falhas no cenário de 500 usuários, atribuídas ao pool de conexões, que será ajustado e retestado. O treinamento do suporte foi planejado para a semana de 13/10. A próxima reunião foi marcada para 06/10.",
+    "finalizado": [
+      "Endpoints de criação e consulta de chamados, já em homologação.",
+      "Testes de carga com 200 e 500 usuários simultâneos."
+    ],
+    "em_andamento": [
+      "Endpoint de anexos, aguardando confirmação do formato do campo de tamanho.",
+      "Script de migração dos chamados antigos, em cerca de 40%."
+    ],
+    "ideias_propostas": [
+      "Vídeos curtos por funcionalidade dentro do portal, como tour para novos atendentes (Bruno). Registrado para uma segunda fase."
+    ],
+    "duvidas": [
+      "Se as sessões de treinamento podem ser gravadas, por causa da imagem dos atendentes."
+    ],
+    "pendencias": [
+      "Carla identificar o responsável pela renovação do certificado de homologação, que vence em 20/10."
+    ],
+    "decisoes": [
+      {"id": "D1", "decisao": "Réplica de leitura só será considerada se o teste de carga falhar novamente após o ajuste do pool.", "aprovada_por": "Carla"},
+      {"id": "D2", "decisao": "Treinamento em duas sessões de duas horas, uma por turno, na semana de 13/10, com material da LaCInA.", "aprovada_por": "Grupo"},
+      {"id": "D3", "decisao": "Migração dos chamados antigos fica para depois do treinamento.", "aprovada_por": "Carla"}
+    ],
+    "plano_acao": [
+      {"id": "A1", "acao": "Confirmar o formato do campo de tamanho de anexo com a equipe da Dell", "responsavel": "Carla", "prazo": "02/10", "status": "Pendente"},
+      {"id": "A2", "acao": "Ajustar o pool de conexões para 50 e repetir o teste com 500 usuários", "responsavel": "Diego", "prazo": "03/10", "status": "Pendente"},
+      {"id": "A3", "acao": "Enviar o relatório dos testes de carga para Bruno", "responsavel": "Diego", "prazo": "29/09", "status": "Pendente"},
+      {"id": "A4", "acao": "Montar a apresentação do treinamento", "responsavel": "Ana", "prazo": "A definir", "status": "Pendente"},
+      {"id": "A5", "acao": "Preparar o ambiente de demonstração com dados fictícios", "responsavel": "Bruno", "prazo": "A definir", "status": "Pendente"},
+      {"id": "A6", "acao": "Consultar o jurídico sobre a gravação das sessões de treinamento", "responsavel": "Carla", "prazo": "A definir", "status": "Pendente"}
+    ],
+    "proxima_reuniao": {"data": "06/10/2026", "horario": "14:00", "pauta": "Resultado do teste de carga com pool ajustado; material do treinamento"}
+  }
+}
