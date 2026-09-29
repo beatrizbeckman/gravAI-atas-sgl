@@ -1,0 +1,119 @@
+{
+  "id": "dell",
+  "name": "Ata Dell",
+  "title": "ATA DE REUNIÃO",
+  "subtitle": "Reunião com Dell Technologies",
+  "logo": "dell",
+  "footer": "Dell Technologies · Ata de Reunião · {projeto} · Ata gerada automaticamente pelo GravAI",
+  "language": "pt-BR",
+  "tone": "Formal e impessoal, como documento corporativo. Terceira pessoa, voz ativa, frases curtas, sem gírias e sem opinião de quem redige. Registrar fatos, decisões e responsáveis; não reproduzir a conversa.",
+  "header": [
+    {"key": "projeto", "label": "Projeto", "source": "request", "required": true},
+    {"key": "numero", "label": "Ata nº", "source": "request", "format": "000"},
+    {"key": "data", "label": "Data", "source": "request", "format": "DD/MM/AAAA", "required": true},
+    {"key": "horario", "label": "Horário", "source": "request", "format": "HH:MM – HH:MM"}
+  ],
+  "participants": {"title": "PARTICIPANTES", "source": "transcript"},
+  "sections": [
+    {
+      "key": "topicos",
+      "title": "TÓPICOS DISCUTIDOS",
+      "type": "topics",
+      "required": true,
+      "min_items": 1,
+      "instructions": "Um item por assunto tratado, na ordem em que apareceu na reunião. Título curto (até 8 palavras) e resumo de 2 a 4 frases do que foi falado, citando quem propôs ou discordou quando isso for relevante."
+    },
+    {
+      "key": "resumo",
+      "title": "RESUMO DA REUNIÃO",
+      "type": "paragraph",
+      "required": true,
+      "instructions": "Um parágrafo de 3 a 6 frases com o objetivo da reunião, os principais resultados e o encaminhamento geral."
+    },
+    {
+      "key": "finalizado",
+      "title": "Finalizado",
+      "group": "RESUMO DA REUNIÃO",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "Entregas ou tarefas relatadas como concluídas desde a última reunião."
+    },
+    {
+      "key": "em_andamento",
+      "title": "Em andamento",
+      "group": "RESUMO DA REUNIÃO",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "Trabalho iniciado e ainda não concluído, com o estado atual quando for mencionado."
+    },
+    {
+      "key": "ideias_propostas",
+      "title": "Ideias e propostas",
+      "group": "RESUMO DA REUNIÃO",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "Sugestões levantadas que ainda não viraram decisão nem ação."
+    },
+    {
+      "key": "duvidas",
+      "title": "Dúvidas em aberto",
+      "group": "RESUMO DA REUNIÃO",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "Perguntas feitas na reunião que ficaram sem resposta."
+    },
+    {
+      "key": "pendencias",
+      "title": "Pendências",
+      "group": "RESUMO DA REUNIÃO",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "Itens de reuniões anteriores ou desta que dependem de alguém e ainda não têm ação formal no plano."
+    },
+    {
+      "key": "decisoes",
+      "title": "DECISÕES",
+      "type": "table",
+      "required": true,
+      "allow_empty": true,
+      "id_prefix": "D",
+      "columns": [
+        {"key": "decisao", "label": "Decisão"},
+        {"key": "aprovada_por", "label": "Aprovada por", "instructions": "Nome de quem aprovou ou 'Grupo' quando foi consenso."}
+      ],
+      "instructions": "Somente o que foi explicitamente decidido. Uma linha por decisão, redigida como afirmação fechada."
+    },
+    {
+      "key": "plano_acao",
+      "title": "PLANO DE AÇÃO",
+      "type": "table",
+      "required": true,
+      "allow_empty": true,
+      "id_prefix": "A",
+      "columns": [
+        {"key": "acao", "label": "Ação / Entregável"},
+        {"key": "responsavel", "label": "Responsável", "instructions": "Nome de um participante. 'A definir' se ninguém assumiu."},
+        {"key": "prazo", "label": "Prazo", "format": "DD/MM", "instructions": "'A definir' se não foi combinado."},
+        {"key": "status", "label": "Status", "values": ["Pendente", "Em andamento", "Concluído"], "default": "Pendente"}
+      ],
+      "instructions": "Tarefas com dono. Começar cada ação com verbo no infinitivo."
+    },
+    {
+      "key": "proxima_reuniao",
+      "title": "PRÓXIMA REUNIÃO",
+      "type": "record",
+      "required": false,
+      "fields": [
+        {"key": "data", "label": "Data", "format": "DD/MM/AAAA"},
+        {"key": "horario", "label": "Horário", "format": "HH:MM"},
+        {"key": "pauta", "label": "Pauta prevista"}
+      ],
+      "instructions": "Preencher apenas se a próxima reunião foi marcada ou a pauta dela foi combinada. Caso contrário, deixar os campos vazios."
+    }
+  ]
+}

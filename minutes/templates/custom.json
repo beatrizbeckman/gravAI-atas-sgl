@@ -1,0 +1,24 @@
+{
+  "id": "custom",
+  "name": "Ata personalizada",
+  "title": "ATA DE REUNIÃO",
+  "subtitle": "",
+  "footer": "Ata de Reunião · {projeto} · Ata gerada automaticamente pelo GravAI",
+  "language": "pt-BR",
+  "tone": "Definido pelo usuário na requisição. Na ausência de indicação, formal e objetivo, em terceira pessoa.",
+  "header": [
+    {"key": "projeto", "label": "Projeto", "source": "request", "required": true},
+    {"key": "data", "label": "Data", "source": "request", "format": "DD/MM/AAAA", "required": true},
+    {"key": "horario", "label": "Horário", "source": "request", "format": "HH:MM – HH:MM"}
+  ],
+  "participants": {"title": "PARTICIPANTES", "source": "transcript"},
+  "sections": [
+    {
+      "key": "conteudo",
+      "title": "CONTEÚDO",
+      "type": "paragraph",
+      "required": true,
+      "instructions": "Esqueleto usado quando o usuário só descreve o que quer, sem listar seções. As instruções do usuário substituem esta e o modelo organiza o texto como achar melhor. Quando o usuário lista seções, elas substituem esta lista inteira."
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "daily",
+  "name": "Daily",
+  "title": "Daily",
+  "subtitle": "Alinhamento diário do time",
+  "footer": "Daily · {projeto} · Ata gerada automaticamente pelo GravAI",
+  "language": "pt-BR",
+  "tone": "Informal e direto, como anotação de time. Itens curtos (uma linha), verbos no passado para o que foi feito e no presente para o que está em andamento. Pode usar primeira pessoa do plural. Sem introdução, sem conclusão.",
+  "header": [
+    {"key": "projeto", "label": "Projeto", "source": "request", "required": true},
+    {"key": "data", "label": "Data", "source": "request", "format": "DD/MM/AAAA · HH:MM – HH:MM", "required": true}
+  ],
+  "participants": {"title": "Time", "label": "Quem estava", "source": "transcript", "inline": true},
+  "sections": [
+    {
+      "key": "feito",
+      "title": "Feito desde a última daily",
+      "group": "Como foi",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "O que cada pessoa relatou como concluído, um item por entrega, começando pelo nome de quem fez."
+    },
+    {
+      "key": "em_andamento",
+      "title": "Em andamento hoje",
+      "group": "Como foi",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "No que cada pessoa vai trabalhar hoje, um item por pessoa ou por tarefa."
+    },
+    {
+      "key": "ideias",
+      "title": "Ideias",
+      "group": "Como foi",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "Sugestões levantadas que não viraram tarefa."
+    },
+    {
+      "key": "duvidas",
+      "title": "Dúvidas",
+      "group": "Como foi",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "Perguntas que ficaram sem resposta na daily."
+    },
+    {
+      "key": "bloqueios",
+      "title": "Travado / bloqueios",
+      "group": "Como foi",
+      "type": "bullets",
+      "required": true,
+      "allow_empty": true,
+      "instructions": "Qualquer coisa que impede alguém de avançar e de quem depende a solução."
+    },
+    {
+      "key": "combinados",
+      "title": "Combinados",
+      "type": "table",
+      "required": true,
+      "allow_empty": true,
+      "id_prefix": "A",
+      "columns": [
+        {"key": "o_que", "label": "O que"},
+        {"key": "quem", "label": "Quem", "instructions": "Nome de um participante. 'A definir' se ninguém assumiu."},
+        {"key": "ate_quando", "label": "Até quando", "format": "DD/MM", "instructions": "'Próxima daily' quando não foi dito prazo."},
+        {"key": "status", "label": "Status", "values": ["Pendente", "Em andamento", "Concluído"], "default": "Pendente"}
+      ],
+      "instructions": "Somente o que foi combinado com nome de quem faz. Ação curta, começando com verbo no infinitivo."
+    }
+  ]
+}
