@@ -59,3 +59,9 @@ class TranscriptedSession(BaseModel):
     session_start: datetime
     session_end: datetime
     tracks: dict[str, ParticipantDataTransc] # Map participant_id to ParticipantData
+
+class Utterance(BaseModel):
+    speaker: str
+    start: float  # seconds from session start
+    end: float
+    text: str
