@@ -25,31 +25,47 @@ def _load_json_or_raise(path: str, label: str) -> dict:
         raise RuntimeError(f"Invalid JSON in {label} file: {path} ({exc})") from exc
 
 
+def _wait_for_sidecar(sidecar_path: str, timeout_s: float = 120) -> dict:
+    """The WS server writes the sidecar only after each track is closed and its WAV is
+    re-encoded by ffmpeg, which happens a few seconds after the browser leaves."""
+    deadline = time.time() + timeout_s
+    while True:
+        try:
+            session_info = _load_json_or_raise(sidecar_path, "session sidecar")
+        except RuntimeError:
+            if time.time() >= deadline:
+                raise
+        else:
+            tracks = session_info.get("tracks", {}).values()
+            if all("ended_at" in track for track in tracks) or time.time() >= deadline:
+                return session_info
+        time.sleep(1)
+
+
 def _extract_session_dto(slice_audio_tracks: str) -> SessionDataDTO:
     sidecar_path = os.path.join(slice_audio_tracks, "session_sidecar.json")
     vad_timeline_path = os.path.join(slice_audio_tracks, "vad_timeline.json")
-    main_audio_track_path = None
+
+    if not os.path.isdir(slice_audio_tracks):
+        raise RuntimeError(
+            f"Recording folder not found: {slice_audio_tracks}. "
+            "No audio was received, so the bot probably never got into the meeting."
+        )
+    session_info = _wait_for_sidecar(sidecar_path)
+
     main_audio_track_name = None
     main_audio_track_name_sidecar_key = None
-    for candidate_f in os.listdir(slice_audio_tracks):
-        if candidate_f.startswith("track_mainAudio"):
-            main_audio_track_path = os.path.join(slice_audio_tracks, candidate_f)
+    for candidate_f in sorted(os.listdir(slice_audio_tracks)):
+        if candidate_f.startswith("track_mainAudio") and candidate_f.endswith(".wav"):
             main_audio_track_name = candidate_f
-            main_audio_track_name_sidecar_key = candidate_f[:candidate_f.find(".")].replace("track_", "")
+            main_audio_track_name_sidecar_key = os.path.splitext(candidate_f)[0].replace("track_", "", 1)
             break
-        
-    if not os.path.exists(sidecar_path):
-        time.sleep(1)  # Wait a bit in case the file is still being written
-        if not os.path.exists(sidecar_path):
-            raise RuntimeError(f"Missing sidecar file: {sidecar_path}")
-    if not os.path.exists(vad_timeline_path):
-        time.sleep(1)  # Wait a bit in case the file is still being written
-        if not os.path.exists(vad_timeline_path):
-            raise RuntimeError(f"Missing VAD timeline file: {vad_timeline_path}")
-    assert main_audio_track_path is not None
+    if main_audio_track_name is None:
+        raise RuntimeError(f"No 'track_mainAudio*.wav' file in {slice_audio_tracks}; the meeting audio was not captured.")
 
-    session_info = _load_json_or_raise(sidecar_path, "session sidecar")
     vad_timeline = _load_json_or_raise(vad_timeline_path, "VAD timeline")
+    if main_audio_track_name_sidecar_key not in session_info["tracks"]:
+        raise RuntimeError(f"Track '{main_audio_track_name_sidecar_key}' is not listed in {sidecar_path}")
 
     session_data = SessionDataDTO(
         start_time=datetime.fromisoformat(session_info["tracks"][main_audio_track_name_sidecar_key]["started_at"]),
@@ -85,21 +101,23 @@ def _find_participant_tracks(session_data: SessionDataDTO, all_participants_data
         class_counts = [event["class_count"] for event in participant_data]
         end_action = min(class_counts)
         start_action = max(class_counts)
-        assert len([c for c in class_counts if c == end_action or c == start_action]) == len(class_counts), "Expected only two distinct class counts per participant, representing start and end actions."
+        if start_action == end_action:
+            # The speaking indicator never toggled: this participant never spoke.
+            continue
 
+        # Teams adds CSS classes to the voice-level outline while someone speaks, so the
+        # highest class count means "speaking" and anything lower means "silent".
         track_changes = []
         for event in participant_data:
             time_in_s = datetime.fromtimestamp(event["timestamp"] / 1000).astimezone() - session_data.start_time
-            print(time_in_s)
-            if len(track_changes) == 0:
-                if event["class_count"] == start_action:
-
-                    
-                    track_changes.append((ActionType.START, time_in_s))
-            else:
-                last_change = track_changes[-1]
-                if event["class_count"] == end_action and last_change[0] == ActionType.START:
-                    track_changes.append((ActionType.END, time_in_s))
+            is_speaking = event["class_count"] == start_action
+            last_action = track_changes[-1][0] if track_changes else ActionType.END
+            if is_speaking and last_action == ActionType.END:
+                track_changes.append((ActionType.START, time_in_s))
+            elif not is_speaking and last_action == ActionType.START:
+                track_changes.append((ActionType.END, time_in_s))
+        if not track_changes:
+            continue
         if track_changes[-1][0] == ActionType.START:
             track_changes.append((ActionType.END, session_data.end_time - session_data.start_time))
 
@@ -120,7 +138,6 @@ def create_session(slice_audio_tracks, session_data, all_participants_data, part
     for participant_id, track_changes in participants_tracks_locations.items():
         participant_track_path = os.path.join(slice_audio_tracks, f"track_{participant_id}.wav")
         main_track_path = os.path.join(slice_audio_tracks, session_data.main_track_name)
-        print(track_changes)
         segments = []
         start_time = None
         for change in track_changes:
@@ -151,11 +168,11 @@ def create_session(slice_audio_tracks, session_data, all_participants_data, part
             "-af", filter_chain,
             participant_track_path,
         ]
-        subprocess.run(ffmpeg_cmd, check=True)
+        subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         participants_tracks[participant_id] = ParticipantData(
             participant_id=participant_id,
-            participant_name=all_participants_data[participant_id][0]["participant_name"],
+            participant_name=all_participants_data[participant_id][0]["participant_name"] or participant_id,
             track=Track(
                 wav_file_path=participant_track_path
             )

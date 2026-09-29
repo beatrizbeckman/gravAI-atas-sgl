@@ -17,4 +17,5 @@ dependencies = [
     "sqlalchemy>=2.0",
     "psycopg2-binary>=2.9",  # PostgreSQL adapter
     "alembic>=1.13",  # Database migrations
+    "tiktoken>=0.14.0",
 ]

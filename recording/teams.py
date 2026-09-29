@@ -1,7 +1,9 @@
 import argparse
+import queue
+import re
 import time
 from urllib.parse import urlparse
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import Locator, Page, sync_playwright
 import multiprocessing as mp
 from multiprocessing import Process, Queue
 import os
@@ -35,6 +37,137 @@ def stop_ws_audio_server() -> None:
                 pass
         _WS_PROC = None
 
+_BOT_NAME = "GravAI Bot"
+_LAUNCH_BUTTON = re.compile(r"continue on this browser|join on the web|join from this browser", re.IGNORECASE)
+_NO_AV_BUTTON = re.compile(r"continue without audio or video", re.IGNORECASE)
+_LOBBY_TEXT = re.compile(r"let you in", re.IGNORECASE)
+_PREJOIN_TIMEOUT_S = 150
+_ERROR_SCREEN_GRACE_S = 20
+
+
+def _screenshot(page: Page, output_dir: str, name: str) -> None:
+    try:
+        os.makedirs(output_dir, exist_ok=True)
+        path = os.path.join(output_dir, f"{name}.png")
+        page.screenshot(path=path)
+        print(f"[teams] screenshot saved to {path}")
+    except Exception as exc:
+        print(f"[teams] failed to save screenshot '{name}': {exc}")
+
+
+def _dismiss_overlays(page: Page) -> None:
+    """Closes the "Continue without audio or video" dialog, which Teams shows on top of
+    the pre-join form (it intercepts clicks on the name input and on "Join now")."""
+    try:
+        button = page.get_by_role("button", name=_NO_AV_BUTTON).first
+        if button.is_visible():
+            button.click(timeout=3_000)
+            print("[teams] dismissed 'Continue without audio or video' dialog")
+    except Exception:
+        pass
+
+
+def _open_meeting_page(page: Page, meeting_url: str) -> None:
+    """Opens the meeting link. Teams sometimes takes more than 20 s to deliver the first
+    HTML from inside Docker, so wait longer and retry instead of failing on the first try."""
+    for attempt in range(1, 4):
+        print(f"[teams] opening meeting link (attempt {attempt}/3)...")
+        try:
+            page.goto(meeting_url, wait_until="domcontentloaded", timeout=60_000)
+            return
+        except Exception as exc:
+            print(f"[teams] opening the meeting link failed (attempt {attempt}/3): {exc.__class__.__name__}")
+            if attempt == 3:
+                raise RuntimeError(
+                    "Could not open the Teams meeting link after 3 attempts (60 s each). "
+                    "Check the container's internet connection."
+                ) from exc
+
+
+def _wait_for_prejoin(page: Page, output_dir: str, debug: bool) -> Locator:
+    """Waits for the display-name input of the pre-join screen.
+
+    Teams first loads the full web app, which often fails inside Docker with a
+    "Retry" screen and then redirects by itself to the light meetings app. The
+    whole sequence can take ~40 s, so the retry buttons are only used when the
+    error screen stays up for longer than the grace period.
+    """
+    input_box = page.locator(
+        'input[data-tid="prejoin-display-name-input"], '
+        'input[id="prejoin-display-name-input"], '
+        'input[placeholder*="name" i]'
+    ).first
+    error_button = page.locator("#error-action")
+    clear_cache_button = page.locator("#error-action-clear-cache")
+
+    start = time.time()
+    error_since = None
+    retries = 0
+    next_debug_shot = start
+    while time.time() - start < _PREJOIN_TIMEOUT_S:
+        try:
+            if input_box.is_visible():
+                print(f"[teams] pre-join screen loaded after {time.time() - start:.0f}s")
+                return input_box
+
+            try:
+                page.get_by_role("button", name=_LAUNCH_BUTTON).first.click(timeout=500)
+                print("[teams] clicked 'continue on this browser'")
+            except Exception:
+                pass
+            _dismiss_overlays(page)
+
+            if error_button.is_visible():
+                error_since = error_since or time.time()
+                if time.time() - error_since > _ERROR_SCREEN_GRACE_S and retries < 2:
+                    (clear_cache_button if retries == 1 else error_button).click(timeout=5_000)
+                    print(f"[teams] error screen persisted, retry #{retries + 1}")
+                    retries += 1
+                    error_since = None
+            else:
+                error_since = None
+        except Exception:
+            # The page navigates several times while loading; locators may fail mid-navigation.
+            pass
+
+        if debug and time.time() >= next_debug_shot:
+            _screenshot(page, output_dir, f"prejoin_{int(time.time() - start):03d}s")
+            next_debug_shot += 15
+        page.wait_for_timeout(1_000)
+
+    raise RuntimeError(
+        f"Microsoft Teams did not show the pre-join screen within {_PREJOIN_TIMEOUT_S}s. "
+        "Check the 'failure.png' screenshot in the session folder."
+    )
+
+
+def _fill_name_and_join(page: Page, input_box: Locator) -> None:
+    _dismiss_overlays(page)
+    # fill() does not need the input to receive pointer events, so it works even if
+    # a dialog is still animating on top of the form.
+    input_box.fill(_BOT_NAME)
+
+    join_button = page.get_by_role("button", name=re.compile(r"^join now$", re.IGNORECASE)).first
+    for _ in range(3):
+        _dismiss_overlays(page)
+        try:
+            join_button.click(timeout=5_000)
+            print("[teams] clicked 'Join now'")
+            return
+        except Exception as exc:
+            print(f"[teams] 'Join now' click failed, retrying: {exc.__class__.__name__}")
+    join_button.click(force=True, timeout=5_000)
+    print("[teams] clicked 'Join now' (forced)")
+
+
+def _wait_for_admission_hint(page: Page) -> None:
+    try:
+        page.get_by_text(_LOBBY_TEXT).first.wait_for(state="visible", timeout=15_000)
+        print(f"[teams] waiting in the lobby: admit '{_BOT_NAME}' in the Teams meeting")
+    except Exception:
+        print("[teams] lobby message not detected; the bot may already be in the meeting")
+
+
 class MeetingRecorder(BaseModel):
     rtc_intercept_js_path: str
     vad_observer_js_path: str
@@ -50,6 +183,7 @@ class MeetingRecorder(BaseModel):
 
     def record_meeting_with_ws_audio_server(self, meeting_url: str, output_dir: str | None = None, ws_host: str | None = None, ws_port: int | None = None, debug: bool = False):
         settings = Settings()
+        debug = debug or settings.RECORDING_DEBUG
 
         print("Hello from record-meeting!")
         session_id, tracks_output_dir, q, base_output_dir = self.setup(output_dir or settings.SAVE_DIR)
@@ -69,8 +203,12 @@ class MeetingRecorder(BaseModel):
         p_join_browser.join()
         print("Finished - Recording")
 
-        res = q.get_nowait()
-        res_type, message = res
+        try:
+            res_type, message = q.get(timeout=5)
+        except queue.Empty:
+            raise RuntimeError(
+                f"Recording process exited (code {p_join_browser.exitcode}) without reporting a result."
+            )
         if res_type == "stop":
             return tracks_output_dir
         elif res_type == "exception":
@@ -151,14 +289,17 @@ class TeamsMeetingRecorder(MeetingRecorder):
         return intercept_js, vad_observer_js, vad_events, vad_meta
 
     def record_meeting(self, meeting_url: str, q: Queue, output_dir: str, debug: bool, intercept_js, vad_observer_js, vad_events: list[dict], vad_meta: dict) -> Session:
-        try:
-            with sync_playwright() as p:
+        page = None
+        with sync_playwright() as p:
+            try:
                 browser = p.chromium.launch(
                     headless=True,
                     ignore_default_args=["--mute-audio"],
                     args=[
                         "--use-fake-ui-for-media-stream",
                         "--autoplay-policy=no-user-gesture-required",
+                        "--disable-dev-shm-usage",
+                        "--disable-http2",
                         "--enable-logging",
                         "--v=1",
                         "--vmodule=*webrtc*=3,*libjingle*=3",
@@ -172,46 +313,12 @@ class TeamsMeetingRecorder(MeetingRecorder):
                 page = context.new_page()
                 page.set_default_timeout(20_000)
 
-                page.goto(meeting_url, wait_until="domcontentloaded")
-                try:
-                    page.locator("prejoin-join-button").first.click(timeout=9000)
-                except Exception:
-                    pass
-                if debug:
-                    page.screenshot(path="prejoin.png")
-                try:
-                    page.locator(".btn.primary").first.click(timeout=3000)
-                except Exception:
-                    pass
-                try:
-                    if debug:
-                        page.screenshot(path="prejoin2.png")
-                    page.get_by_role("button", name="Continue without audio or video").click(timeout=3000)
-                except Exception:
-                    pass
+                _open_meeting_page(page, meeting_url)
 
-                if debug:
-                    page.screenshot(path="prejoin3.png")
-
-                try:
-                    input_box = page.locator('input[data-tid="prejoin-display-name-input"]')
-                    input_box.wait_for(timeout=30000)
-                except Exception:
-                    input_box = page.locator("input").first
-
-                input_box.click(timeout=10_000)
-                input_box.fill("GravAI Bot")
-
-                try:
-                    page.get_by_role("button", name="Join now").click(timeout=5000)
-                except Exception:
-                    print("Failed to click 'Join now' button, attempting alternative.")
-                    for _ in range(4):
-                        page.keyboard.press("Tab")
-                    page.keyboard.press("Enter")
-
-                if debug:
-                    page.screenshot(path="last_wait.png")
+                input_box = _wait_for_prejoin(page, output_dir, debug)
+                _fill_name_and_join(page, input_box)
+                _wait_for_admission_hint(page)
+                _screenshot(page, output_dir, "after_join")
 
                 try:
                     vad_meta["page_start_ms"] = page.evaluate("() => Date.now()")
@@ -239,9 +346,10 @@ class TeamsMeetingRecorder(MeetingRecorder):
 
                 ended_span_locator = page.locator("span:has-text('Did you leave by mistake?')")
                 removed_h1_locator = page.locator("h1:has-text(\"You've been removed from this meeting\")")
+                rejoin_button_locator = page.get_by_role("button", name=re.compile(r"^rejoin$", re.IGNORECASE))
                 rejected_h1_locator = page.locator("h1[id='calling-retry-screen-title']")
 
-                deadline = time.time() + 7_200
+                deadline = time.time() + Settings().MAX_RECORDING_SECONDS
                 while True:
                     _drain_vad_events()
                     try:
@@ -252,7 +360,7 @@ class TeamsMeetingRecorder(MeetingRecorder):
                         raise Exception("Rejected from joining the meeting")
 
                     try:
-                        ended_span_locator.or_(removed_h1_locator).wait_for(state="visible", timeout=1000)
+                        ended_span_locator.or_(removed_h1_locator).or_(rejoin_button_locator).first.wait_for(state="visible", timeout=1000)
                         break
                     except Exception as e:
                         if time.time() >= deadline:
@@ -275,9 +383,12 @@ class TeamsMeetingRecorder(MeetingRecorder):
                 browser.close()
 
                 q.put(("stop", None))
-        except Exception as e:
-            print(f"Error in recording process: {e}")
-            q.put(("exception", str(e)))
+            except Exception as e:
+                print(f"Error in recording process: {e}")
+                if page is not None:
+                    # Still inside sync_playwright(), so the browser is alive for the screenshot.
+                    _screenshot(page, output_dir, "failure")
+                q.put(("exception", str(e)))
 
 
 # if __name__ == "__main__":

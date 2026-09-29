@@ -1,4 +1,4 @@
-import os, time, tiktoken
+import os, time
 from groq import Groq
 from dotenv import load_dotenv
 
@@ -7,22 +7,29 @@ load_dotenv()
 # Configuration from environment variables
 GROQ_API_KEY_ENV = os.environ.get("GROQ_API_KEY_ENV")
 GROQ_MODEL = os.environ.get("GROQ_MODEL")
-MAX_RETRIES = int(os.environ.get("MAX_RETRIES"))
-MAX_TOKENS = int(os.environ.get("MAX_TOKENS"))
-BASE_BACKOFF_SECONDS = int(os.environ.get("BASE_BACKOFF_SECONDS"))
-CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE"))
-DAILY_TOKEN_BUDGET = int(os.environ.get("DAILY_TOKEN_BUDGET"))
-RESERVED_FOR_AGGREGATION = int(os.environ.get("RESERVED_FOR_AGGREGATION"))
+MAX_RETRIES = int(os.environ.get("MAX_RETRIES", "3"))
+MAX_TOKENS = int(os.environ.get("MAX_TOKENS", "8000"))
+BASE_BACKOFF_SECONDS = int(os.environ.get("BASE_BACKOFF_SECONDS", "2"))
+CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", "40"))
+DAILY_TOKEN_BUDGET = int(os.environ.get("DAILY_TOKEN_BUDGET", "500000"))
+RESERVED_FOR_AGGREGATION = int(os.environ.get("RESERVED_FOR_AGGREGATION", "20000"))
 
-_enc = tiktoken.get_encoding("cl100k_base")
+_enc = None
 
-def estimate_tokens(text: str) -> int: return len(_enc.encode(text))
+
+def estimate_tokens(text: str) -> int:
+    # tiktoken downloads its encoding on first use, so load it lazily instead of at import time.
+    global _enc
+    if _enc is None:
+        import tiktoken
+        _enc = tiktoken.get_encoding("cl100k_base")
+    return len(_enc.encode(text))
 
 
 def create_groq_client() -> Groq:
     api_key = GROQ_API_KEY_ENV
     if not api_key:
-        raise RuntimeError("Missing environment variable: GROQ_API_KEY")
+        raise RuntimeError("Missing environment variable: GROQ_API_KEY_ENV")
     return Groq(api_key=api_key)
 
 

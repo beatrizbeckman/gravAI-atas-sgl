@@ -1,6 +1,7 @@
 FROM ubuntu:24.04
 
 ARG WHISPER_VERSION=1.8.4
+ARG WHISPER_MODEL=large-v3
 WORKDIR /app
 
 RUN apt-get update &&\
@@ -18,5 +19,24 @@ WORKDIR /app/whisper.cpp-${WHISPER_VERSION}
 
 RUN cmake -B build
 RUN cmake --build build -j --config Release
-    
-RUN sh models/download-ggml-model.sh large-v3
+
+# Keep partial model downloads between builds and resume after network failures.
+RUN --mount=type=cache,target=/model-cache \
+    set -eu; \
+    model_file="ggml-${WHISPER_MODEL}.bin"; \
+    model_url="https://huggingface.co/ggerganov/whisper.cpp/resolve/main/${model_file}"; \
+    attempt=1; \
+    while [ "$attempt" -le 10 ]; do \
+        if curl --fail --location --continue-at - \
+            --output "/model-cache/${model_file}" "$model_url"; then \
+            break; \
+        fi; \
+        if [ "$attempt" -eq 10 ]; then \
+            echo "Failed to download ${model_file} after ${attempt} attempts" >&2; \
+            exit 1; \
+        fi; \
+        attempt=$((attempt + 1)); \
+        echo "Download interrupted; retrying (${attempt}/10)..."; \
+        sleep 5; \
+    done; \
+    cp "/model-cache/${model_file}" "models/${model_file}"

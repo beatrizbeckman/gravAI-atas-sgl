@@ -4,9 +4,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration from environment variables
-CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE"))
-DAILY_TOKEN_BUDGET = int(os.environ.get("DAILY_TOKEN_BUDGET"))
-RESERVED_FOR_AGGREGATION = int(os.environ.get("RESERVED_FOR_AGGREGATION"))
+CHUNK_SIZE = int(os.environ.get("CHUNK_SIZE", "40"))
+DAILY_TOKEN_BUDGET = int(os.environ.get("DAILY_TOKEN_BUDGET", "500000"))
+RESERVED_FOR_AGGREGATION = int(os.environ.get("RESERVED_FOR_AGGREGATION", "20000"))
 
 
 def build_transcript_json(transcript: dict) -> str: return json.dumps(transcript, ensure_ascii=False, indent=2)

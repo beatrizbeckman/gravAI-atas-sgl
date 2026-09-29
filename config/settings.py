@@ -62,6 +62,18 @@ class Settings(BaseSettings, Singleton):
         alias="WHISPER_PORT",
     )
 
+    RECORDING_DEBUG: bool = Field(
+        False,
+        description="Save periodic screenshots of the Teams pre-join screen to the session folder",
+        alias="RECORDING_DEBUG",
+    )
+
+    MAX_RECORDING_SECONDS: int = Field(
+        7_200,
+        description="Stop recording after this many seconds if the meeting end is not detected",
+        alias="MAX_RECORDING_SECONDS",
+    )
+
     # DF_PATH: str = "df.pkl"
 
 
