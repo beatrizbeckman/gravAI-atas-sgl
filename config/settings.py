@@ -74,6 +74,36 @@ class Settings(BaseSettings, Singleton):
         alias="MAX_RECORDING_SECONDS",
     )
 
+    LLM_PROVIDER: str = Field(
+        "ollama",
+        description="Who generates the minutes: 'ollama' (local) or 'groq'",
+        alias="LLM_PROVIDER",
+    )
+
+    OLLAMA_HOST: str = Field(
+        "http://127.0.0.1:11434",
+        description="Base URL of the Ollama server",
+        alias="OLLAMA_HOST",
+    )
+
+    OLLAMA_MODEL: str = Field(
+        "qwen2.5:7b-instruct",
+        description="Ollama model used for the minutes",
+        alias="OLLAMA_MODEL",
+    )
+
+    OLLAMA_NUM_CTX: int = Field(
+        16_384,
+        description="Context window requested from Ollama; must hold the prompt plus the transcript part",
+        alias="OLLAMA_NUM_CTX",
+    )
+
+    LLM_TIMEOUT_SECONDS: int = Field(
+        600,
+        description="Give up on a single LLM request after this many seconds",
+        alias="LLM_TIMEOUT_SECONDS",
+    )
+
     # DF_PATH: str = "df.pkl"
 
 
