@@ -174,14 +174,15 @@ class MeetingRecorder(BaseModel):
     audio_worklet_js_path: str
 
     @abstractmethod
-    def record_meeting(self, meeting_url: str, q: Queue, output_dir: str, debug: bool, intercept_js, vad_observer_js, vad_events: list[dict], vad_meta: dict) -> Session:
+    def record_meeting(self, meeting_url: str, q: Queue, output_dir: str, debug: bool, intercept_js, vad_observer_js, vad_events: list[dict], vad_meta: dict, max_seconds: int | None = None) -> Session:
         pass
 
     @abstractmethod
     def setup_ws_server(self, meeting_url: str, ws_host: str, ws_port: int, session_id: str) -> tuple[str, str, list[dict], dict]:
         pass
 
-    def record_meeting_with_ws_audio_server(self, meeting_url: str, output_dir: str | None = None, ws_host: str | None = None, ws_port: int | None = None, debug: bool = False):
+    def record_meeting_with_ws_audio_server(self, meeting_url: str, output_dir: str | None = None, ws_host: str | None = None, ws_port: int | None = None, debug: bool = False, max_seconds: int | None = None):
+        """Records until the meeting ends or max_seconds (default MAX_RECORDING_SECONDS) elapse. Returns the tracks folder."""
         settings = Settings()
         debug = debug or settings.RECORDING_DEBUG
 
@@ -197,7 +198,7 @@ class MeetingRecorder(BaseModel):
         print(f"Starting intercept mode session {session_id} -> {tracks_output_dir}")
         p_join_browser = mp.Process(
             target=self.record_meeting,
-            args=(meeting_url, q, tracks_output_dir, debug, intercept_js, vad_observer_js, vad_events, vad_meta),
+            args=(meeting_url, q, tracks_output_dir, debug, intercept_js, vad_observer_js, vad_events, vad_meta, max_seconds),
         )
         p_join_browser.start()
         p_join_browser.join()
@@ -288,7 +289,7 @@ class TeamsMeetingRecorder(MeetingRecorder):
 
         return intercept_js, vad_observer_js, vad_events, vad_meta
 
-    def record_meeting(self, meeting_url: str, q: Queue, output_dir: str, debug: bool, intercept_js, vad_observer_js, vad_events: list[dict], vad_meta: dict) -> Session:
+    def record_meeting(self, meeting_url: str, q: Queue, output_dir: str, debug: bool, intercept_js, vad_observer_js, vad_events: list[dict], vad_meta: dict, max_seconds: int | None = None) -> Session:
         page = None
         with sync_playwright() as p:
             try:
@@ -349,7 +350,7 @@ class TeamsMeetingRecorder(MeetingRecorder):
                 rejoin_button_locator = page.get_by_role("button", name=re.compile(r"^rejoin$", re.IGNORECASE))
                 rejected_h1_locator = page.locator("h1[id='calling-retry-screen-title']")
 
-                deadline = time.time() + Settings().MAX_RECORDING_SECONDS
+                deadline = time.time() + (max_seconds or Settings().MAX_RECORDING_SECONDS)
                 while True:
                     _drain_vad_events()
                     try:

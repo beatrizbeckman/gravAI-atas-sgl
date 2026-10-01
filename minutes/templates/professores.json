@@ -1,6 +1,7 @@
 {
   "id": "professores",
   "name": "Ata de reunião com professores",
+  "description": "Reunião de orientação com professores: mesma estrutura da ata Dell, com feedback dos professores no lugar de ideias e propostas.",
   "title": "ATA DE REUNIÃO COM PROFESSORES",
   "subtitle": "Reunião interna de orientação",
   "footer": "Ata de Reunião com Professores · {projeto} · Ata gerada automaticamente pelo GravAI",

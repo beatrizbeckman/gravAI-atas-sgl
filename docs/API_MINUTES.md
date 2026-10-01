@@ -1,0 +1,407 @@
+# GravAI — API de geração de atas (`/minutes/*`)
+
+Contrato HTTP para gerar atas de reunião (`.docx`) a partir de transcrições ou gravações feitas pelo GravAI. Este documento é a referência para qualquer cliente da API: a página de demonstração do próprio GravAI, o SGL ou um script.
+
+Versão do contrato: **1.0** (01/10/2026). Mudanças incompatíveis sobem a versão. Implementado em `api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
+
+---
+
+## 1. Visão geral
+
+Gerar uma ata é lento (de dezenas de segundos a alguns minutos com um LLM local; horas quando inclui gravar a reunião). Por isso a API é **assíncrona**: cada `POST` cria um *job*, devolve o `job_id` imediatamente e o cliente consulta o status até ele terminar.
+
+```
+cliente ──POST /minutes/from-transcript──► API  (202 Accepted, {"id": "..."} )
+cliente ──GET  /minutes/jobs/{id}────────► API  (status: queued → running → done | failed)
+cliente ──GET  /minutes/jobs/{id}/download► API  (arquivo .docx)
+```
+
+Três maneiras de criar um job, da mais simples à mais completa:
+
+| Endpoint | Entrada | Faz |
+|---|---|---|
+| `POST /minutes/from-transcript` | transcrição já pronta (lista de falas) | LLM → `.docx` |
+| `POST /minutes/from-recording` | pasta de uma gravação já transcrita pelo GravAI | normaliza transcrição → LLM → `.docx` |
+| `POST /minutes/record-and-generate` | link de reunião do Teams | grava → transcreve → normaliza → LLM → `.docx` |
+
+Base URL de desenvolvimento: `http://localhost:8000`. Todos os corpos são JSON em UTF-8. Datas e horas em texto, no formato que vai aparecer na ata (a API não converte).
+
+---
+
+## 2. Templates
+
+### `GET /minutes/templates`
+
+Lista os modelos de ata disponíveis e os campos de cabeçalho que cada um espera. Serve para o cliente montar o formulário sem conhecer os templates de antemão.
+
+**Resposta `200`**
+
+```json
+{
+  "templates": [
+    {
+      "id": "dell",
+      "name": "Ata Dell",
+      "description": "Reunião com Dell Technologies. Tópicos, resumo, decisões, plano de ação e próxima reunião.",
+      "header": [
+        {"key": "projeto", "label": "Projeto", "required": true,  "format": null,          "values": null, "default": null},
+        {"key": "numero",  "label": "Ata nº",  "required": false, "format": "000",         "values": null, "default": null},
+        {"key": "data",    "label": "Data",    "required": true,  "format": "DD/MM/AAAA",  "values": null, "default": null},
+        {"key": "horario", "label": "Horário", "required": false, "format": "HH:MM – HH:MM", "values": null, "default": null}
+      ],
+      "participants": {"source": "transcript", "label": "Participantes"},
+      "sections": [
+        {"key": "topicos",   "title": "TÓPICOS DISCUTIDOS", "type": "topics",    "columns": []},
+        {"key": "resumo",    "title": "RESUMO DA REUNIÃO",  "type": "paragraph", "columns": []},
+        {"key": "decisoes",  "title": "DECISÕES",           "type": "table", "columns": [{"key": "id", "label": "Nº"}, {"key": "decisao", "label": "Decisão"}, {"key": "aprovada_por", "label": "Aprovada por"}]},
+        {"key": "plano_acao","title": "PLANO DE AÇÃO",      "type": "table", "columns": [{"key": "id", "label": "ID"}, {"key": "acao", "label": "Ação / Entregável"}, {"key": "responsavel", "label": "Responsável"}, {"key": "prazo", "label": "Prazo"}, {"key": "status", "label": "Status"}]}
+      ]
+    },
+    {"id": "professores", "...": "..."},
+    {"id": "daily", "...": "..."},
+    {"id": "custom", "name": "Ata personalizada", "description": "Seções e tom definidos na requisição (campo custom).", "header": ["..."], "sections": []}
+  ]
+}
+```
+
+Campos de cabeçalho por template (fonte: `minutes/templates/*.json`):
+
+| Template | Campos (`*` = obrigatório) |
+|---|---|
+| `dell` | `projeto*`, `numero`, `data*`, `horario` |
+| `professores` | `projeto*`, `numero`, `data*`, `horario`, `professores*`, `tipo` (`Orientação` \| `Apresentação`, padrão `Orientação`) |
+| `daily` | `projeto*`, `data*` (formato `DD/MM/AAAA · HH:MM – HH:MM`) |
+| `custom` | `projeto*`, `data*`, `horario` |
+
+O cabeçalho é **sempre** preenchido pelo cliente, nunca pelo LLM. `format` é só uma dica de exibição; a API grava o texto como veio.
+
+---
+
+## 3. Criar jobs
+
+Os três `POST` compartilham o bloco de **especificação da ata**:
+
+```json
+{
+  "template": "dell",
+  "header": {"projeto": "Portal de Suporte", "numero": "007", "data": "29/09/2026", "horario": "14:00 – 14:45"},
+  "participants": ["Ana", "Bruno", "Carla", "Diego"],
+  "custom": null
+}
+```
+
+| Campo | Tipo | Obrigatório | Descrição |
+|---|---|---|---|
+| `template` | string | sim | `dell`, `professores`, `daily` ou `custom`. |
+| `header` | objeto | sim | Chaves conforme `GET /minutes/templates`. Faltando campo obrigatório → `422`. Chaves desconhecidas são ignoradas. |
+| `participants` | lista de strings | não | Nomes a listar na ata. Quando omitido, a API usa os falantes da transcrição. Quando informado, substitui a lista da transcrição **só na seção de participantes**; os nomes dentro do texto continuam sendo os da transcrição. |
+| `custom` | objeto | só quando `template = "custom"` | Ver 3.4. |
+
+### 3.1 `POST /minutes/from-transcript`
+
+Caminho principal. O cliente já tem a transcrição (de uma gravação anterior do GravAI, de outro sistema ou digitada) e quer só a ata.
+
+**Corpo**
+
+```json
+{
+  "template": "dell",
+  "header": {"projeto": "Portal de Suporte", "numero": "007", "data": "29/09/2026", "horario": "14:00 – 14:45"},
+  "participants": null,
+  "utterances": [
+    {"speaker": "Carla", "start": 0.0,  "end": 9.5,  "text": "Boa tarde pessoal, vamos começar..."},
+    {"speaker": "Ana",   "start": 10.0, "end": 14.0, "text": "Boa tarde Carla. Antes disso..."}
+  ]
+}
+```
+
+| Campo | Tipo | Regras |
+|---|---|---|
+| `utterances` | lista | Mínimo 1 item. Ordem cronológica (a API reordena por `start` se vier fora de ordem). |
+| `utterances[].speaker` | string | Nome exatamente como deve aparecer na ata. |
+| `utterances[].start`, `end` | número (segundos) | `end > start`. Contados do início da reunião. Só servem de orientação ao modelo; não entram na ata. |
+| `utterances[].text` | string | Texto da fala. Vazio é descartado. |
+
+**Resposta `202 Accepted`**: o objeto de job (seção 4) com `status: "queued"`.
+
+### 3.2 `POST /minutes/from-recording`
+
+Para uma reunião que o GravAI já gravou e transcreveu (`POST /transcribe` do GravAI gerou `session_transcription.json` na pasta).
+
+**Corpo**
+
+```json
+{
+  "template": "professores",
+  "header": {"projeto": "TCC GravAI", "data": "29/09/2026", "professores": "Prof. Fulano"},
+  "tracks_dir": "./tmp/5d3136ef-0d7f-4664-a8d8-28ecc6b4929e_tracks"
+}
+```
+
+| Campo | Regras |
+|---|---|
+| `tracks_dir` | Pasta `*_tracks` de uma gravação, relativa à raiz do GravAI ou absoluta. Deve conter `session_transcription.json` ou os arquivos `track_*_transcription_segments.json` + `vad_timeline.json`. Pasta inexistente → `404`. Pasta sem transcrição → `422`. |
+
+A API roda a normalização da transcrição (junta as tracks de cada participante, remove alucinações e duplicatas) e segue como em 3.1.
+
+### 3.3 `POST /minutes/record-and-generate`
+
+Fluxo completo: o bot entra na reunião, grava até ela acabar, transcreve, normaliza e gera a ata. O job fica em `running` por toda a reunião.
+
+**Corpo**
+
+```json
+{
+  "template": "daily",
+  "header": {"projeto": "GravAI", "data": "01/10/2026 · 09:00 – 09:15"},
+  "meeting_url": "https://teams.live.com/meet/...",
+  "max_recording_seconds": 7200
+}
+```
+
+| Campo | Regras |
+|---|---|
+| `meeting_url` | Link do Teams (`teams.live.com` ou `teams.microsoft.com`). Outro domínio → `400`. |
+| `max_recording_seconds` | Opcional, mínimo 60. Teto de segurança caso o fim da reunião não seja detectado. Padrão: `MAX_RECORDING_SECONDS` do servidor (7200). |
+
+Só **uma gravação por vez**: se já houver um job `record_and_generate` gravando **ou ainda na fila**, a resposta é `409` com `detail` explicando. Jobs dos outros tipos não têm essa restrição.
+
+### 3.4 Ata personalizada (`template = "custom"`)
+
+O cliente descreve a ata em vez de escolher um modelo fixo. Duas formas, excludentes:
+
+**(a) Instruções livres** — o LLM organiza o conteúdo como achar melhor, em uma única seção de texto:
+
+```json
+{
+  "template": "custom",
+  "header": {"projeto": "Sprint 12", "data": "01/10/2026"},
+  "custom": {
+    "name": "Ata de retrospectiva",
+    "tone": "Informal, direto, sem jargão.",
+    "instructions": "Quero um resumo do que foi bom, do que foi ruim e uma lista de ações para a próxima sprint."
+  },
+  "utterances": ["..."]
+}
+```
+
+**(b) Seções declaradas** — o cliente define a estrutura e o LLM preenche cada seção:
+
+```json
+{
+  "template": "custom",
+  "header": {"projeto": "Sprint 12", "data": "01/10/2026"},
+  "custom": {
+    "name": "Ata de retrospectiva",
+    "tone": "Informal, direto.",
+    "sections": [
+      {"key": "bom",   "title": "O que foi bom",  "type": "bullets",   "instructions": "Pontos positivos citados pelo time."},
+      {"key": "ruim",  "title": "O que foi ruim", "type": "bullets",   "instructions": "Problemas citados.", "allow_empty": true},
+      {"key": "acoes", "title": "Ações",          "type": "table",     "instructions": "Tarefas com dono.",
+       "columns": [{"key": "acao", "label": "Ação"}, {"key": "quem", "label": "Quem"}, {"key": "prazo", "label": "Prazo", "format": "DD/MM"}]}
+    ]
+  },
+  "utterances": ["..."]
+}
+```
+
+| Campo de `custom` | Regras |
+|---|---|
+| `name` | Opcional. Nome do modelo mostrado no prompt. Padrão: "Ata personalizada". |
+| `title`, `subtitle` | Opcionais. Título e subtítulo impressos no `.docx`. Padrão: "ATA DE REUNIÃO". |
+| `tone` | Opcional. Padrão: formal, terceira pessoa. |
+| `instructions` | Forma (a). String não vazia. |
+| `sections` | Forma (b). Lista com 1 a 15 seções. |
+| `sections[].key` | Obrigatório, único, `snake_case` (`^[a-z][a-z0-9_]*$`). |
+| `sections[].title` | Obrigatório. |
+| `sections[].type` | `paragraph`, `bullets`, `topics`, `table` ou `record`. |
+| `sections[].instructions` | Obrigatório. O que o LLM deve colocar ali. |
+| `sections[].allow_empty` | Opcional, padrão `true` (seção aparece mesmo vazia; o modelo não inventa). |
+| `sections[].columns` / `fields` | Obrigatório para `table` / `record`. Cada item: `key`, `label`, e opcionalmente `format`, `values`, `default`, `instructions`. |
+
+Mandar `instructions` e `sections` juntos, ou nenhum dos dois → `422`.
+
+---
+
+## 4. Acompanhar jobs
+
+### 4.1 Objeto de job
+
+Todas as respostas que envolvem job têm este formato:
+
+```json
+{
+  "id": "6f1c2a0e-3b7d-4a7e-9f2a-0c1d2e3f4a5b",
+  "kind": "from_transcript",
+  "status": "done",
+  "stage": null,
+  "template": "dell",
+  "header": {"projeto": "Portal de Suporte", "numero": "007", "data": "29/09/2026", "horario": "14:00 – 14:45"},
+  "created_at": "2026-10-01T14:03:12Z",
+  "updated_at": "2026-10-01T14:04:40Z",
+  "finished_at": "2026-10-01T14:04:40Z",
+  "result": {
+    "download_url": "/minutes/jobs/6f1c2a0e-3b7d-4a7e-9f2a-0c1d2e3f4a5b/download",
+    "filename": "ata_dell_2026-10-01_portal-de-suporte.docx",
+    "participants": ["Ana", "Bruno", "Carla", "Diego"],
+    "utterances": 27,
+    "parts": 1,
+    "llm_model": "qwen2.5:7b-instruct",
+    "generation_seconds": 84.3
+  },
+  "error": null
+}
+```
+
+| Campo | Descrição |
+|---|---|
+| `id` | UUID do job. |
+| `kind` | `from_transcript`, `from_recording` ou `record_and_generate`. |
+| `status` | `queued` (na fila), `running` (executando), `done` (ata pronta), `failed` (erro; ver `error`). |
+| `stage` | Só quando `running`: `recording`, `transcribing`, `normalizing`, `generating` (LLM), `rendering` (docx). `null` nos outros status. |
+| `template`, `header` | Ecos da requisição. |
+| `created_at`, `updated_at`, `finished_at` | ISO 8601 em UTC. `finished_at` é `null` até `done`/`failed`. |
+| `result` | `null` até `done`. `parts` é em quantas partes a transcrição foi dividida para o LLM (1 = coube de uma vez). |
+| `error` | `null` exceto em `failed`. Objeto `{"code": "...", "message": "..."}`. |
+
+Códigos de `error.code`:
+
+| `code` | Significado | O que o cliente faz |
+|---|---|---|
+| `llm_unreachable` | Servidor Ollama fora do ar ou modelo não baixado. | Avisar o operador; tentar de novo mais tarde. |
+| `llm_invalid_response` | O modelo não devolveu JSON válido ou deixou seção obrigatória vazia, mesmo após as tentativas. | Tentar de novo; se persistir, revisar a transcrição (muito curta ou sem conteúdo). |
+| `empty_transcript` | Após a normalização não sobrou nenhuma fala. | Checar a gravação/transcrição. |
+| `transcription_failed` | Whisper falhou ou não respondeu. | Avisar o operador. |
+| `recording_failed` | Bot não entrou na reunião, foi rejeitado ou removido. | Checar o link e se o bot foi admitido. |
+| `internal` | Qualquer outro erro. `message` tem o detalhe. | Reportar. |
+
+### 4.2 `GET /minutes/jobs/{id}`
+
+Devolve o objeto de job. `404` se o id não existe.
+
+**Polling recomendado:** a cada **5 s** para `from_transcript` e `from_recording`; a cada **30 s** para `record_and_generate` (que dura a reunião inteira). Parar quando `status` for `done` ou `failed`.
+
+Duração típica (LLM local 7B em GPU): 30 s a 3 min para uma reunião de 1 h. Em CPU, multiplique por 10.
+
+### 4.3 `GET /minutes/jobs/{id}/download`
+
+Devolve o `.docx` (`Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document`, `Content-Disposition: attachment; filename="..."`).
+
+- `404`: job não existe.
+- `409`: job ainda não terminou (`status` ≠ `done`) ou falhou.
+
+### 4.4 `GET /minutes/jobs/{id}/result`
+
+Devolve o **conteúdo da ata em JSON**, no formato das seções do template, antes de virar `.docx`. Útil para pré-visualizar na tela ou para avaliação da qualidade.
+
+```json
+{
+  "template": "dell",
+  "header": {"..."},
+  "participants": ["Ana", "Bruno", "Carla", "Diego"],
+  "minutes": {
+    "topicos": [{"titulo": "Integração com a API de chamados", "resumo": "..."}],
+    "resumo": "Reunião de acompanhamento do projeto...",
+    "finalizado": ["..."],
+    "em_andamento": ["..."],
+    "ideias_propostas": [],
+    "duvidas": ["..."],
+    "pendencias": ["..."],
+    "decisoes":   [{"id": "D1", "decisao": "...", "aprovada_por": "Carla"}],
+    "plano_acao": [{"id": "A1", "acao": "...", "responsavel": "Carla", "prazo": "02/10", "status": "Pendente"}],
+    "proxima_reuniao": {"data": "06/10/2026", "horario": "14:00", "pauta": "..."}
+  }
+}
+```
+
+Formato de cada valor conforme o `type` da seção: `paragraph` → string; `bullets` → lista de strings; `topics` → lista de `{titulo, resumo}`; `table` → lista de objetos com as colunas (+ `id` quando o template numera); `record` → objeto com os campos. Mesmos códigos de erro de 4.3.
+
+### 4.5 `GET /minutes/jobs`
+
+Lista os jobs mais recentes (para a página de demonstração). Query: `limit` (padrão 20, máximo 100), `status` (filtro opcional).
+
+```json
+{"jobs": [{"...objeto de job..."}, {"..."}]}
+```
+
+---
+
+## 5. Erros síncronos (nas respostas HTTP)
+
+Formato padrão do FastAPI:
+
+```json
+{"detail": "mensagem"}
+```
+
+Em `422` o `detail` é a lista de erros de validação do FastAPI (campo, mensagem).
+
+| Status | Quando |
+|---|---|
+| `400` | `meeting_url` não é do Teams. |
+| `404` | Job inexistente; `tracks_dir` inexistente. |
+| `409` | Já há uma gravação em andamento; download/result de job não concluído. |
+| `422` | Corpo inválido: template desconhecido, campo obrigatório do cabeçalho ausente, `utterances` vazia, `custom` mal formado, pasta sem transcrição. |
+| `500` | Erro inesperado ao **criar** o job (erros durante a execução vão para `status: failed`, nunca para `500`). |
+
+---
+
+## 6. Exemplos com `curl`
+
+```bash
+# 1. Descobrir templates e campos
+curl http://localhost:8000/minutes/templates
+
+# 2. Criar um job a partir de uma transcrição (fixture do repositório)
+curl -X POST http://localhost:8000/minutes/from-transcript \
+  -H "Content-Type: application/json" \
+  -d @minutes/tests/fixtures/reuniao_dell.json
+# → 202 {"id": "6f1c...", "status": "queued", ...}
+
+# 3. Consultar
+curl http://localhost:8000/minutes/jobs/6f1c2a0e-3b7d-4a7e-9f2a-0c1d2e3f4a5b
+
+# 4. Baixar quando status = done
+curl -OJ http://localhost:8000/minutes/jobs/6f1c2a0e-3b7d-4a7e-9f2a-0c1d2e3f4a5b/download
+
+# 5. Gravação já transcrita
+curl -X POST http://localhost:8000/minutes/from-recording \
+  -H "Content-Type: application/json" \
+  -d '{"template":"daily","header":{"projeto":"GravAI","data":"01/10/2026 · 09:00 – 09:15"},"tracks_dir":"./tmp/5d3136ef-0d7f-4664-a8d8-28ecc6b4929e_tracks"}'
+```
+
+> Os arquivos em `minutes/tests/fixtures/reuniao_*.json` têm exatamente o formato do corpo de `from-transcript` e servem de exemplo de requisição.
+
+Exemplo de polling em JavaScript (página de demonstração):
+
+```js
+async function waitForJob(id) {
+  while (true) {
+    const job = await (await fetch(`/minutes/jobs/${id}`)).json();
+    if (job.status === "done" || job.status === "failed") return job;
+    await new Promise(r => setTimeout(r, 5000));
+  }
+}
+```
+
+---
+
+## 7. Configuração do servidor que afeta o cliente
+
+| Variável (`.env`) | Efeito visível |
+|---|---|
+| `LLM_PROVIDER`, `OLLAMA_HOST`, `OLLAMA_MODEL` | Qual LLM gera a ata; aparece em `result.llm_model`. |
+| `OLLAMA_NUM_CTX` | Tamanho de contexto. Transcrições maiores que o contexto são divididas (`result.parts > 1`). |
+| `LLM_TIMEOUT_SECONDS` | Tempo máximo de uma chamada ao LLM; estourar vira `failed` com `llm_unreachable`. |
+| `MAX_RECORDING_SECONDS` | Teto padrão de `record-and-generate`. |
+| `SAVE_DIR` | Onde as gravações e os `.docx` são salvos. |
+
+---
+
+## 8. Garantias e limitações
+
+- Jobs e seus arquivos persistem em SQLite e em disco; sobrevivem a reinício da API. Jobs que estavam `running` quando a API caiu voltam como `failed` (`internal`, "interrupted by restart").
+- Jobs são executados **um por vez** na ordem de criação (fila única). Um `record_and_generate` em andamento não bloqueia a criação de outros jobs, mas eles só rodam depois dele.
+- Não há autenticação nesta versão. A API deve ficar em rede interna.
+- Os nomes dos participantes vêm do nome de exibição no Teams. Fala de duas pessoas no mesmo instante pode ser atribuída à pessoa errada; identificação por voz é a Parte 2 do projeto.
+- O LLM é instruído a não inventar conteúdo, mas pode errar. A ata deve ser revisada por uma pessoa antes de ser distribuída; o campo "Ata gerada automaticamente pelo GravAI" no rodapé existe para isso.

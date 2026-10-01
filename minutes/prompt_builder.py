@@ -259,9 +259,10 @@ if __name__ == "__main__":
     import argparse
     import sys
 
-    parser = argparse.ArgumentParser(description="Build (and optionally run through the configured LLM) the minutes prompt for a fixture file")
+    parser = argparse.ArgumentParser(
+        description="Print the prompts built for a fixture file (to run them through the LLM use `python -m minutes.generate`)"
+    )
     parser.add_argument("fixture", help="JSON with template, header and utterances (see minutes/tests/fixtures)")
-    parser.add_argument("--call", action="store_true", help="send the prompt to the LLM (LLM_PROVIDER in .env) and print the parsed minutes")
     parser.add_argument("--max-chars", type=int, default=DEFAULT_MAX_CHARS, help="transcript characters per request before splitting")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
@@ -273,27 +274,7 @@ if __name__ == "__main__":
     participants = sorted({u.speaker for u in utterances})
     parts = split_transcript(utterances, args.max_chars)
 
-    system = build_system_prompt(template)
-    users = [
-        build_user_prompt(template, p, fixture["header"], participants, part=(i, len(parts)) if len(parts) > 1 else None)
-        for i, p in enumerate(parts, 1)
-    ]
-
-    if not args.call:
-        print("=== SYSTEM ===\n" + system)
-        for i, u in enumerate(users, 1):
-            print(f"\n=== USER {i}/{len(users)} ===\n" + u)
-        sys.exit()
-
-    from minutes.llm import generate
-
-    partials = []
-    for i, u in enumerate(users, 1):
-        print(f"[{i}/{len(users)}] calling LLM...", file=sys.stderr)
-        partials.append(parse_response(template, generate(system, u)))
-    if len(partials) > 1:
-        print("[merge] calling LLM...", file=sys.stderr)
-        result = parse_response(template, generate(system, build_merge_prompt(template, partials, fixture["header"], participants)))
-    else:
-        result = partials[0]
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    print("=== SYSTEM ===\n" + build_system_prompt(template))
+    for i, p in enumerate(parts, 1):
+        user = build_user_prompt(template, p, fixture["header"], participants, part=(i, len(parts)) if len(parts) > 1 else None)
+        print(f"\n=== USER {i}/{len(parts)} ===\n" + user)

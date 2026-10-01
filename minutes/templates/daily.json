@@ -1,6 +1,7 @@
 {
   "id": "daily",
   "name": "Daily",
+  "description": "Alinhamento diário do time: feito, em andamento, ideias, dúvidas, bloqueios e combinados. Curta e informal.",
   "title": "Daily",
   "subtitle": "Alinhamento diário do time",
   "footer": "Daily · {projeto} · Ata gerada automaticamente pelo GravAI",

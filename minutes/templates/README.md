@@ -1,6 +1,6 @@
 # Templates de ata
 
-Cada JSON descreve um modelo de ata: o que vai no cabeçalho, quais seções existem, em que ordem, o que cada uma deve conter e o tom do texto. O mesmo arquivo alimenta duas coisas: a montagem do prompt para o LLM e a geração do `.docx`. A ata personalizada (`custom`) usa a mesma estrutura, mas montada em memória a partir do que o usuário pediu na requisição.
+Cada JSON descreve um modelo de ata: o que vai no cabeçalho, quais seções existem, em que ordem, o que cada uma deve conter e o tom do texto. O mesmo arquivo alimenta duas coisas: a montagem do prompt para o LLM e a geração do `.docx`. A ata personalizada (`custom`) usa a mesma estrutura, mas montada em memória a partir do que o usuário pediu na requisição: `custom.json` é só o esqueleto (cabeçalho, rodapé, idioma) e `minutes/custom_template.py` troca nome, tom e seções pelo que veio no campo `custom` do request (instruções livres ou lista de seções, ver `docs/API_MINUTES.md` seção 3.4).
 
 ## Campos do topo
 

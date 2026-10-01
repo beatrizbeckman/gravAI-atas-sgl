@@ -56,6 +56,7 @@ class Section(BaseModel):
 class MinutesTemplate(BaseModel):
     id: str
     name: str
+    description: str = ""
     title: str
     subtitle: str = ""
     logo: str | None = None
@@ -73,6 +74,29 @@ class MinutesTemplate(BaseModel):
         if duplicated:
             raise ValueError(f"duplicated section keys in template '{self.id}': {sorted(duplicated)}")
         return self
+
+
+    def summary(self) -> dict:
+        """What GET /minutes/templates shows a client so it can build the form."""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "header": [
+                {"key": f.key, "label": f.label, "required": f.required, "format": f.format, "values": f.values, "default": f.default}
+                for f in self.header
+            ],
+            "participants": {"source": self.participants.source, "label": self.participants.label or "Participantes"},
+            "sections": [
+                {
+                    "key": s.key,
+                    "title": s.title,
+                    "type": s.type,
+                    "columns": ([{"key": "id", "label": s.id_label}] if s.id_prefix else []) + [{"key": c.key, "label": c.label} for c in (s.columns or s.fields or [])],
+                }
+                for s in self.sections
+            ],
+        }
 
 
 def available_templates() -> list[str]:

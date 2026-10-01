@@ -1,6 +1,5 @@
 import json
 import os
-import threading
 from fastapi import FastAPI, HTTPException
 from config.settings import Settings
 from models.models import Session, TranscriptedSession
@@ -8,22 +7,32 @@ from recording.teams import TeamsMeetingRecorder, stop_ws_audio_server
 from slicing.slice import Slicer
 from transcribe.base import transcribe_meeting_tracks
 from contextlib import asynccontextmanager
+from api.minutes import router as minutes_router
+from api.demo import router as demo_router
+from jobs.runtime import JobsRuntime
 
 # The WS audio server and the Playwright recorder support a single meeting at a time.
-_RECORDING_LOCK = threading.Lock()
+# The lock lives in jobs.executors so the minutes jobs and these endpoints share it.
+from jobs.executors import RECORDING_LOCK as _RECORDING_LOCK
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     settings = Settings()
     TeamsMeetingRecorder.launch_ws_server(settings.SAVE_DIR, settings.WS_HOST, settings.WS_PORT, settings.WS_AUDIO_SERVER_PATH)
+    # Minutes jobs: SQLite store + one worker thread (see jobs/ and docs/API_MINUTES.md).
+    app.state.jobs = JobsRuntime.from_settings()
+    app.state.jobs.start()
     yield
+    app.state.jobs.stop()
     stop_ws_audio_server()
 
 app = FastAPI(
     description="record_bot",
     lifespan=lifespan
 )
+app.include_router(minutes_router)
+app.include_router(demo_router)
 
 # Endpoints are plain `def` (not `async def`): FastAPI runs them in a worker thread,
 # so a recording that blocks for the whole meeting does not freeze the rest of the API.

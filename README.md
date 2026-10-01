@@ -93,14 +93,28 @@ The `minutes/` module turns a recording folder into a meeting-minutes document. 
 uv run python -m minutes.transcript_normalizer tmp/<session>_tracks
 uv run python -m minutes.transcript_normalizer tmp/<session>_tracks -o transcript.json
 
-# Show the prompts built for a transcript (or run them through the LLM with --call)
+# Show the prompts built for a transcript
 uv run python -m minutes.prompt_builder minutes/tests/fixtures/reuniao_dell.json
-uv run python -m minutes.prompt_builder minutes/tests/fixtures/reuniao_dell.json --call
 
-# Render filled minutes as .docx
+# Whole pipeline: transcript -> LLM -> .docx (LLM configured in .env)
+uv run python -m minutes.generate minutes/tests/fixtures/reuniao_dell.json -o ata.docx --json
+
+# Render already-filled minutes as .docx (no LLM involved)
 uv run python -m minutes.docx_writer minutes/tests/fixtures/ata_dell_preenchida.json -o ata.docx
 ```
 
-The LLM is configured in `.env` (`LLM_PROVIDER`, `OLLAMA_HOST`, `OLLAMA_MODEL`); the default is a local Ollama server. Templates live in `minutes/templates/`, see the README there.
+The LLM is configured in `.env` (`LLM_PROVIDER`, `OLLAMA_HOST`, `OLLAMA_MODEL`); the default is a local Ollama server. `LLM_PROVIDER=fake` fills every section with placeholder text so the pipeline can be exercised without any LLM. Templates live in `minutes/templates/`, see the README there. The HTTP contract for generating minutes is in `docs/API_MINUTES.md`. Generation runs as background jobs (`jobs/`: SQLite store, one worker thread, one executor per job kind) so HTTP clients only poll:
+
+```bash
+# API with the fake LLM (no Ollama needed)
+LLM_PROVIDER=fake uv run fastapi dev api/app.py
+
+curl http://localhost:8000/minutes/templates
+curl -X POST http://localhost:8000/minutes/from-transcript -H "Content-Type: application/json" -d @minutes/tests/fixtures/reuniao_dell.json
+curl http://localhost:8000/minutes/jobs/<id>            # poll until status is done
+curl -OJ http://localhost:8000/minutes/jobs/<id>/download
+```
+
+A demonstration page that drives the same endpoints is served at [http://localhost:8000/demo](http://localhost:8000/demo): pick a template, fill the header, paste a transcript (or point to a recording, or give a Teams link), follow the job and download the `.docx`.
 
 The project is early-stage and evolving. Expect breaking changes as we harden reliability and multi-platform support.

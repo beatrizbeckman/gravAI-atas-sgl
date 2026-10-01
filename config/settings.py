@@ -76,7 +76,7 @@ class Settings(BaseSettings, Singleton):
 
     LLM_PROVIDER: str = Field(
         "ollama",
-        description="Who generates the minutes: 'ollama' (local) or 'groq'",
+        description="Who generates the minutes: 'ollama' (local), 'groq', or 'fake' (placeholder text, no LLM; for demos and tests)",
         alias="LLM_PROVIDER",
     )
 
@@ -102,6 +102,12 @@ class Settings(BaseSettings, Singleton):
         600,
         description="Give up on a single LLM request after this many seconds",
         alias="LLM_TIMEOUT_SECONDS",
+    )
+
+    JOBS_DB_PATH: str | None = Field(
+        None,
+        description="SQLite file for the minutes jobs; default is <SAVE_DIR>/minutes_jobs.sqlite3",
+        alias="JOBS_DB_PATH",
     )
 
     # DF_PATH: str = "df.pkl"

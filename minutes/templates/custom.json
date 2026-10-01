@@ -1,6 +1,7 @@
 {
   "id": "custom",
   "name": "Ata personalizada",
+  "description": "Ata personalizada: seções e tom definidos na requisição (campo custom, com instruções livres ou lista de seções).",
   "title": "ATA DE REUNIÃO",
   "subtitle": "",
   "footer": "Ata de Reunião · {projeto} · Ata gerada automaticamente pelo GravAI",

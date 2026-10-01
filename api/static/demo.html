@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GravAI · Atas</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --text: #1f2328; --muted: #656d76; --line: #d8dde3;
+    --accent: #0b5fff; --accent-text: #ffffff; --ok: #1a7f37; --warn: #9a6700; --err: #cf222e; --band: #2b2b2b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1216; --card: #171b21; --text: #e6e8eb; --muted: #9aa4af; --line: #2b323a; --accent: #4c8dff; --band: #3a3f45; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 20px 16px 8px; max-width: 1100px; margin: 0 auto; }
+  header h1 { margin: 0; font-size: 22px; }
+  header p { margin: 4px 0 0; color: var(--muted); }
+  main { max-width: 1100px; margin: 0 auto; padding: 8px 16px 48px; display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { main { grid-template-columns: 5fr 6fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .card h2 { margin: 0 0 12px; font-size: 16px; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 10px 0 4px; }
+  label .req { color: var(--err); }
+  input[type=text], input[type=url], input[type=number], select, textarea {
+    width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--text); font: inherit;
+  }
+  textarea { min-height: 160px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+  .row { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+  .tabs { display: flex; gap: 6px; margin: 12px 0 8px; flex-wrap: wrap; }
+  .tabs button { padding: 6px 12px; border: 1px solid var(--line); background: var(--bg); color: var(--text); border-radius: 999px; cursor: pointer; font: inherit; }
+  .tabs button.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  .tab { display: none; } .tab.active { display: block; }
+  .actions { display: flex; gap: 10px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
+  button.primary { padding: 10px 18px; background: var(--accent); color: var(--accent-text); border: 0; border-radius: 6px; font: inherit; font-weight: 600; cursor: pointer; }
+  button.primary:disabled { opacity: .5; cursor: default; }
+  button.link { background: none; border: 0; color: var(--accent); cursor: pointer; font: inherit; padding: 0; }
+  .hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
+  .status { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 8px; background: var(--bg); margin-bottom: 12px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); flex: none; }
+  .dot.running { background: var(--warn); animation: pulse 1s infinite alternate; }
+  .dot.done { background: var(--ok); } .dot.failed { background: var(--err); }
+  @keyframes pulse { from { opacity: .4 } to { opacity: 1 } }
+  .error { color: var(--err); white-space: pre-wrap; }
+  .metrics { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 13px; margin: 8px 0 12px; }
+  .metrics b { color: var(--text); }
+  .preview h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; margin: 16px 0 6px; padding-bottom: 4px; border-bottom: 2px solid var(--band); }
+  .preview p, .preview li { margin: 4px 0; }
+  .preview table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .preview th, .preview td { border: 1px solid var(--line); padding: 5px 7px; text-align: left; vertical-align: top; }
+  .preview th { background: var(--band); color: #fff; }
+  .preview .empty { color: var(--muted); font-style: italic; }
+  .preview .topic b { display: block; }
+  ul.jobs { list-style: none; padding: 0; margin: 0; }
+  ul.jobs li { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 13px; }
+  ul.jobs li:first-child { border-top: 0; }
+  ul.jobs .id { font-family: ui-monospace, Consolas, monospace; color: var(--muted); }
+  ul.jobs .grow { flex: 1; }
+  code { background: var(--bg); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>GravAI · Geração de atas</h1>
+  <p>Escolha o modelo, preencha o cabeçalho, informe a reunião e gere o <code>.docx</code>. Cliente de referência da API <code>/minutes/*</code>.</p>
+</header>
+<main>
+  <section class="card">
+    <h2>1. Ata</h2>
+    <label for="template">Modelo de ata</label>
+    <select id="template"></select>
+    <div class="hint" id="template-description"></div>
+
+    <div id="custom-box" style="display:none">
+      <label for="custom-tone">Tom (opcional)</label>
+      <input type="text" id="custom-tone" placeholder="Ex.: informal e direto">
+      <label for="custom-instructions">O que a ata deve conter</label>
+      <textarea id="custom-instructions" style="min-height:90px" placeholder="Ex.: um resumo do que foi bom, do que foi ruim e uma lista de ações para a próxima sprint."></textarea>
+      <div class="hint">Ou, para definir a estrutura seção a seção, cole um JSON de <code>sections</code> abaixo (veja docs/API_MINUTES.md, 3.4). Se preenchido, substitui as instruções.</div>
+      <textarea id="custom-sections" style="min-height:70px" placeholder='[{"key": "bom", "title": "O que foi bom", "type": "bullets", "instructions": "Pontos positivos."}]'></textarea>
+    </div>
+
+    <h2 style="margin-top:18px">2. Cabeçalho</h2>
+    <div id="header-fields" class="row"></div>
+    <label for="participants">Participantes (opcional, separados por vírgula)</label>
+    <input type="text" id="participants" placeholder="Vazio = quem falou na transcrição">
+
+    <h2 style="margin-top:18px">3. Reunião</h2>
+    <div class="tabs">
+      <button type="button" data-tab="transcript" class="active">Colar transcrição</button>
+      <button type="button" data-tab="recording">Gravação já feita</button>
+      <button type="button" data-tab="teams">Gravar pelo Teams</button>
+    </div>
+    <div class="tab active" id="tab-transcript">
+      <label for="transcript">Transcrição</label>
+      <textarea id="transcript" placeholder="Uma fala por linha:  [00:12] Ana: Bom dia, vamos começar.
+Ou um JSON: [{&quot;speaker&quot;: &quot;Ana&quot;, &quot;start&quot;: 0, &quot;end&quot;: 5, &quot;text&quot;: &quot;...&quot;}]"></textarea>
+      <div class="hint">Exemplos: <span id="examples"></span></div>
+    </div>
+    <div class="tab" id="tab-recording">
+      <label for="tracks-dir">Pasta da gravação (<code>*_tracks</code>, já transcrita)</label>
+      <input type="text" id="tracks-dir" placeholder="./tmp/5d3136ef-..._tracks">
+    </div>
+    <div class="tab" id="tab-teams">
+      <label for="meeting-url">Link da reunião do Teams</label>
+      <input type="url" id="meeting-url" placeholder="https://teams.live.com/meet/...">
+      <label for="max-seconds">Duração máxima (segundos, opcional)</label>
+      <input type="number" id="max-seconds" min="60" placeholder="7200">
+      <div class="hint">O bot entra, grava até a reunião acabar, transcreve e gera a ata. Pode levar a reunião inteira.</div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="generate">Gerar ata</button>
+      <span class="error" id="form-error"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Resultado</h2>
+    <div id="result-empty" class="hint">Nenhuma ata gerada ainda nesta sessão.</div>
+    <div id="result" style="display:none">
+      <div class="status"><span class="dot" id="dot"></span><span id="status-text"></span></div>
+      <div class="error" id="job-error"></div>
+      <div id="done" style="display:none">
+        <div class="actions" style="margin:0 0 8px">
+          <a class="primary" id="download" style="text-decoration:none; display:inline-block">Baixar .docx</a>
+          <button class="link" id="show-json">ver JSON</button>
+        </div>
+        <div class="metrics" id="metrics"></div>
+        <div class="preview" id="preview"></div>
+        <textarea id="json" style="display:none; min-height:260px"></textarea>
+      </div>
+    </div>
+
+    <h2 style="margin-top:22px">Últimos jobs</h2>
+    <ul class="jobs" id="jobs"></ul>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const api = async (path, options) => {
+    const res = await fetch(path, options);
+    const data = res.headers.get("content-type")?.includes("json") ? await res.json() : null;
+    if (!res.ok) throw new Error(describeError(res.status, data));
+    return data;
+  };
+  const describeError = (status, data) => {
+    if (!data || !data.detail) return `HTTP ${status}`;
+    if (typeof data.detail === "string") return data.detail;
+    return data.detail.map((e) => `${(e.loc || []).slice(1).join(".")}: ${e.msg}`).join("\n");
+  };
+
+  // ------------------------------------------------------------ templates
+  let templates = [];
+  let current = null;
+
+  async function loadTemplates() {
+    templates = (await api("/minutes/templates")).templates;
+    const select = $("template");
+    select.innerHTML = templates.map((t) => `<option value="${t.id}">${t.name}</option>`).join("");
+    select.value = templates.some((t) => t.id === "dell") ? "dell" : templates[0].id;
+    select.addEventListener("change", renderTemplate);
+    renderTemplate();
+  }
+
+  function renderTemplate() {
+    current = templates.find((t) => t.id === $("template").value);
+    $("template-description").textContent = current.description || "";
+    $("custom-box").style.display = current.id === "custom" ? "block" : "none";
+    $("header-fields").innerHTML = current.header.map((f) => {
+      const req = f.required ? ' <span class="req">*</span>' : "";
+      let control;
+      if (f.values) {
+        control = `<select id="h-${f.key}">${f.values.map((v) => `<option ${v === f.default ? "selected" : ""}>${v}</option>`).join("")}</select>`;
+      } else {
+        control = `<input type="text" id="h-${f.key}" placeholder="${f.format || ""}" value="${f.default || ""}">`;
+      }
+      return `<div><label for="h-${f.key}">${f.label}${req}</label>${control}</div>`;
+    }).join("");
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0"), mm = String(today.getMonth() + 1).padStart(2, "0");
+    const data = $("h-data");
+    if (data && !data.value) data.value = `${dd}/${mm}/${today.getFullYear()}`;
+  }
+
+  function readHeader() {
+    const header = {};
+    for (const f of current.header) header[f.key] = $(`h-${f.key}`).value.trim();
+    return header;
+  }
+
+  // ------------------------------------------------------------ examples
+  async function loadExamples() {
+    const { examples } = await api("/demo/examples");
+    $("examples").innerHTML = examples.map((e) => `<button class="link" data-example="${e.id}">${e.label}</button>`).join(" · ");
+    $("examples").addEventListener("click", async (ev) => {
+      const id = ev.target.dataset.example;
+      if (!id) return;
+      const ex = await api(`/demo/examples/${id}`);
+      $("template").value = ex.template;
+      renderTemplate();
+      for (const [k, v] of Object.entries(ex.header)) if ($(`h-${k}`)) $(`h-${k}`).value = v;
+      $("transcript").value = ex.utterances.map((u) => `[${fmt(u.start)}] ${u.speaker}: ${u.text}`).join("\n");
+      activateTab("transcript");
+    });
+  }
+
+  const fmt = (s) => { s = Math.floor(s); const m = Math.floor(s / 60), r = s % 60; return `${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}`; };
+
+  // Accepts a JSON array of utterances or one line per turn: "[mm:ss] Nome: texto" / "Nome: texto".
+  function parseTranscript(text) {
+    text = text.trim();
+    if (!text) throw new Error("Cole a transcrição ou carregue um exemplo.");
+    if (text.startsWith("[") && text.trimEnd().endsWith("]") && text.includes("{")) {
+      const arr = JSON.parse(text);
+      if (!Array.isArray(arr)) throw new Error("O JSON precisa ser uma lista de falas.");
+      return arr;
+    }
+    const line = /^\s*(?:\[(\d+):(\d{2})(?::(\d{2}))?\]\s*)?([^:\[\]]{1,60}?)\s*:\s*(.+)$/;
+    const out = [];
+    let cursor = 0;
+    for (const raw of text.split(/\r?\n/)) {
+      if (!raw.trim()) continue;
+      const m = raw.match(line);
+      if (!m) throw new Error(`Linha sem o formato "Nome: texto": ${raw.slice(0, 60)}`);
+      let start = cursor;
+      if (m[1] !== undefined) start = m[3] !== undefined ? (+m[1]) * 3600 + (+m[2]) * 60 + (+m[3]) : (+m[1]) * 60 + (+m[2]);
+      const words = m[5].trim().split(/\s+/).length;
+      const end = start + Math.max(2, Math.round(words / 2.5));
+      out.push({ speaker: m[4].trim(), start, end, text: m[5].trim() });
+      cursor = end + 1;
+    }
+    return out;
+  }
+
+  // ---------------------------------------------------------------- tabs
+  let tab = "transcript";
+  function activateTab(name) {
+    tab = name;
+    document.querySelectorAll(".tabs button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("active", t.id === `tab-${name}`));
+  }
+  document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => activateTab(b.dataset.tab)));
+
+  // -------------------------------------------------------------- submit
+  function buildBody() {
+    const body = { template: current.id, header: readHeader() };
+    const participants = $("participants").value.split(",").map((s) => s.trim()).filter(Boolean);
+    if (participants.length) body.participants = participants;
+    if (current.id === "custom") {
+      const custom = {};
+      if ($("custom-tone").value.trim()) custom.tone = $("custom-tone").value.trim();
+      const sections = $("custom-sections").value.trim();
+      if (sections) custom.sections = JSON.parse(sections);
+      else custom.instructions = $("custom-instructions").value.trim();
+      body.custom = custom;
+    }
+    return body;
+  }
+
+  async function submit() {
+    $("form-error").textContent = "";
+    $("generate").disabled = true;
+    try {
+      const body = buildBody();
+      let path;
+      if (tab === "transcript") { path = "/minutes/from-transcript"; body.utterances = parseTranscript($("transcript").value); }
+      else if (tab === "recording") { path = "/minutes/from-recording"; body.tracks_dir = $("tracks-dir").value.trim(); }
+      else {
+        path = "/minutes/record-and-generate";
+        body.meeting_url = $("meeting-url").value.trim();
+        if ($("max-seconds").value) body.max_recording_seconds = +$("max-seconds").value;
+      }
+      const job = await api(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      watch(job.id);
+    } catch (err) {
+      $("form-error").textContent = err.message;
+    } finally {
+      $("generate").disabled = false;
+    }
+  }
+  $("generate").addEventListener("click", submit);
+
+  // ------------------------------------------------------------- polling
+  const STAGES = { recording: "gravando a reunião", transcribing: "transcrevendo (whisper)", normalizing: "organizando a transcrição", generating: "gerando a ata (LLM)", rendering: "montando o .docx" };
+  const STATUS = { queued: "na fila", running: "em andamento", done: "ata pronta", failed: "falhou" };
+  let timer = null;
+
+  async function watch(id) {
+    clearTimeout(timer);
+    $("result-empty").style.display = "none";
+    $("result").style.display = "block";
+    $("done").style.display = "none";
+    $("job-error").textContent = "";
+    const tick = async () => {
+      const job = await api(`/minutes/jobs/${id}`);
+      show(job);
+      loadJobs();
+      if (job.status === "queued" || job.status === "running") timer = setTimeout(tick, job.kind === "record_and_generate" ? 10000 : 3000);
+    };
+    tick().catch((err) => { $("job-error").textContent = err.message; });
+  }
+
+  async function show(job) {
+    $("dot").className = `dot ${job.status}`;
+    let text = `${STATUS[job.status] || job.status}`;
+    if (job.stage) text += ` · ${STAGES[job.stage] || job.stage}`;
+    text += ` · ${job.template} · ${job.id.slice(0, 8)}`;
+    $("status-text").textContent = text;
+    if (job.status === "failed") {
+      $("job-error").textContent = `${job.error.code}: ${job.error.message}`;
+    }
+    if (job.status === "done") {
+      $("done").style.display = "block";
+      $("download").href = job.result.download_url;
+      $("download").textContent = `Baixar ${job.result.filename}`;
+      $("metrics").innerHTML = [
+        `<span><b>${job.result.participants.length}</b> participantes</span>`,
+        `<span><b>${job.result.utterances}</b> falas</span>`,
+        `<span><b>${job.result.parts}</b> parte(s) enviada(s) ao LLM</span>`,
+        `<span>modelo <b>${job.result.llm_model}</b></span>`,
+        `<span><b>${job.result.generation_seconds}s</b></span>`,
+      ].join("");
+      const result = await api(`/minutes/jobs/${job.id}/result`);
+      $("json").value = JSON.stringify(result.minutes, null, 2);
+      renderPreview(job.template, result);
+    }
+  }
+
+  // The preview only looks at the shape of each value; it knows nothing about templates.
+  function renderPreview(templateId, result) {
+    const template = templates.find((t) => t.id === templateId);
+    const titles = Object.fromEntries((template?.sections || []).map((s) => [s.key, s.title]));
+    const columns = Object.fromEntries((template?.sections || []).map((s) => [s.key, s.columns || []]));
+    // Column order and labels come from the template; unknown keys (custom replies) fall back to the key itself.
+    const table = (key, rows) => {
+      const known = columns[key].length ? columns[key] : Object.keys(rows[0]).map((k) => ({ key: k, label: k }));
+      const cols = known.filter((c) => rows.some((r) => c.key in r));
+      return `<table><tr>${cols.map((c) => `<th>${esc(c.label)}</th>`).join("")}</tr>${rows.map((r) => `<tr>${cols.map((c) => `<td>${esc(r[c.key])}</td>`).join("")}</tr>`).join("")}</table>`;
+    };
+    const esc = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+    let html = `<p><b>Participantes:</b> ${esc(result.participants.join(", "))}</p>`;
+    for (const [key, value] of Object.entries(result.minutes)) {
+      html += `<h3>${esc(titles[key] || key)}</h3>`;
+      if (typeof value === "string") html += value ? `<p>${esc(value)}</p>` : `<p class="empty">Nenhum item registrado.</p>`;
+      else if (Array.isArray(value)) {
+        if (!value.length) html += `<p class="empty">Nenhum item registrado.</p>`;
+        else if (typeof value[0] === "string") html += `<ul>${value.map((v) => `<li>${esc(v)}</li>`).join("")}</ul>`;
+        else if ("titulo" in value[0]) html += value.map((t) => `<p class="topic"><b>${esc(t.titulo)}</b>${esc(t.resumo)}</p>`).join("");
+        else html += table(key, value);
+      } else if (value && typeof value === "object") {
+        html += Object.values(value).some((v) => v) ? table(key, [value]) : `<p class="empty">Nenhum item registrado.</p>`;
+      }
+    }
+    $("preview").innerHTML = html;
+  }
+  $("show-json").addEventListener("click", () => {
+    const box = $("json");
+    const open = box.style.display === "none";
+    box.style.display = open ? "block" : "none";
+    $("show-json").textContent = open ? "esconder JSON" : "ver JSON";
+  });
+
+  // ---------------------------------------------------------------- jobs
+  async function loadJobs() {
+    const { jobs } = await api("/minutes/jobs?limit=10");
+    $("jobs").innerHTML = jobs.length ? jobs.map((j) => `
+      <li>
+        <span class="dot ${j.status}"></span>
+        <span class="id">${j.id.slice(0, 8)}</span>
+        <span class="grow">${j.template} · ${STATUS[j.status] || j.status}${j.stage ? " · " + (STAGES[j.stage] || j.stage) : ""} · ${j.created_at.replace("T", " ").replace("Z", "")}</span>
+        <button class="link" data-watch="${j.id}">abrir</button>
+        ${j.status === "done" ? `<a href="${j.result.download_url}">.docx</a>` : ""}
+      </li>`).join("") : `<li class="hint">Nenhum job ainda.</li>`;
+  }
+  $("jobs").addEventListener("click", (ev) => { if (ev.target.dataset.watch) watch(ev.target.dataset.watch); });
+
+  loadTemplates().then(loadExamples).then(loadJobs).catch((err) => { $("form-error").textContent = err.message; });
+})();
+</script>
+</body>
+</html>

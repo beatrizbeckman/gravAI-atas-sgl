@@ -27,6 +27,7 @@ venv/
 *.docx
 *.pdf
 *.log
+*.sqlite3
 
 # Editors and OS
 .idea/

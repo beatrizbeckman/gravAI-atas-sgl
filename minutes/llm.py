@@ -1,3 +1,6 @@
+import json
+import re
+
 import requests
 
 from config.settings import Settings
@@ -22,7 +25,48 @@ def generate(system: str, user: str) -> str:
         # Imported lazily: the groq package and its key are only needed for this provider.
         from llm_analyser.groq_config import call_groq
         return call_groq(user, system)
-    raise ValueError(f"Unknown LLM_PROVIDER '{settings.LLM_PROVIDER}' (expected 'ollama' or 'groq')")
+    if settings.LLM_PROVIDER == "fake":
+        return fake_generate(system, user)
+    raise ValueError(f"Unknown LLM_PROVIDER '{settings.LLM_PROVIDER}' (expected 'ollama', 'groq' or 'fake')")
+
+
+def model_name() -> str:
+    """Identifier of the model behind generate(), reported in the job result."""
+    settings = Settings()
+    if settings.LLM_PROVIDER == "ollama":
+        return settings.OLLAMA_MODEL
+    if settings.LLM_PROVIDER == "groq":
+        import os
+        return os.environ.get("GROQ_MODEL", "groq")
+    return settings.LLM_PROVIDER
+
+
+_SCHEMA_BLOCK = re.compile(r"Formato de saída\s*(\{.*?\})\s*Conteúdo de cada chave", re.DOTALL)
+
+
+def fake_generate(system: str, user: str) -> str:
+    """
+    No LLM at all: answers with the output schema found in the system prompt,
+    so every section comes back filled with placeholder text. Lets the API, the
+    jobs and the demo page run end to end on a machine without Ollama.
+    """
+    match = _SCHEMA_BLOCK.search(system)
+    if not match:
+        raise RuntimeError("fake provider: could not find the output schema in the system prompt")
+    schema = json.loads(match.group(1))
+    return json.dumps(_fill(schema), ensure_ascii=False)
+
+
+def _fill(value):
+    if isinstance(value, dict):
+        return {k: _fill(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_fill(v) for v in value]
+    if isinstance(value, str):
+        # Hints look like "texto", "DD/MM" or "Pendente | Em andamento"; keep the first allowed value.
+        first = value.split("|")[0].strip()
+        return "Conteúdo de exemplo gerado sem LLM (provedor fake)." if first == "texto" else first
+    return value
 
 
 def ollama_generate(system: str, user: str, host: str, model: str, num_ctx: int, timeout: int) -> str:
