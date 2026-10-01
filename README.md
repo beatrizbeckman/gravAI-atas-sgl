@@ -58,4 +58,49 @@ docker compose -f docker-compose-whisper.yaml up -d
 
 3. Connect to the instance [http://localhost:8000](http://localhost:8000)
 
+### Local development (uv)
+
+The project uses [uv](https://docs.astral.sh/uv/) to manage the virtual environment and dependencies. Every command runs through `uv run`, so there is no need to activate anything.
+
+```bash
+# Install uv (once)
+winget install astral-sh.uv          # Windows
+curl -LsSf https://astral.sh/uv/install.sh | sh   # Linux / macOS
+
+# Create .venv and install the dependencies from uv.lock
+uv sync
+
+# Playwright browsers (only needed to record meetings)
+uv run playwright install
+
+# Run the API with auto reload
+uv run fastapi dev api/app.py
+
+# Run the tests
+uv run pytest
+
+# Add or remove a dependency (updates pyproject.toml and uv.lock)
+uv add <package>
+uv remove <package>
+```
+
+### Minutes (atas)
+
+The `minutes/` module turns a recording folder into a meeting-minutes document. Each step has a small CLI so it can be exercised without the others:
+
+```bash
+# Merge the per-participant whisper output of a recording into one transcript
+uv run python -m minutes.transcript_normalizer tmp/<session>_tracks
+uv run python -m minutes.transcript_normalizer tmp/<session>_tracks -o transcript.json
+
+# Show the prompts built for a transcript (or run them through the LLM with --call)
+uv run python -m minutes.prompt_builder minutes/tests/fixtures/reuniao_dell.json
+uv run python -m minutes.prompt_builder minutes/tests/fixtures/reuniao_dell.json --call
+
+# Render filled minutes as .docx
+uv run python -m minutes.docx_writer minutes/tests/fixtures/ata_dell_preenchida.json -o ata.docx
+```
+
+The LLM is configured in `.env` (`LLM_PROVIDER`, `OLLAMA_HOST`, `OLLAMA_MODEL`); the default is a local Ollama server. Templates live in `minutes/templates/`, see the README there.
+
 The project is early-stage and evolving. Expect breaking changes as we harden reliability and multi-platform support.

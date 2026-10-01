@@ -1,6 +1,13 @@
+.git
 .venv
 venv
-.git
 tmp
 __pycache__
+.pytest_cache
+.env
+.vscode
+.devcontainer
 *.png
+*.docx
+*.pdf
+*.wav

@@ -1,15 +1,36 @@
-# Python-generated files
+# Python
 __pycache__/
 *.py[oc]
 build/
 dist/
 wheels/
 *.egg-info
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
 
 # Virtual environments
-.venv
-.env
-.pytest_cache
+.venv/
+venv/
 
-/tmp
-llm_analyser/tests
+# Secrets and local config
+.env
+.env.*
+!.env.example
+
+# Recordings, transcriptions and generated minutes
+/tmp/
+*.wav
+*.mp3
+*.docx
+*.pdf
+*.log
+
+# Editors and OS
+.idea/
+.vscode/*
+!.vscode/launch.json
+.DS_Store
+Thumbs.db
