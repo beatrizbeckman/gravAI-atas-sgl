@@ -1,0 +1,5 @@
+{
+  "_comment": "US$ por milhao de tokens, conferidos nas paginas de preco dos provedores em 06/10/2026. Modelo ausente => custo n/d. Atualize ao adicionar modelos.",
+  "openai/gpt-oss-20b": {"input_per_m": 0.075, "output_per_m": 0.30, "provider": "groq"},
+  "openai/gpt-oss-120b": {"input_per_m": 0.15, "output_per_m": 0.60, "provider": "groq"}
+}

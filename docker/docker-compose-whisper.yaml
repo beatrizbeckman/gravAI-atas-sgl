@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: gravai-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../.env:/app/.env
+      # Recordings, transcriptions and debug screenshots survive rebuilds and are visible on the host.
+      - ../tmp:/app/tmp
+    # Chromium needs more shared memory than Docker's 64 MB default to render Teams.
+    shm_size: "1gb"
+    restart: unless-stopped
+    entrypoint: ["uv", "run", "fastapi", "run", "gravai/api/app.py", "--host", "0.0.0.0", "--port", "8000"]
+
+  whisper:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.whisper
+    container_name: whisper
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../.env:/app/.env
+    restart: unless-stopped
+    entrypoint: ["./build/bin/whisper-server", "-m", "models/ggml-large-v3.bin", "--host", "0.0.0.0", "--language", $WHISPER_LANGUAGE, "--port", "8080"]
+    

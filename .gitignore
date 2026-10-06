@@ -35,3 +35,10 @@ venv/
 !.vscode/launch.json
 .DS_Store
 Thumbs.db
+# running work log, kept out of the repo on purpose
+DIARIO_PARTE1.md
+# dataset build caches (translation chunks, raw downloads)
+datasets/raw/
+datasets/reunioes/*/traducao_cache.json
+# experiment runs (prompts, raw replies, docx); commit a run on purpose with git add -f
+experiments/results/

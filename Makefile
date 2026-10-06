@@ -6,7 +6,7 @@ exec-playright:
 	uv run playwright install
 
 run-api:
-	uv run fastapi dev api/app.py
+	uv run fastapi dev gravai/api/app.py
 
 download-model:
 	@cd ../whisper.cpp && sh ./models/download-ggml-model.sh ${MODELO}
@@ -16,9 +16,3 @@ build-whisper:
 
 exec-whisper:
 	@cd ../whisper.cpp && ./build/bin/whisper-server -m models/ggml-$(MODELO).bin --host 0.0.0.0 --language pt
-
-install-groq:
-	uv pip install groq
-
-upgrade-pip:
-	uv pip install --upgrade pip

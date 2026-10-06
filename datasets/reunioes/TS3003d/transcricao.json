@@ -1,0 +1,3943 @@
+{
+ "template": "dell",
+ "header": {
+  "projeto": "Controle Remoto Universal",
+  "numero": "004",
+  "data": "23/03/2026",
+  "horario": "14:00 – 14:38"
+ },
+ "utterances": [
+  {
+   "speaker": "Pedro",
+   "start": 0.0,
+   "end": 0.77,
+   "text": "Então olá."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1.17,
+   "end": 3.86,
+   "text": "Boa tarde. Desculpa, estou um pouco atrasada."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 4.26,
+   "end": 5.03,
+   "text": "Sem problema."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 5.43,
+   "end": 7.35,
+   "text": "Fiquei preso no trânsito."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 7.75,
+   "end": 8.14,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 8.54,
+   "end": 13.54,
+   "text": "Isso é possível, uh, nessa hora do dia. Começa às três horas. Uh"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 13.94,
+   "end": 14.32,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 14.72,
+   "end": 41.65,
+   "text": "Uh, deixa eu ver. Nossa quarta e última reunião. Aí está ele. Sim. Ok, essa é nossa última reunião. Nessa reunião vamos discutir o design final. E vamos fazer uma avaliação, não só do produto, mas também do projeto. E então vamos encerrar o projeto hoje também. Então, depois disso, vocês vão estar, uh, livres para ir e, uh, gastar todo o seu dinheiro."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 42.05,
+   "end": 92.43,
+   "text": "E esse, uh, design, reunião de design detalhado, uh, vamos discutir, uh, o look-and-feel do design, o design de interface de usabilidade, e vamos fazer a avaliação do produto. Um, para fazer isso temos esta agenda. Primeiro vamos ter a apresentação do protótipo. Depois vamos definir alguns critérios de avaliação, cri um criteria. Então vamos olhar as finanças. Uh, vamos ter que ver se tudo que a gente quer fazer também é possível dentro do nosso orçamento. Porque tudo custa dinheiro, e quanto mais funções você quer ter, mais dinheiro vai custar. Então temos que ver se cabe dentro dos doze euros e meio por controle remoto. Mas vamos ver isso depois. Então vamos fazer a avaliação do projeto, e o encerramento depois disso."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 92.83,
+   "end": 105.52,
+   "text": "Temos quarenta minutos. Então vamos terminar às três e meia. Mas primeiro, um, vamos fazer a apresentação do protótipo. Então, se alguém quiser, pode avançar."
+  },
+  {
+   "speaker": "Davi",
+   "start": 105.92,
+   "end": 144.0,
+   "text": "Ok. Bem, isso é o que eu e o Richard criamos. O ponto padrão para o botão liga-desliga. O botão mudo logo abaixo. Depois tem os seletores de volume e canal. Botão simples de mais e menos. Uh, pensamos em um botão de ajuda. Se você segurá‑lo e pressionar outro botão, uh, a ajuda vai para a tela L_C_D_. Depois tem os botões zero a um a zero. Um botão para teletexto. Um botão para legendas. E o logo da empresa. Então é um protótipo bem simples. E, uh, vamos ter que ver nos testes, uh, como os usuários recebem isso."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 144.4,
+   "end": 144.78,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 145.18,
+   "end": 150.95,
+   "text": "Um, é esse o momento em que a gente pode fazer perguntas sobre a funcionalidade?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 151.35,
+   "end": 152.51,
+   "text": "Então, yeah. Yeah."
+  },
+  {
+   "speaker": "Davi",
+   "start": 152.91,
+   "end": 155.98,
+   "text": "Claro, uh, pode interromper a qualquer hora."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 156.38,
+   "end": 166.0,
+   "text": "Um, quando você está no teletexto geralmente há botões onde você só pressiona e vai para a próxima página de teletexto."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 166.4,
+   "end": 182.55,
+   "text": "Uh, isso é só, uh, o normal, uh, como os controles remotos normais, uh. Então, um, você coloca, uh, você, um, veio na página, uh, cento. Agora você pode usar os botões normais de um a zero."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 182.95,
+   "end": 183.34,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 183.74,
+   "end": 201.05,
+   "text": "E você, mas também pode, uh, usar o, um botão, th, para, uh, mudar o canal. S, então, uh, o botão de mudança, uh, para, uh, mudar para cima no teletexto, e mudar para baixo. Então"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 201.45,
+   "end": 202.98,
+   "text": "Ok. Ok. Um, yeah."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 203.38,
+   "end": 214.15,
+   "text": "Ok. Uh, mas, um, eu pensei que em algumas reuniões anteriores a gente, uh, tentou manter simples. Uh, só alguns botões e botões grandes."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 214.55,
+   "end": 215.32,
+   "text": "Ah, é?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 215.72,
+   "end": 226.11,
+   "text": "Mas, uh, eu acho que isso aqui tem, na verdade, vários botões. Então eu estou me perguntando se a gente realmente precisa de todos esses botões."
+  },
+  {
+   "speaker": "Davi",
+   "start": 226.51,
+   "end": 231.89,
+   "text": "Eu acho que se você olhar a maioria dos controles, eles têm mais botões que isso."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 232.29,
+   "end": 233.06,
+   "text": "É isso mesmo."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 233.46,
+   "end": 233.85,
+   "text": "É."
+  },
+  {
+   "speaker": "Davi",
+   "start": 234.25,
+   "end": 237.71,
+   "text": "E bem, o botão liga‑desliga, é, é uma necessidade."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 238.11,
+   "end": 238.49,
+   "text": "É."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 238.89,
+   "end": 239.28,
+   "text": "É."
+  },
+  {
+   "speaker": "Davi",
+   "start": 239.68,
+   "end": 246.22,
+   "text": "Você não pode remover esse. Os botões de volume e canal, você obviamente precisa desses, desses."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 246.62,
+   "end": 247.0,
+   "text": "É."
+  },
+  {
+   "speaker": "Davi",
+   "start": 247.4,
+   "end": 257.78,
+   "text": "O botão de mudo poderia ser substituído, uh, ao pressionar o botão de volume para baixo duas vezes. Então a gente poderia cancelar esse aqui. Eu acho que o botão de ajuda realmente é necessário"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 258.18,
+   "end": 258.95,
+   "text": "É, é."
+  },
+  {
+   "speaker": "Davi",
+   "start": 259.35,
+   "end": 265.51,
+   "text": "porque não tem outro jeito de saber quando alguém quer saber o que um botão faz."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 265.91,
+   "end": 266.29,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 266.69,
+   "end": 272.46,
+   "text": "Uh, ou você pode colocar, uh, quando você pressiona, uh, um botão, uh, uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 272.86,
+   "end": 274.02,
+   "text": "Tempo longo. É."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 274.42,
+   "end": 274.8,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 275.2,
+   "end": 276.35,
+   "text": "Se você colocar"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 276.75,
+   "end": 290.22,
+   "text": "Mas m É. A gente já discutiu isso. Mas, uh, a gente acha que pessoas mais velhas, uh, não sabem dessa opção. Então, uh, eles só apertam, uh, apertam o botão e, uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 290.62,
+   "end": 291.38,
+   "text": "É. Certo."
+  },
+  {
+   "speaker": "Davi",
+   "start": 291.78,
+   "end": 295.63,
+   "text": "Bom, você não pode deixar de fora os botões numéricos, eu acho."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 296.03,
+   "end": 296.42,
+   "text": "É."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 296.82,
+   "end": 297.58,
+   "text": "E, uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 297.98,
+   "end": 300.68,
+   "text": "Uh, teletexto e legendas são, yeah, necessários."
+  },
+  {
+   "speaker": "Davi",
+   "start": 301.08,
+   "end": 301.46,
+   "text": "E"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 301.86,
+   "end": 302.25,
+   "text": "Oh."
+  },
+  {
+   "speaker": "Davi",
+   "start": 302.65,
+   "end": 303.03,
+   "text": "É."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 303.43,
+   "end": 303.82,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 304.22,
+   "end": 304.6,
+   "text": "Certo."
+  },
+  {
+   "speaker": "Davi",
+   "start": 305.0,
+   "end": 306.92,
+   "text": "Então já é meio básico."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 307.32,
+   "end": 317.32,
+   "text": "É. Acho que sim. Foi isso que eu apontei antes. Se você só fizer um controle só para a TV, não tem muito o que ganhar aqui."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 317.72,
+   "end": 318.11,
+   "text": "Yep."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 318.51,
+   "end": 318.89,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 319.29,
+   "end": 325.45,
+   "text": "Certo. Então a gente tinha alguém sobre th interfa Algo sobre o design dos botões lá?"
+  },
+  {
+   "speaker": "Davi",
+   "start": 325.85,
+   "end": 326.62,
+   "text": "É, eles são"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 327.02,
+   "end": 328.94,
+   "text": "Só botões normais, simples."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 329.34,
+   "end": 330.11,
+   "text": "É. É,"
+  },
+  {
+   "speaker": "Davi",
+   "start": 330.51,
+   "end": 333.58,
+   "text": "É meio difícil de desenhar no quadro branco."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 333.98,
+   "end": 334.37,
+   "text": "it"
+  },
+  {
+   "speaker": "Davi",
+   "start": 334.77,
+   "end": 344.77,
+   "text": "Mas eles deveriam ser de tamanho igual, redondos, com um logo pequeno neles para o volume, o triângulo e tal."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 345.17,
+   "end": 345.94,
+   "text": "É. 'Tá."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 346.34,
+   "end": 349.42,
+   "text": "Ééé. Só pra reconhecer, então, uh"
+  },
+  {
+   "speaker": "Davi",
+   "start": 349.82,
+   "end": 350.97,
+   "text": "Só pra reconhecimento."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 351.37,
+   "end": 356.37,
+   "text": "Uh éé e agora a gente não precisa de LEDs ou um Y uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 356.77,
+   "end": 357.15,
+   "text": "Não."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 357.55,
+   "end": 361.02,
+   "text": "alguns controles remotos fazem isso também,"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 361.42,
+   "end": 361.8,
+   "text": "Não."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 362.2,
+   "end": 369.12,
+   "text": "mas, uh, porque a gente usa a tela pequena a gente não tem que usar isso. Uh então"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 369.52,
+   "end": 370.29,
+   "text": "É. Certo."
+  },
+  {
+   "speaker": "Davi",
+   "start": 370.69,
+   "end": 378.0,
+   "text": "Então, e quanto aos materiais, a gente acabou escolhendo botões de borracha. Com uma cor diferente da caixa."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 378.4,
+   "end": 378.78,
+   "text": "Não."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 379.18,
+   "end": 379.57,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 379.97,
+   "end": 381.51,
+   "text": "Então eles sobressaem."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 381.91,
+   "end": 382.29,
+   "text": "Certo."
+  },
+  {
+   "speaker": "Davi",
+   "start": 382.69,
+   "end": 384.62,
+   "text": "E, uh, é isso."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 385.02,
+   "end": 405.78,
+   "text": "Legal. Então, como só temos trinta minutos restantes, vou passar para a parte financeira, que é bem empolgante, pra ver se tudo isso que a gente quer fazer é viável. E eu posso dizer que vai ser bem difícil produzir isso por doze euros e meio."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 406.18,
+   "end": 406.57,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 406.97,
+   "end": 421.58,
+   "text": "Se a gente ver, não sei se preenchi certo, então me corrija se você notar algo errado. Eu contei duas baterias. Mas talvez a gente possa usar só uma. Não sei se dá."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 421.98,
+   "end": 423.14,
+   "text": "Já que é recarregável."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 423.54,
+   "end": 425.08,
+   "text": "É recarregável. Isso mesmo."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 425.48,
+   "end": 427.78,
+   "text": "É, a gente pode, uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 428.18,
+   "end": 430.11,
+   "text": "Certo. São dois euros a menos."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 430.51,
+   "end": 430.89,
+   "text": "'Tá."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 431.29,
+   "end": 436.68,
+   "text": "Precisamos do chip avançado. Então não tem muito o que economizar aí."
+  },
+  {
+   "speaker": "Davi",
+   "start": 437.08,
+   "end": 437.46,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 437.86,
+   "end": 446.71,
+   "text": "Aqui a gente tem as curvas simples. Uh dá pra ver que a diferença entre sem curva e a curva simples é um euro. Um,"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 447.11,
+   "end": 447.49,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 447.89,
+   "end": 458.28,
+   "text": "Não sei, mas acho que a curva simples fica boa pro design, e também pra a tela ter um lugar de destaque no controle remoto."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 458.68,
+   "end": 459.06,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 459.46,
+   "end": 462.15,
+   "text": "Eu acho que temos que manter isso."
+  },
+  {
+   "speaker": "Davi",
+   "start": 462.55,
+   "end": 462.94,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 463.34,
+   "end": 463.72,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 464.12,
+   "end": 482.2,
+   "text": "Então temos os suplementos de material da caixa. É plástico. É o mais barato que precisamos. Então isso, uh, não tem muito para economizar também. Mas então os maiores custos são os botões. Então talvez a gente realmente deva tentar descartar alguns botões para, uh, manter nossos custos baixos."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 482.6,
+   "end": 482.98,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 483.38,
+   "end": 490.69,
+   "text": "Porque você tem que, a gente vai ter que pegar os doze euros e meio no final. Um,"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 491.09,
+   "end": 491.48,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 491.88,
+   "end": 496.49,
+   "text": "então se a gente, vamos primeiro contar os botões que temos agora."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 496.89,
+   "end": 498.82,
+   "text": "Uh dezesseis, eu acredito."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 499.22,
+   "end": 504.22,
+   "text": "Porque eu dezesseis. Nah, isso vai ser ainda mais então. Dezoito euros. Então,"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 504.62,
+   "end": 507.31,
+   "text": "Uh dezessete. Uh com o botão de ajuda."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 507.71,
+   "end": 508.09,
+   "text": "dezessete."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 508.49,
+   "end": 508.88,
+   "text": "Um"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 509.28,
+   "end": 510.82,
+   "text": "Ok, incluindo a ajuda?"
+  },
+  {
+   "speaker": "Davi",
+   "start": 511.22,
+   "end": 511.6,
+   "text": "Isso."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 512.0,
+   "end": 512.38,
+   "text": "Droga."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 512.78,
+   "end": 513.94,
+   "text": "É. Uh dezessete."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 514.34,
+   "end": 514.72,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 515.12,
+   "end": 524.74,
+   "text": "Eu acho que a gente pode, uh, descartar o botão de ajuda e o botão de mudo, uh, pressionando o volume por muito tempo, ou pressionando um número por muito tempo."
+  },
+  {
+   "speaker": "Davi",
+   "start": 525.14,
+   "end": 525.52,
+   "text": "Isso."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 525.92,
+   "end": 531.69,
+   "text": "Isso já nos economiza, uh, um euro. Porque então a gente tem quinze, eu acho?"
+  },
+  {
+   "speaker": "Davi",
+   "start": 532.09,
+   "end": 532.48,
+   "text": "É."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 532.88,
+   "end": 533.26,
+   "text": "Não seria"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 533.66,
+   "end": 534.43,
+   "text": "Quinze botões."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 534.83,
+   "end": 537.52,
+   "text": "É. Não. Isso não seria uma opção."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 537.92,
+   "end": 539.08,
+   "text": "E isso é"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 539.48,
+   "end": 545.63,
+   "text": "Uh, eu suponho que você contaria o volume e os botões de canal como dois botões cada, certo?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 546.03,
+   "end": 548.34,
+   "text": "Não, esses são um, eu acho."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 548.74,
+   "end": 550.28,
+   "text": "É. Onde foi, uh"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 550.68,
+   "end": 552.98,
+   "text": "Bem, acho que na verdade há dois botões,"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 553.38,
+   "end": 555.31,
+   "text": "Ah, é só um botão."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 555.71,
+   "end": 556.48,
+   "text": "não são?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 556.88,
+   "end": 566.49,
+   "text": "Mas, hum... Sim. Havia, uh, dois, uh, para um botão grande. Mas eles são, uh, mais caros que os pequenos. Uh, é... Então"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 566.89,
+   "end": 570.35,
+   "text": "É, mas isso não está declarado nesses arquivos."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 570.75,
+   "end": 571.91,
+   "text": "É só um."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 572.31,
+   "end": 580.0,
+   "text": "Então talvez a gente possa até fazer um botão com o volume e o canal juntos, ao pressionar"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 580.4,
+   "end": 586.55,
+   "text": "Bom, eu estava pensando, talvez você possa simplesmente integrar três desses números em um botão."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 586.95,
+   "end": 588.49,
+   "text": "Isso também é uma possibilidade."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 588.89,
+   "end": 590.82,
+   "text": "Isso reduziria o custo."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 591.22,
+   "end": 602.37,
+   "text": "Então, e também é bom para o design. Então você pode fazer, uh, vamos ver. Se você fizer isso parece um pouco com, uh, uma cruz. Mais. Min."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 602.77,
+   "end": 606.23,
+   "text": "Mas eu não não sei se é mais barato."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 606.63,
+   "end": 608.17,
+   "text": "Uh, sim, canal."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 608.57,
+   "end": 609.34,
+   "text": "Então, uh,"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 609.74,
+   "end": 610.51,
+   "text": "É, w"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 610.91,
+   "end": 614.37,
+   "text": "a gente ainda tem quatro botões, mas só, hum, então"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 614.77,
+   "end": 618.23,
+   "text": "É, eu acho que eles contam, uh, os materiais."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 618.63,
+   "end": 624.02,
+   "text": "Você tem, uh, não não um botão de bunda em si, mas, uh, no, hum"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 624.42,
+   "end": 626.72,
+   "text": "É, no chip lá. É."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 627.12,
+   "end": 631.74,
+   "text": "É. No chip você ainda tem, uh, quatro, uh, quatro botões."
+  },
+  {
+   "speaker": "Davi",
+   "start": 632.14,
+   "end": 632.52,
+   "text": "É."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 632.92,
+   "end": 633.31,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 633.71,
+   "end": 635.25,
+   "text": "Isso mesmo. Isso mesmo."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 635.65,
+   "end": 636.03,
+   "text": "Então"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 636.43,
+   "end": 639.89,
+   "text": "Mas eu acho que porque temos o chip avançado"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 640.29,
+   "end": 640.68,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 641.08,
+   "end": 644.15,
+   "text": "a gente pode contar isso como um botão."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 644.55,
+   "end": 645.32,
+   "text": "É, mas"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 645.72,
+   "end": 649.18,
+   "text": "Mas, eu acho que isso realmente são quatro botões de qualquer forma."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 649.58,
+   "end": 651.51,
+   "text": "Mas não, mas eu acho"
+  },
+  {
+   "speaker": "Davi",
+   "start": 651.91,
+   "end": 652.29,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 652.69,
+   "end": 667.31,
+   "text": "É, talvez seja, mas então me parece que é impossível conseguir os doze euros e meio. Também o display L_C_, eu acho que é, eu acho que é caro demais para o display que usamos."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 667.71,
+   "end": 668.09,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 668.49,
+   "end": 670.8,
+   "text": "Uh, isso é um custo grande."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 671.2,
+   "end": 673.51,
+   "text": "Eu acho que eles, uh, tentam t"
+  },
+  {
+   "speaker": "Davi",
+   "start": 673.91,
+   "end": 679.29,
+   "text": "Se a gente tirar o display, a gente também pode economizar no chip."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 679.69,
+   "end": 683.92,
+   "text": "É isso, mas qual é a grande vantagem do nosso controle remoto então?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 684.32,
+   "end": 686.63,
+   "text": "Só a estação de encaixe, eu acho."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 687.03,
+   "end": 687.42,
+   "text": "É."
+  },
+  {
+   "speaker": "Davi",
+   "start": 687.82,
+   "end": 692.82,
+   "text": "Que não, a estação de encaixe nem está nesse esquema c s."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 693.22,
+   "end": 693.6,
+   "text": "Não."
+  },
+  {
+   "speaker": "Davi",
+   "start": 694.0,
+   "end": 697.08,
+   "text": "Então nem está incluído no preço."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 697.48,
+   "end": 699.78,
+   "text": "É extra. É extra. É isso."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 700.18,
+   "end": 702.88,
+   "text": "Talvez a gente deva procurar um fornecedor diferente."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 703.28,
+   "end": 704.43,
+   "text": "É uma opção."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 704.83,
+   "end": 705.22,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 705.62,
+   "end": 719.46,
+   "text": "Polônia. Algo. Fornecedor polonês. Você não acha que a gente pode, se contarmos isso como um botão, e integrar esses botões em três, então a gente economiza muito dinheiro também."
+  },
+  {
+   "speaker": "Davi",
+   "start": 719.86,
+   "end": 726.78,
+   "text": "A gente poderia economizar dinheiro com isso. Mas isso tornaria o controle mais fácil de usar para pessoas idosas?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 727.18,
+   "end": 729.11,
+   "text": "É, é isso que eu estou me perguntando."
+  },
+  {
+   "speaker": "Davi",
+   "start": 729.51,
+   "end": 732.97,
+   "text": "Minha mãe nem consegue enviar, enviar uma mensagem S_M_S_."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 733.37,
+   "end": 734.91,
+   "text": "É. Isso é um ponto."
+  },
+  {
+   "speaker": "Davi",
+   "start": 735.31,
+   "end": 735.69,
+   "text": "Então"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 736.09,
+   "end": 742.25,
+   "text": "A gente vai comprar um, hum, controle remoto, uh, quando você pode, uh, usar?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 742.65,
+   "end": 743.03,
+   "text": "Um"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 743.43,
+   "end": 752.28,
+   "text": "Então, hum, é, a gente tem que ficar abaixo do, hum, abaixo do doze, uh, cinquenta ou não pode, uh, ir, hum"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 752.68,
+   "end": 753.06,
+   "text": "É."
+  },
+  {
+   "speaker": "Davi",
+   "start": 753.46,
+   "end": 753.85,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 754.25,
+   "end": 754.63,
+   "text": "Não."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 755.03,
+   "end": 768.88,
+   "text": "Bom, já que a pesquisa de mercado indicou que pessoas mais velhas gastam seu dinheiro mais fácil, mais fácil, talvez seja viável só subir um pouquinho o preço do controle. Especialmente porque temos esses recursos legais."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 769.28,
+   "end": 769.66,
+   "text": "Não."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 770.06,
+   "end": 778.91,
+   "text": "É, mas, uh, a gente tem que ficar nos doze euros e meio. Não temos mais orçamento para desenvolver isso."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 779.31,
+   "end": 780.85,
+   "text": "É impossível fazer isso?"
+  },
+  {
+   "speaker": "Davi",
+   "start": 781.25,
+   "end": 783.94,
+   "text": "A margem vai ficar muito pequena. É, né."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 784.34,
+   "end": 785.11,
+   "text": "É, então"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 785.51,
+   "end": 790.12,
+   "text": "Mas dá pra fazer um, uh, para, uh, doze cinquenta."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 790.52,
+   "end": 799.37,
+   "text": "Dá. Se você tirar o display L_C_. E se usar menos botões. Tipo, ou você pode pegar o chip único."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 799.77,
+   "end": 801.31,
+   "text": "Eu não acho."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 801.71,
+   "end": 805.17,
+   "text": "Seria, seria bem rígido."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 805.57,
+   "end": 806.34,
+   "text": "S, é."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 806.74,
+   "end": 808.66,
+   "text": "Mas, você não pode usar, uh"
+  },
+  {
+   "speaker": "Davi",
+   "start": 809.06,
+   "end": 809.45,
+   "text": "Dez."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 809.85,
+   "end": 811.0,
+   "text": "Aí está."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 811.4,
+   "end": 811.78,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 812.18,
+   "end": 814.11,
+   "text": "Mas então, w, bonito."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 814.51,
+   "end": 818.74,
+   "text": "Uh, wi com n, oh, com, uh, opções atraentes, uh."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 819.14,
+   "end": 819.52,
+   "text": "É."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 819.92,
+   "end": 824.15,
+   "text": "Então, uh, você pode ficar, uh, abaixo de doze cinquenta. Então"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 824.55,
+   "end": 827.25,
+   "text": "Eu acho que é, uh, difícil também,"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 827.65,
+   "end": 828.42,
+   "text": "Ou b"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 828.82,
+   "end": 829.2,
+   "text": "mas"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 829.6,
+   "end": 837.68,
+   "text": "Basicamente virando uma escolha entre tipo ou um controle remoto bom e um custo de produção mais alto, ou qualquer outro controle remoto."
+  },
+  {
+   "speaker": "Davi",
+   "start": 838.08,
+   "end": 838.85,
+   "text": "Sem controle remoto."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 839.25,
+   "end": 846.55,
+   "text": "Ou a gente pode tirar os dez botões e colocar uma roda de rolagem para os números do programa. Aí w"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 846.95,
+   "end": 847.72,
+   "text": "Roda de rolagem, uma."
+  },
+  {
+   "speaker": "Davi",
+   "start": 848.12,
+   "end": 848.51,
+   "text": "É isso"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 848.91,
+   "end": 851.22,
+   "text": "Porque aí a gente economiza dez botões."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 851.62,
+   "end": 852.38,
+   "text": "Não, isso"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 852.78,
+   "end": 855.09,
+   "text": "Aí a gente tem cinco e um."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 855.49,
+   "end": 855.88,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 856.28,
+   "end": 863.2,
+   "text": "E, e ver. Se a gente tem esse aqui e a gente tem o avançado W, uh, a gente tá chegando perto."
+  },
+  {
+   "speaker": "Davi",
+   "start": 863.6,
+   "end": 864.75,
+   "text": "A gente tá chegando mais perto."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 865.15,
+   "end": 865.54,
+   "text": "É."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 865.94,
+   "end": 868.25,
+   "text": "Mas como funciona a roda de rolagem aqui?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 868.65,
+   "end": 880.57,
+   "text": "Então você vai... Ou talvez você possa, hum, rolar. Se você rolar, vai ver os números no display L_C_D_. Até acertar o número certo, então você aperta."
+  },
+  {
+   "speaker": "Davi",
+   "start": 880.97,
+   "end": 881.35,
+   "text": "É."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 881.75,
+   "end": 886.75,
+   "text": "Isso também mostraria o preço da roda de rolagem. Roda de rolagem integrada com botão."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 887.15,
+   "end": 889.46,
+   "text": "Certo. Tem que rolar e apertar."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 889.86,
+   "end": 890.25,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 890.65,
+   "end": 895.65,
+   "text": "Ok, mas então você pode apertar, hum, algum outro botão também."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 896.05,
+   "end": 896.82,
+   "text": "Mas é."
+  },
+  {
+   "speaker": "Davi",
+   "start": 897.22,
+   "end": 901.06,
+   "text": "Você poderia simplesmente não rolar por meio segundo."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 901.46,
+   "end": 910.69,
+   "text": "É. Isso mesmo. Então, se você rolar até um número e depois esperar meio segundo, ele muda para esse canal."
+  },
+  {
+   "speaker": "Davi",
+   "start": 911.09,
+   "end": 913.4,
+   "text": "Então você não vai precisar de botão."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 913.8,
+   "end": 918.03,
+   "text": "Acho que isso seria o fim da nossa usabilidade."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 918.43,
+   "end": 921.51,
+   "text": "Mas definitivamente reduziria o custo, muito."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 921.91,
+   "end": 922.68,
+   "text": "D, né."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 923.08,
+   "end": 923.85,
+   "text": "É, mas"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 924.25,
+   "end": 930.78,
+   "text": "E precisamos da bateria. E o chip comum não é possível? Tem que ser avançado?"
+  },
+  {
+   "speaker": "Davi",
+   "start": 931.18,
+   "end": 936.95,
+   "text": "Se você quiser usar uma tela L_C_D_, você precisa de um chip avançado, sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 937.35,
+   "end": 940.05,
+   "text": "Tem que ser avançado. É. Ok."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 940.45,
+   "end": 940.83,
+   "text": "Hmm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 941.23,
+   "end": 947.0,
+   "text": "E a gente pode economizar um euro com um design plano. Essa é uma opção que podemos"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 947.4,
+   "end": 948.17,
+   "text": "Ja ja."
+  },
+  {
+   "speaker": "Davi",
+   "start": 948.57,
+   "end": 948.95,
+   "text": "Yep."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 949.35,
+   "end": 950.89,
+   "text": "Então estamos quase lá."
+  },
+  {
+   "speaker": "Davi",
+   "start": 951.29,
+   "end": 955.52,
+   "text": "É, se você puder simplesmente deixar de fora mais um botão."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 955.92,
+   "end": 957.46,
+   "text": "É. Então se a gente"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 957.86,
+   "end": 962.09,
+   "text": "É, ou a gente tem que, hum, pular o botão de legenda, hum."
+  },
+  {
+   "speaker": "Davi",
+   "start": 962.49,
+   "end": 962.88,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 963.28,
+   "end": 967.12,
+   "text": "É, mas eu acho que isso é uma grande vantagem,"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 967.52,
+   "end": 968.29,
+   "text": "Então, é"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 968.69,
+   "end": 969.46,
+   "text": "se a gente"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 969.86,
+   "end": 971.78,
+   "text": "É, é uma grande vantagem."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 972.18,
+   "end": 972.57,
+   "text": "Mas"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 972.97,
+   "end": 974.12,
+   "text": "Mas, hum, é"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 974.52,
+   "end": 979.91,
+   "text": "Será que a gente pode, não podemos integrar o teletexto e as legendas num único botão?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 980.31,
+   "end": 981.08,
+   "text": "Ah, é."
+  },
+  {
+   "speaker": "Davi",
+   "start": 981.48,
+   "end": 983.02,
+   "text": "Eu acho que sim. É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 983.42,
+   "end": 985.72,
+   "text": "Se você apertar três vezes?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 986.12,
+   "end": 989.58,
+   "text": "Bom, acho que os subtítulos do teletexto são"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 989.98,
+   "end": 990.37,
+   "text": "É."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 990.77,
+   "end": 996.15,
+   "text": "agora você só aperta o botão de teletexto, vai para a página oito oito oito,"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 996.55,
+   "end": 996.94,
+   "text": "É."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 997.34,
+   "end": 997.72,
+   "text": "É."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 998.12,
+   "end": 1001.2,
+   "text": "e o teletexto desaparece. Mas as legendas ficam lá."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1001.6,
+   "end": 1004.68,
+   "text": "Mas se você apertar o botão de teletexto duas vezes"
+  },
+  {
+   "speaker": "Davi",
+   "start": 1005.08,
+   "end": 1010.46,
+   "text": "E se você precisar rolar até a página oitenta e oito? Oitocentos e oitenta e oito."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1010.86,
+   "end": 1013.55,
+   "text": "Eu acho que esse é o caso na maioria"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1013.95,
+   "end": 1018.18,
+   "text": "É, hum, um M, hum, um B, hum, alguns botões."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1018.58,
+   "end": 1020.51,
+   "text": "Ah, isso não é bem isso"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1020.91,
+   "end": 1028.6,
+   "text": "Bom, isso poderia ser tipo rolar até oito, clicar, rolar até oito, clicar, rolar até oito, clicar."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1029.0,
+   "end": 1029.77,
+   "text": "É. Certo."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1030.17,
+   "end": 1036.71,
+   "text": "Mas, então, isso seria praticamente uma opção inviável para pessoas mais velhas,"
+  },
+  {
+   "speaker": "Davi",
+   "start": 1037.11,
+   "end": 1037.49,
+   "text": "Não."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1037.89,
+   "end": 1040.97,
+   "text": "que nem sabem o que é a roda de rolagem."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1041.37,
+   "end": 1041.75,
+   "text": "É."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1042.15,
+   "end": 1042.54,
+   "text": "Não."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1042.94,
+   "end": 1049.86,
+   "text": "Segurando um controle que eles esperam ter tipo dez botões para os números de um a zero."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1050.26,
+   "end": 1053.72,
+   "text": "Com só cinco botões nele. E uma roda de rolagem."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1054.12,
+   "end": 1081.82,
+   "text": "Eu acho que se você fizer uma boa propaganda, hum, na televisão e no guia, pode explicar às pessoas como usar a roda de rolagem. Se você deixar bem simples. Porque isso economiza muito dinheiro. E a gente pode manter nossa tela LCD, que pode fornecer informações extras. Como usar a roda de rolagem. Como usar os outros botões como legendas."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1082.22,
+   "end": 1082.98,
+   "text": "Verdade. Verdade."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1083.38,
+   "end": 1083.77,
+   "text": "Hmm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1084.17,
+   "end": 1093.78,
+   "text": "E é bom para o design inovador também. Se você apagar esses. Mm apagador? E nós colocamos uh Parece meio estranho talvez."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1094.18,
+   "end": 1096.49,
+   "text": "Isso é um rolo de rolagem bem grande."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1096.89,
+   "end": 1098.82,
+   "text": "Isso é algo assim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1099.22,
+   "end": 1108.06,
+   "text": "Então, sim. Temos o rolo de rolagem. Um, dois, três, quatro, cinco botões, se apagarmos este. E esses são dois botões então."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1108.46,
+   "end": 1118.08,
+   "text": "Poderíamos fazer dois botões a partir disso. E só um Se você pressionar o botão de volume você pode controlar o volume com o rolo de rolagem."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1118.48,
+   "end": 1118.86,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1119.26,
+   "end": 1124.65,
+   "text": "Então isso economizaria dois botões. Se você fizer o mesmo para o canal."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1125.05,
+   "end": 1133.89,
+   "text": "Sim. Isso é realmente uma boa boa ideia, eu acho. E vai tornar o uso do rolo de rolagem uh mais óbvio de fato."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1134.29,
+   "end": 1135.06,
+   "text": "Mais óbvio."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1135.46,
+   "end": 1141.23,
+   "text": "Então fazemos um para o volume, um para o canal. Mais rolo. Isso mesmo."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1141.63,
+   "end": 1142.78,
+   "text": "Então se nós"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1143.18,
+   "end": 1150.88,
+   "text": "Então temos um, dois, três. Sim, podemos deixar o teletexto se quisermos. Isso m isso é melhor."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1151.28,
+   "end": 1151.66,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1152.06,
+   "end": 1152.83,
+   "text": "Sim. Então"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1153.23,
+   "end": 1155.15,
+   "text": "Então isso é cinco botões."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1155.55,
+   "end": 1163.63,
+   "text": "Se deixarmos todos esses botões, talvez você possa usar o case plano plano. E fazer menor no geral."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1164.03,
+   "end": 1164.8,
+   "text": "Y sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1165.2,
+   "end": 1175.97,
+   "text": "Então se você colocar os botões de volume e canal na mesma altura do botão liga/desliga, a tela logo atrás disso, então o botão de rolagem"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1176.37,
+   "end": 1179.45,
+   "text": "Mm sim. Uh sim, e então você pode"
+  },
+  {
+   "speaker": "Davi",
+   "start": 1179.85,
+   "end": 1182.54,
+   "text": "você obtém um controle remoto muito menor."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1182.94,
+   "end": 1183.71,
+   "text": "Isso mesmo."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1184.11,
+   "end": 1184.88,
+   "text": "Uh sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1185.28,
+   "end": 1186.43,
+   "text": "E ele sh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1186.83,
+   "end": 1190.29,
+   "text": "Então podemos diminuir isso para quatro botões."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1190.69,
+   "end": 1191.08,
+   "text": "Sim?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1191.48,
+   "end": 1193.4,
+   "text": "Agora temos cinco."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1193.8,
+   "end": 1203.03,
+   "text": "Mas uh, você pode fazer um f bem grande uh controle remoto para uh apenas o mesmo preço de um pequeno."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1203.43,
+   "end": 1204.97,
+   "text": "Sim. Isso não é problema."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1205.37,
+   "end": 1213.06,
+   "text": "Apenas uh você só tem que pagar pelo curvado duplo ou curvado simples. Ele uh é um pouco uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1213.46,
+   "end": 1223.08,
+   "text": "Sim. Sim. É, é mais os moldes em que eles são feitos, eu acho. Curva única é realmente fácil de apenas preencher."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1223.48,
+   "end": 1223.86,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1224.26,
+   "end": 1227.34,
+   "text": "E as caixas saem direto da máquina."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1227.74,
+   "end": 1243.89,
+   "text": "E curva única você tem que ter uma máquina diferente, do que uma plana. Eu acho que isso é um modelo bem fácil. Um, o que todo mundo acha de um design plano ou curva única? Freek, o que você acha?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1244.29,
+   "end": 1248.91,
+   "text": "Bem, eu ainda acho que devemos ir pelo design de curva única."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1249.31,
+   "end": 1249.69,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1250.09,
+   "end": 1254.71,
+   "text": "Mas então, de novo, todas essas mudanças não são realmente boas pra mim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1255.11,
+   "end": 1257.42,
+   "text": "O argumento do Richard foi muito bom. Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1257.82,
+   "end": 1258.2,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1258.6,
+   "end": 1258.98,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1259.38,
+   "end": 1259.77,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1260.17,
+   "end": 1262.48,
+   "text": "Mas já que nós só temos que."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1262.88,
+   "end": 1264.8,
+   "text": "Precisamos cortar custos."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1265.2,
+   "end": 1265.58,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1265.98,
+   "end": 1267.52,
+   "text": "Sim. Sim eu ag"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1267.92,
+   "end": 1274.46,
+   "text": "Eu prefiro ir direto ao conselho e fazer com que gastemos dezoito dólares a um remoto."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1274.86,
+   "end": 1279.86,
+   "text": "Pedir mais dinheiro. Sim. Sim. Eu concordo com a usabilidade. Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1280.26,
+   "end": 1284.49,
+   "text": "Ou fazer alguma pesquisa de mercado e ver quais são as opções."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1284.89,
+   "end": 1293.74,
+   "text": "Sim. Mas th eu acho que podemos então manter a curva única. Só para expressar nossa tela L_C_D_ um pouco mais."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1294.14,
+   "end": 1294.52,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1294.92,
+   "end": 1295.31,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1295.71,
+   "end": 1300.32,
+   "text": "Então as pessoas vão usar mais, e especialmente para as funções de ajuda,"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1300.72,
+   "end": 1301.11,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1301.51,
+   "end": 1320.35,
+   "text": "será bom se tivermos barra de rolagem, botão de rolagem. Também será necessário ter uma boa função de ajuda. Então isso é rolagem. Eu acho que teria sido melhor ter essa lista de preços um pouco antes. Antes de irmos para o design completo."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1320.75,
+   "end": 1321.52,
+   "text": "Sim. Definitivamente."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1321.92,
+   "end": 1322.69,
+   "text": "O th"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1323.09,
+   "end": 1326.17,
+   "text": "Mas eu fico feliz que pudemos fazer um pouco."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1326.57,
+   "end": 1326.95,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1327.35,
+   "end": 1331.97,
+   "text": "É bem diferente, se você viu o último do que este."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1332.37,
+   "end": 1333.52,
+   "text": "É bem diferente."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1333.92,
+   "end": 1339.31,
+   "text": "Mas isso não é realmente como para o grupo que estávamos fazendo remotamente."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1339.71,
+   "end": 1340.09,
+   "text": "Não."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1340.49,
+   "end": 1345.49,
+   "text": "Isso realmente vai exigir muito marketing para vender."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1345.89,
+   "end": 1347.43,
+   "text": "Sim. Vai. Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1347.83,
+   "end": 1348.6,
+   "text": "Mas um"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1349.0,
+   "end": 1355.15,
+   "text": "Porque se pessoas mais velhas gostam de formas familiares e coisas familiares. Isso não é familiar para elas."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1355.55,
+   "end": 1357.09,
+   "text": "Não, mas eu acho"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1357.49,
+   "end": 1361.34,
+   "text": "Então teremos que convencer muito."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1361.74,
+   "end": 1363.28,
+   "text": "Eu acho que o mais"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1363.68,
+   "end": 1372.14,
+   "text": "Mas eles conhecem os botões de rolagem de rádios antigos. Eles também chamam esses botões de mudar canais."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1372.54,
+   "end": 1373.31,
+   "text": "Isso mesmo."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1373.71,
+   "end": 1374.09,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1374.49,
+   "end": 1376.03,
+   "text": "Podemos deixar l"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1376.43,
+   "end": 1377.97,
+   "text": "Então talvez seja um"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1378.37,
+   "end": 1382.98,
+   "text": "Podemos manter um pouco. Tipo botões antigos."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1383.38,
+   "end": 1384.15,
+   "text": "Sim. Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1384.55,
+   "end": 1389.17,
+   "text": "Talvez isso seja reconhecível para eles também. Sim. Isso é bom."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1389.57,
+   "end": 1389.95,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1390.35,
+   "end": 1404.58,
+   "text": "Então, receio que tenhamos que seguir em frente. E é menos assustador, eu acho. Se eles virem esse design, vão pensar oh, só há cinco botões, e mas veremos."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1404.98,
+   "end": 1405.37,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1405.77,
+   "end": 1408.85,
+   "text": "Isso é verdade. Pode ser confuso também."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1409.25,
+   "end": 1410.78,
+   "text": "Sim. Isso é definitivamente certo."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1411.18,
+   "end": 1411.57,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1411.97,
+   "end": 1414.66,
+   "text": "Eles iriam dizer, o quê? Apenas cinco botões?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1415.06,
+   "end": 1415.45,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1415.85,
+   "end": 1417.77,
+   "text": "Mas muito especial, então"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1418.17,
+   "end": 1419.71,
+   "text": "Eu compraria."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1420.11,
+   "end": 1422.03,
+   "text": "Sim. Mas você não tem sessenta."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1422.43,
+   "end": 1433.2,
+   "text": "Isso mesmo. Eu compraria se tivesse seis. Não, não sei. Quanto custa menos do que doze e meio euros? Não? Ah, sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1433.6,
+   "end": 1433.98,
+   "text": "Não."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1434.38,
+   "end": 1438.23,
+   "text": "Não. Mas podemos continuar com a avaliação do projeto."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1438.63,
+   "end": 1439.02,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1439.42,
+   "end": 1446.72,
+   "text": "Vamos ver. Acho que posso sentar. Ainda temos quinze minutos restantes, então estamos bem no cronograma."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1447.12,
+   "end": 1447.51,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1447.91,
+   "end": 1449.45,
+   "text": "Um, o processo do projeto."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1449.85,
+   "end": 1455.23,
+   "text": "Então um, eu configurei todos esses critérios. E a avaliação da coisa."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1455.63,
+   "end": 1460.63,
+   "text": "Critérios de avaliação. Isso mesmo. Foi o ponto que eu esqueci. Eu deveria"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1461.03,
+   "end": 1462.95,
+   "text": "Aí estamos. Critérios de avaliação."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1463.35,
+   "end": 1464.12,
+   "text": "Obrigado."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1464.52,
+   "end": 1465.29,
+   "text": "Vá em frente."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1465.69,
+   "end": 1469.15,
+   "text": "Acho que temos cinco minutos para esses critérios."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1469.55,
+   "end": 1470.71,
+   "text": "Mais cinco minutos?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1471.11,
+   "end": 1473.42,
+   "text": "Não, temos quinze minutos mas"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1473.82,
+   "end": 1474.2,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1474.6,
+   "end": 1475.75,
+   "text": "Uh sim. O quê?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1476.15,
+   "end": 1482.69,
+   "text": "'Kay então eu fiz um estudo de literatura, e análise dos requisitos que definimos antes."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1483.09,
+   "end": 1483.86,
+   "text": "Uh sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1484.26,
+   "end": 1523.88,
+   "text": "Traduzido em critérios, que seriam esses. Um, o controle remoto é elegante? A forma, aparência e sensação. Inovador? Quais novas funções existem? Uh, fácil de usar? Uh, a aprendibilidade é um fator muito importante aqui. Uh, é funcional? Existem não muitas funções uh entre as funções? E são as funções que existem, são úteis? E o custo. O público-alvo. O controle remoto é realmente para o grupo que estamos fazendo? E reconhecibilidade. Se nossa empresa é Se é facilmente reconhecível que nossa empresa fez? E então devemos avaliá-lo agora."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1524.28,
+   "end": 1524.66,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1525.06,
+   "end": 1533.52,
+   "text": "Vamos ver. Oh eu tenho que dizer que isso foi um pouco difícil, porque as atas da nossa última reunião não estavam aqui."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1533.92,
+   "end": 1537.77,
+   "text": "Sim, isso porque minha caneta não conseguiu enviar seus dados."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1538.17,
+   "end": 1538.94,
+   "text": "Mm. É?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1539.34,
+   "end": 1539.72,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1540.12,
+   "end": 1541.28,
+   "text": "Eu tentei"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1541.68,
+   "end": 1542.06,
+   "text": "Interessante."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1542.46,
+   "end": 1546.31,
+   "text": "mas está dando erros ao baixar o software."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1546.71,
+   "end": 1547.09,
+   "text": "Então"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1547.49,
+   "end": 1548.26,
+   "text": "Mm. 'Kay."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1548.66,
+   "end": 1552.89,
+   "text": "O design é elegante, numa escala de um a sete?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1553.29,
+   "end": 1554.83,
+   "text": "Acho que é elegante."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1555.23,
+   "end": 1555.62,
+   "text": "Seis."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1556.02,
+   "end": 1556.78,
+   "text": "Sim. Seis."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1557.18,
+   "end": 1558.34,
+   "text": "Uh seis. Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1558.74,
+   "end": 1562.97,
+   "text": "Todos nós vamos para seis? Bom. Um, o design é inovador?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1563.37,
+   "end": 1563.75,
+   "text": "Muito."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1564.15,
+   "end": 1564.92,
+   "text": "Mm. Sh"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1565.32,
+   "end": 1569.17,
+   "text": "Acho que sim, com nossa tela L_C_D_, estação de acoplamento, botões de rolagem."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1569.57,
+   "end": 1571.11,
+   "text": "Legendas, botões. Sim. Sete."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1571.51,
+   "end": 1571.89,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1572.29,
+   "end": 1572.68,
+   "text": "Sete?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1573.08,
+   "end": 1573.46,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1573.86,
+   "end": 1574.25,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1574.65,
+   "end": 1578.49,
+   "text": "Então temos vinte centavos para nossa estação de acoplamento, hein?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1578.89,
+   "end": 1580.05,
+   "text": "Deve ser possível."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1580.45,
+   "end": 1581.6,
+   "text": "Sim. Isso mesmo."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1582.0,
+   "end": 1584.31,
+   "text": "O design é fácil de usar?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1584.71,
+   "end": 1585.86,
+   "text": "Mm. Não muito."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1586.26,
+   "end": 1587.8,
+   "text": "Isso é meio duvidoso."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1588.2,
+   "end": 1590.51,
+   "text": "Bem, seria para nós. Mas"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1590.91,
+   "end": 1592.83,
+   "text": "Para pessoas idosas eu eu"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1593.23,
+   "end": 1597.85,
+   "text": "Eu diria quatro. Quatro ou cinco entre. Entre quatro ou cinco."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1598.25,
+   "end": 1598.63,
+   "text": "W"
+  },
+  {
+   "speaker": "Davi",
+   "start": 1599.03,
+   "end": 1600.57,
+   "text": "Quatro ou cinco. Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1600.97,
+   "end": 1601.74,
+   "text": "Sim. Quatro."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1602.14,
+   "end": 1604.06,
+   "text": "Eu também iria por quatro."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1604.46,
+   "end": 1604.85,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1605.25,
+   "end": 1605.63,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1606.03,
+   "end": 1607.18,
+   "text": "É funcional?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1607.58,
+   "end": 1613.35,
+   "text": "O design é funcional? Um, temos todas as funções que queremos incluir?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1613.75,
+   "end": 1614.14,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1614.54,
+   "end": 1615.31,
+   "text": "N Yeah."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1615.71,
+   "end": 1619.55,
+   "text": "Acho que sim. Temos muitas funções?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1619.95,
+   "end": 1620.34,
+   "text": "No."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1620.74,
+   "end": 1621.12,
+   "text": "No."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1621.52,
+   "end": 1621.91,
+   "text": "No."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1622.31,
+   "end": 1625.0,
+   "text": "Não acho. É bem enxuto."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1625.4,
+   "end": 1626.94,
+   "text": "Parece que é, tipo, sete."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1627.34,
+   "end": 1636.18,
+   "text": "Sete. Ah, e a gente cuida das maiores frustrações do controle remoto? Tipo, ele se perder e as influências R_S_I_?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1636.58,
+   "end": 1637.35,
+   "text": "Mm m"
+  },
+  {
+   "speaker": "Davi",
+   "start": 1637.75,
+   "end": 1640.45,
+   "text": "Mm, não pensamos nisso."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1640.85,
+   "end": 1641.62,
+   "text": "It was."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1642.02,
+   "end": 1643.17,
+   "text": "Acho que sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1643.57,
+   "end": 1649.34,
+   "text": "Eu já tinha resolvido. Mm. São feios, não muito funcionais, e se perdem."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1649.74,
+   "end": 1650.12,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1650.52,
+   "end": 1653.6,
+   "text": "Os custos de produção estão dentro dos limites pré‑estabelecidos?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1654.0,
+   "end": 1655.54,
+   "text": "Bem, agora estão."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1655.94,
+   "end": 1656.32,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1656.72,
+   "end": 1659.8,
+   "text": "O design se encaixa no grupo de foco?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1660.2,
+   "end": 1661.35,
+   "text": "Mm, sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1661.75,
+   "end": 1663.68,
+   "text": "Acho que é três."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1664.08,
+   "end": 1664.46,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1664.86,
+   "end": 1671.02,
+   "text": "Não, acho que com nosso novo botão de rádio, acho que é, tipo, melhor."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1671.42,
+   "end": 1672.95,
+   "text": "Acho que não."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1673.35,
+   "end": 1676.82,
+   "text": "Sim. Uh, temos que testar isso, mas"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1677.22,
+   "end": 1678.37,
+   "text": "Não sei."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1678.77,
+   "end": 1683.38,
+   "text": "Ainda acho que é, tipo, muito, muito chamativo. Muito, muito flashy."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1683.78,
+   "end": 1684.55,
+   "text": "I think"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1684.95,
+   "end": 1686.11,
+   "text": "Acho que"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1686.51,
+   "end": 1693.05,
+   "text": "Acho que um botão de rádio não é exatamente o que pessoas mais velhas esperam ter em um controle remoto."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1693.45,
+   "end": 1694.6,
+   "text": "Uh, sim, verdade."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1695.0,
+   "end": 1697.69,
+   "text": "Sim. Eu daria um quatro."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1698.09,
+   "end": 1701.55,
+   "text": "Não tenho certeza. Acho que eu iria por dois."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1701.95,
+   "end": 1703.88,
+   "text": "Eu vou por três. Então"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1704.28,
+   "end": 1707.74,
+   "text": "Então precisamos fazer o três. É o"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1708.14,
+   "end": 1710.45,
+   "text": "'Kay. A empresa é reconhecível?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1710.85,
+   "end": 1712.0,
+   "text": "Sim, é."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1712.4,
+   "end": 1713.17,
+   "text": "Sim sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1713.57,
+   "end": 1715.88,
+   "text": "Bem, temos o logo lá."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1716.28,
+   "end": 1716.66,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1717.06,
+   "end": 1717.45,
+   "text": "Então"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1717.85,
+   "end": 1728.62,
+   "text": "E eles querem colocar moda nos seus produtos. Uh no slogan da empresa. E temos as capas frontais removíveis. Então, acho que é muito reconhecível."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1729.02,
+   "end": 1729.4,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1729.8,
+   "end": 1730.18,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1730.58,
+   "end": 1730.97,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1731.37,
+   "end": 1740.22,
+   "text": "Então isso será isso. Eu também deveria calcular a pontuação, mas pensei que teríamos outra coisa privada depois disso."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1740.62,
+   "end": 1742.92,
+   "text": "Nós temos que calcular. Mm?"
+  },
+  {
+   "speaker": "Davi",
+   "start": 1743.32,
+   "end": 1744.86,
+   "text": "Twendag sieven an twendag."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1745.26,
+   "end": 1748.72,
+   "text": "Isso é tipo depois disso, já terminamos? Ou"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1749.12,
+   "end": 1752.2,
+   "text": "N Vamos, vamos avaliar."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1752.6,
+   "end": 1760.68,
+   "text": "Vamos voltar ao nosso outro quarto. Bem, de qualquer forma. Esses são sete fatores vezes sete é quarenta algo. Dois? Não."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1761.08,
+   "end": 1761.85,
+   "text": "Quarenta e nove."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1762.25,
+   "end": 1770.71,
+   "text": "Nove? Uh, menos um. Menos três, menos quatro. Menos quatro. Então seria menos oito. Quarenta e um de quarenta e nove."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1771.11,
+   "end": 1773.42,
+   "text": "Quarenta e um. Isso é cerca de oitenta por cento."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1773.82,
+   "end": 1774.2,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1774.6,
+   "end": 1775.75,
+   "text": "O que é?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1776.15,
+   "end": 1780.0,
+   "text": "Adivinhe, eu vou apenas digitar isso embaixo aqui."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1780.4,
+   "end": 1784.63,
+   "text": "Isso é oitenta e quatro por cento. Acho que é uma pontuação bem boa."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1785.03,
+   "end": 1785.8,
+   "text": "Hmm. Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1786.2,
+   "end": 1786.58,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1786.98,
+   "end": 1787.37,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1787.77,
+   "end": 1790.85,
+   "text": "Hmm. 'Kay. Então isso será a avaliação."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1791.25,
+   "end": 1796.25,
+   "text": "Obrigado. Então, isso nos leva à avaliação do projeto. Sim. Obrigado."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1796.65,
+   "end": 1802.03,
+   "text": "Processo do projeto. A gente seguiu as fases corretas, você acha? Ao longo do processo?"
+  },
+  {
+   "speaker": "Davi",
+   "start": 1802.43,
+   "end": 1802.82,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1803.22,
+   "end": 1804.37,
+   "text": "Sim. Mas isso"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1804.77,
+   "end": 1811.69,
+   "text": "Acho que deveríamos ter tido a coisa de finanças muito mais cedo. Na fase de design."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1812.09,
+   "end": 1812.48,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1812.88,
+   "end": 1815.95,
+   "text": "Isso mesmo. Então falta de informação sobre preços."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1816.35,
+   "end": 1816.74,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1817.14,
+   "end": 1818.29,
+   "text": "Sim. Isso é verdade."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1818.69,
+   "end": 1819.46,
+   "text": "Sim. Definitivamente."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1819.86,
+   "end": 1823.32,
+   "text": "Ok. Uh Ok. Satisfação. Havia espaço para criatividade?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1823.72,
+   "end": 1824.11,
+   "text": "Não."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1824.51,
+   "end": 1824.89,
+   "text": "Não?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1825.29,
+   "end": 1826.83,
+   "text": "Não muito. Não."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1827.23,
+   "end": 1829.92,
+   "text": "É por causa da planilha de finanças. Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1830.32,
+   "end": 1830.71,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1831.11,
+   "end": 1835.34,
+   "text": "Sim, havia espaço suficiente, mas a finanças uh"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1835.74,
+   "end": 1836.89,
+   "text": "Sim, verdade. Mas"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1837.29,
+   "end": 1838.83,
+   "text": "O espaço era Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1839.23,
+   "end": 1839.62,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1840.02,
+   "end": 1844.25,
+   "text": "E eu teria gostado de ir também para os usuários mais jovens."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1844.65,
+   "end": 1850.03,
+   "text": "E apenas poder acessar a internet e ter algo próprio."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1850.43,
+   "end": 1850.82,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1851.22,
+   "end": 1859.29,
+   "text": "Restrições. Acesso à internet. 'Kay. Liderança. Foi claro o que todo mundo tinha que fazer de acordo com seus papéis e funções? Sim?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1859.69,
+   "end": 1860.08,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1860.48,
+   "end": 1860.86,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1861.26,
+   "end": 1861.65,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1862.05,
+   "end": 1868.58,
+   "text": "Trabalho em equipe? Funcionou? Trabalhar juntos? Também, vocês dois com a última fase?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1868.98,
+   "end": 1869.37,
+   "text": "Então"
+  },
+  {
+   "speaker": "Davi",
+   "start": 1869.77,
+   "end": 1870.92,
+   "text": "Sim, estava ok."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1871.32,
+   "end": 1871.71,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1872.11,
+   "end": 1872.49,
+   "text": "Legal."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1872.89,
+   "end": 1879.43,
+   "text": "As tarefas são muito estruturadas, então você pode fazer passo a passo e é muito fácil."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1879.83,
+   "end": 1880.22,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1880.62,
+   "end": 1881.0,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1881.4,
+   "end": 1888.71,
+   "text": "tarefas. Ok. Os meios eram suficientes para as tarefas que tivemos que fazer? Ou eram demais?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1889.11,
+   "end": 1889.49,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1889.89,
+   "end": 1898.74,
+   "text": "Bem, o quadro branco inteligente, o desenho em d d é só uma dor de cabeça, mas a caneta digital é muito boa."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1899.14,
+   "end": 1899.52,
+   "text": "Quadro branco inteligente."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1899.92,
+   "end": 1900.31,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1900.71,
+   "end": 1903.78,
+   "text": "Se quiser baixar seus dados."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1904.18,
+   "end": 1904.57,
+   "text": "Mas"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1904.97,
+   "end": 1905.74,
+   "text": "Sim. Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1906.14,
+   "end": 1906.91,
+   "text": "Sim. Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1907.31,
+   "end": 1907.69,
+   "text": "Uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1908.09,
+   "end": 1914.25,
+   "text": "Falha no download. O quadro branco inteligente era irritante. Então você preferia ter um flip-over? Ou algo diferente?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1914.65,
+   "end": 1915.03,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1915.43,
+   "end": 1918.51,
+   "text": "Um flip-over ou um digitador mais preciso"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1918.91,
+   "end": 1921.22,
+   "text": "Um flip-over é mais fácil, então sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1921.62,
+   "end": 1923.54,
+   "text": "Mais rápido também, eu acho."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1923.94,
+   "end": 1924.32,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1924.72,
+   "end": 1925.11,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1925.51,
+   "end": 1926.28,
+   "text": "Sim. Flip-over."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1926.68,
+   "end": 1939.75,
+   "text": "Mas se você quiser compartilhar quando fizer uma imagem assim na apresentação, é mais fácil compartilhar com outras pessoas. Uh então uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1940.15,
+   "end": 1940.54,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1940.94,
+   "end": 1951.32,
+   "text": "você pode salvar e colocar na internet, ou em pasta compartilhada ou diretório compartilhado."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1951.72,
+   "end": 1952.11,
+   "text": "Sim,"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1952.51,
+   "end": 1953.28,
+   "text": "Então Então"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1953.68,
+   "end": 1957.14,
+   "text": "Eu tentei abrir o arquivo no meu laptop,"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1957.54,
+   "end": 1958.31,
+   "text": "Sim? Não?"
+  },
+  {
+   "speaker": "Davi",
+   "start": 1958.71,
+   "end": 1959.86,
+   "text": "Não. Não funcionou."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1960.26,
+   "end": 1961.42,
+   "text": "mas não é possível."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1961.82,
+   "end": 1965.66,
+   "text": "Uh você precisa de um quadro inteligente uh aplicação eu acho."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1966.06,
+   "end": 1966.45,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1966.85,
+   "end": 1968.77,
+   "text": "Mas eu acho que você pode"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1969.17,
+   "end": 1973.4,
+   "text": "T pode uh pode exportar isso uh tipo um Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1973.8,
+   "end": 1978.03,
+   "text": "Sim. Deve ser possível. Sim você pode exportar como imagem."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1978.43,
+   "end": 1978.82,
+   "text": "não."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1979.22,
+   "end": 1980.75,
+   "text": "Deve Sim deve ser"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1981.15,
+   "end": 1982.69,
+   "text": "Deveria ter feito isso então."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1983.09,
+   "end": 1986.94,
+   "text": "Então o compartilhamento da informação foi uh foi ok?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 1987.34,
+   "end": 1988.49,
+   "text": "Caneta está aqui."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1988.89,
+   "end": 1989.66,
+   "text": "Uh, rede."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1990.06,
+   "end": 1990.45,
+   "text": "Uh."
+  },
+  {
+   "speaker": "Davi",
+   "start": 1990.85,
+   "end": 1991.23,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1991.63,
+   "end": 1994.32,
+   "text": "Sim, a caneta está aqui na mesa."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1994.72,
+   "end": 1997.03,
+   "text": "Uh, sim. Então você pode Uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 1997.43,
+   "end": 1998.58,
+   "text": "Sim. É possível."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 1998.98,
+   "end": 1999.75,
+   "text": "É possível."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2000.15,
+   "end": 2000.92,
+   "text": "Mm. Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2001.32,
+   "end": 2001.71,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2002.11,
+   "end": 2002.49,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2002.89,
+   "end": 2008.28,
+   "text": "Isso é bom. Encontramos novas ideias para ter esse tipo de reunião? Ou"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2008.68,
+   "end": 2019.45,
+   "text": "Um, sim talvez um uh quando nós n uh apenas uh damos os números de uh Uh uh o um de uh fora s uh sete"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2019.85,
+   "end": 2020.23,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2020.63,
+   "end": 2032.17,
+   "text": "Um é mais fácil de uh fazer as coisas que são tipo isso em um computador. Uh, então uh apenas l uh tipo uh na universidade uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2032.57,
+   "end": 2036.03,
+   "text": "Sim. Então sim. Então todo mundo coloca sua própria pontuação."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2036.43,
+   "end": 2036.82,
+   "text": "Então"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2037.22,
+   "end": 2037.6,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2038.0,
+   "end": 2040.31,
+   "text": "E então ele media a pontuação,"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2040.71,
+   "end": 2041.09,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2041.49,
+   "end": 2041.88,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2042.28,
+   "end": 2044.2,
+   "text": "e você pode pegar um"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2044.6,
+   "end": 2044.98,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2045.38,
+   "end": 2045.77,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Davi",
+   "start": 2046.17,
+   "end": 2046.55,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2046.95,
+   "end": 2056.57,
+   "text": "Isso é melhor. Então isso é uh Como chamamos? Critérios de avaliação. Ok. Mm, mais alguma ideia? Ou perguntas sobre o projeto? Ou sobre o produto?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2056.97,
+   "end": 2057.35,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2057.75,
+   "end": 2064.29,
+   "text": "Porque eu acho que então chegamos à nossa última planilha. Os custos estão dentro do orçamento?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2064.69,
+   "end": 2065.46,
+   "text": "Mm sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2065.86,
+   "end": 2066.25,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2066.65,
+   "end": 2067.42,
+   "text": "Eles estão."
+  },
+  {
+   "speaker": "Davi",
+   "start": 2067.82,
+   "end": 2071.66,
+   "text": "Considerando que não vamos fazer uma estação de docking."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2072.06,
+   "end": 2075.14,
+   "text": "Nós fazemos estação de docking. Isso é um bom ponto."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2075.54,
+   "end": 2082.85,
+   "text": "Mas talvez porque da estação de docking o preço do controle remoto também possa ser um pouco mais alto?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2083.25,
+   "end": 2083.63,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2084.03,
+   "end": 2087.88,
+   "text": "Uh e eu acho que você pode compensar isso também."
+  },
+  {
+   "speaker": "Davi",
+   "start": 2088.28,
+   "end": 2088.66,
+   "text": "Talvez."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2089.06,
+   "end": 2089.45,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2089.85,
+   "end": 2096.38,
+   "text": "Então eu acho que isso não deveria ser o maior problema, porque também é muito barato de fazer."
+  },
+  {
+   "speaker": "Davi",
+   "start": 2096.78,
+   "end": 2097.17,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2097.57,
+   "end": 2102.18,
+   "text": "A gente acha que vamos conseguir os doze e meio milhões?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2102.58,
+   "end": 2102.97,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2103.37,
+   "end": 2104.91,
+   "text": "Ou o que era?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2105.31,
+   "end": 2106.08,
+   "text": "Cinquenta mil."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2106.48,
+   "end": 2112.25,
+   "text": "Quinze quinze milhões. Eu acho que vamos. Se a gente for exportar esse produto. É inovador."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2112.65,
+   "end": 2113.03,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2113.43,
+   "end": 2116.51,
+   "text": "Especialmente na América. As pessoas são bem decadentes. Às vezes."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2116.91,
+   "end": 2117.68,
+   "text": "Sim. Mm."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2118.08,
+   "end": 2118.46,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2118.86,
+   "end": 2128.86,
+   "text": "Sim, ainda acho que se não vamos fazer um botão de rolagem de qualquer jeito, seria mais para os jovens do que para os mais velhos."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2129.26,
+   "end": 2131.18,
+   "text": "Você pode fazer mais. Sim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2131.58,
+   "end": 2131.97,
+   "text": "Ah."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2132.37,
+   "end": 2134.68,
+   "text": "Então talvez devêssemos apenas refocar."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2135.08,
+   "end": 2142.77,
+   "text": "Coloque no mercado para todo mundo. Você pode mudar os mercados mudando as capas frontais."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2143.17,
+   "end": 2143.55,
+   "text": "Ah."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2143.95,
+   "end": 2145.88,
+   "text": "Ou especificamente para os jovens."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2146.28,
+   "end": 2149.35,
+   "text": "Isso é uma coisa que você pode mudar."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2149.75,
+   "end": 2150.14,
+   "text": "Ah."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2150.54,
+   "end": 2151.31,
+   "text": "Isso é verdade."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2151.71,
+   "end": 2164.78,
+   "text": "Então você também pode tentar alcançar os jovens colocando capas chamativas no mercado. Apenas como teste. Veja como funciona. Acho que é uma boa vantagem."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2165.18,
+   "end": 2176.34,
+   "text": "Sim, acho que então seria muito mais popular entre os jovens do que é, do que seria com os mais velhos. Mesmo que fossem suas capas."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2176.74,
+   "end": 2182.12,
+   "text": "Sim. Uh, uh então acho que podemos ter nossa pequena celebração, agora."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2182.52,
+   "end": 2182.91,
+   "text": "Hmm."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2183.31,
+   "end": 2183.69,
+   "text": "Mas"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2184.09,
+   "end": 2184.86,
+   "text": "Isso aí."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2185.26,
+   "end": 2186.03,
+   "text": "Festa festa."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2186.43,
+   "end": 2191.82,
+   "text": "Sim. Acho que ainda temos que encaixar mais um questionário. Acho."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2192.22,
+   "end": 2193.37,
+   "text": "Onde está o champanhe?"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2193.77,
+   "end": 2194.15,
+   "text": "'Kay."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2194.55,
+   "end": 2199.94,
+   "text": "Não sei. Não recebi mensagem do final da"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2200.34,
+   "end": 2202.26,
+   "text": "Uh, eu acredito que y uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2202.66,
+   "end": 2205.35,
+   "text": "Oh acho que tenho agora."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2205.75,
+   "end": 2206.91,
+   "text": "Ah, você fez."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2207.31,
+   "end": 2209.62,
+   "text": "Mais cinco minutos? Oh que legal."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2210.02,
+   "end": 2210.4,
+   "text": "Ok."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2210.8,
+   "end": 2221.95,
+   "text": "Então ainda temos algumas perguntas. Se alguém tiver perguntas pode fazer agora. Ou podemos colocar isso na pasta do projeto também. Talvez seja"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2222.35,
+   "end": 2222.74,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2223.14,
+   "end": 2223.52,
+   "text": "Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2223.92,
+   "end": 2225.85,
+   "text": "Exportar como imagem, acho."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2226.25,
+   "end": 2226.63,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2227.03,
+   "end": 2227.42,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2227.82,
+   "end": 2232.82,
+   "text": "Hmm. Isso é outra rede, acho. Alguém vê a pasta do projeto?"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2233.22,
+   "end": 2235.14,
+   "text": "Não. Hmm. Meus Documentos."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2235.54,
+   "end": 2239.0,
+   "text": "Uh talvez uh eles vão salvar. Então uh"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2239.4,
+   "end": 2242.48,
+   "text": "Yeah, eu vou colocar em Meus Documentos"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2242.88,
+   "end": 2244.42,
+   "text": "Yeah, provavelmente vai."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2244.82,
+   "end": 2250.58,
+   "text": "e uh Isso tá ok. Ok. Acho que vou fazer nossa apresentação final agora."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2250.98,
+   "end": 2254.06,
+   "text": "Oh yeah, você tem que fazer uma final"
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2254.46,
+   "end": 2262.15,
+   "text": "E então eu volto em cerca de dez minutos para mostrar a apresentação final. Resumo do projeto."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2262.55,
+   "end": 2262.94,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Davi",
+   "start": 2263.34,
+   "end": 2263.72,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2264.12,
+   "end": 2267.97,
+   "text": "Temos que voltar para nossas próprias salas de novo?"
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2268.37,
+   "end": 2271.83,
+   "text": "Uh talvez tenhamos que preencher uh outro questionário."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2272.23,
+   "end": 2277.23,
+   "text": "Yeah. Questionário. Acho que vocês recebem um questionário em sua sala."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2277.63,
+   "end": 2278.4,
+   "text": "So uh"
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2278.8,
+   "end": 2279.18,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2279.58,
+   "end": 2280.35,
+   "text": "Sim. Sim."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2280.75,
+   "end": 2285.75,
+   "text": "E então eu te encontro em eu acho em cerca de dez minutos, ou algo assim."
+  },
+  {
+   "speaker": "Úrsula",
+   "start": 2286.15,
+   "end": 2286.54,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Davi",
+   "start": 2286.94,
+   "end": 2287.32,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Pedro",
+   "start": 2287.72,
+   "end": 2291.57,
+   "text": "Espero que minha caneta baixe seu software. Oh. Ou dados."
+  },
+  {
+   "speaker": "Mariana",
+   "start": 2291.97,
+   "end": 2293.51,
+   "text": "Sim. Isso seria legal."
+  }
+ ],
+ "meta": {
+  "source": "AMI Meeting Corpus (QMSum transcript + edinburghcstr/ami timing)",
+  "meeting_id": "TS3003d",
+  "phase": "Projeto detalhado",
+  "language": "pt-BR",
+  "translation_model": "openai/gpt-oss-120b + openai/gpt-oss-20b",
+  "timing": "estimados pelo número de palavras (API do edinburghcstr/ami indisponível na construção)"
+ }
+}

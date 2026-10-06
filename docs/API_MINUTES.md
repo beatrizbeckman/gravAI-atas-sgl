@@ -2,7 +2,7 @@
 
 Contrato HTTP para gerar atas de reunião (`.docx`) a partir de transcrições ou gravações feitas pelo GravAI. Este documento é a referência para qualquer cliente da API: a página de demonstração do próprio GravAI, o SGL ou um script.
 
-Versão do contrato: **1.0** (01/10/2026). Mudanças incompatíveis sobem a versão. Implementado em `api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
+Versão do contrato: **1.0** (01/10/2026). Mudanças incompatíveis sobem a versão. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
 
 ---
 
@@ -64,7 +64,7 @@ Lista os modelos de ata disponíveis e os campos de cabeçalho que cada um esper
 }
 ```
 
-Campos de cabeçalho por template (fonte: `minutes/templates/*.json`):
+Campos de cabeçalho por template (fonte: `gravai/minutes/templates/*.json`):
 
 | Template | Campos (`*` = obrigatório) |
 |---|---|
@@ -355,7 +355,7 @@ curl http://localhost:8000/minutes/templates
 # 2. Criar um job a partir de uma transcrição (fixture do repositório)
 curl -X POST http://localhost:8000/minutes/from-transcript \
   -H "Content-Type: application/json" \
-  -d @minutes/tests/fixtures/reuniao_dell.json
+  -d @datasets/reunioes/ES2004a/transcricao.json
 # → 202 {"id": "6f1c...", "status": "queued", ...}
 
 # 3. Consultar
@@ -370,7 +370,7 @@ curl -X POST http://localhost:8000/minutes/from-recording \
   -d '{"template":"daily","header":{"projeto":"GravAI","data":"01/10/2026 · 09:00 – 09:15"},"tracks_dir":"./tmp/5d3136ef-0d7f-4664-a8d8-28ecc6b4929e_tracks"}'
 ```
 
-> Os arquivos em `minutes/tests/fixtures/reuniao_*.json` têm exatamente o formato do corpo de `from-transcript` e servem de exemplo de requisição.
+> Os arquivos `datasets/reunioes/<id>/transcricao.json` têm exatamente o formato do corpo de `from-transcript` (mais um campo `meta`, ignorado pela API) e servem de exemplo de requisição.
 
 Exemplo de polling em JavaScript (página de demonstração):
 

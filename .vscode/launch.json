@@ -11,7 +11,7 @@
             "module": "fastapi",
             "args": [
                 "run",
-                "api/app.py"
+                "gravai/api/app.py"
             ],
             "python": "${workspaceFolder}/.venv/bin/python",
             "console": "integratedTerminal",

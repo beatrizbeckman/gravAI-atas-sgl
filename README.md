@@ -48,19 +48,19 @@ cmake --build build -j --config Release
 
 2.a. Start your external whisper server for transcription and specify the WHISPER_HOST and WHISPER_PORT accordingly on .env file and the GravAI docker-compose without: (Optional)
 ```bash
-docker compose -f docker-compose.yaml up -d
+docker compose -f docker/docker-compose.yaml up -d
 ```
 
 2.b. Or deploy the GravAI docker-compose with whisper built-in: (Optional)
 ```bash
-docker compose -f docker-compose-whisper.yaml up -d
+docker compose -f docker/docker-compose-whisper.yaml up -d
 ```
 
 3. Connect to the instance [http://localhost:8000](http://localhost:8000)
 
-### Local development (uv)
+### Local development (virtual environment)
 
-The project uses [uv](https://docs.astral.sh/uv/) to manage the virtual environment and dependencies. Every command runs through `uv run`, so there is no need to activate anything.
+The project uses [uv](https://docs.astral.sh/uv/) to manage the virtual environment and dependencies. `uv sync` creates `.venv/` from `uv.lock` with everything, including the dev tools (pytest, ruff). Every command then runs through `uv run`, so there is no need to activate anything.
 
 ```bash
 # Install uv (once)
@@ -74,43 +74,58 @@ uv sync
 uv run playwright install
 
 # Run the API with auto reload
-uv run fastapi dev api/app.py
+uv run fastapi dev gravai/api/app.py
 
-# Run the tests
+# Run the tests, the linter and the formatter
 uv run pytest
+uv run ruff check .
+uv run ruff format .
 
 # Add or remove a dependency (updates pyproject.toml and uv.lock)
 uv add <package>
 uv remove <package>
 ```
 
+Without uv, a plain virtual environment works too; `requirements.txt` is exported from `uv.lock` (regenerate it with `uv export --no-hashes -o requirements.txt` after changing dependencies):
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate            # Windows
+source .venv/bin/activate          # Linux / macOS
+pip install -r requirements.txt
+pytest
+```
+
 ### Minutes (atas)
 
-The `minutes/` module turns a recording folder into a meeting-minutes document. Each step has a small CLI so it can be exercised without the others:
+The `gravai/minutes/` module turns a recording folder into a meeting-minutes document. Each step has a small CLI so it can be exercised without the others. The example transcripts are the real meetings of the dataset in `datasets/reunioes/` (see `datasets/README.md`):
 
 ```bash
 # Merge the per-participant whisper output of a recording into one transcript
-uv run python -m minutes.transcript_normalizer tmp/<session>_tracks
-uv run python -m minutes.transcript_normalizer tmp/<session>_tracks -o transcript.json
+uv run python -m gravai.minutes.transcript_normalizer tmp/<session>_tracks
+uv run python -m gravai.minutes.transcript_normalizer tmp/<session>_tracks -o transcript.json
 
 # Show the prompts built for a transcript
-uv run python -m minutes.prompt_builder minutes/tests/fixtures/reuniao_dell.json
+uv run python -m gravai.minutes.prompt_builder datasets/reunioes/ES2004a/transcricao.json
 
 # Whole pipeline: transcript -> LLM -> .docx (LLM configured in .env)
-uv run python -m minutes.generate minutes/tests/fixtures/reuniao_dell.json -o ata.docx --json
+uv run python -m gravai.minutes.generate datasets/reunioes/ES2004a/transcricao.json -o ata.docx --json
 
-# Render already-filled minutes as .docx (no LLM involved)
-uv run python -m minutes.docx_writer minutes/tests/fixtures/ata_dell_preenchida.json -o ata.docx
+# Render minutes an LLM already produced (e.g. from an experiment run) as .docx, no LLM involved
+uv run python -m gravai.minutes.docx_writer datasets/reunioes/ES2004a/transcricao.json experiments/results/<run>/<pair>/minutes.json -o ata.docx
+
+# Compare models over the whole dataset (prompts, raw replies, docx, time, tokens, cost per pair)
+uv run python experiments/run_experiments.py --max-chars 12000
 ```
 
-The LLM is configured in `.env` (`LLM_PROVIDER`, `OLLAMA_HOST`, `OLLAMA_MODEL`); the default is a local Ollama server. `LLM_PROVIDER=fake` fills every section with placeholder text so the pipeline can be exercised without any LLM. Templates live in `minutes/templates/`, see the README there. The HTTP contract for generating minutes is in `docs/API_MINUTES.md`. Generation runs as background jobs (`jobs/`: SQLite store, one worker thread, one executor per job kind) so HTTP clients only poll:
+The LLM is configured in `.env` (`LLM_PROVIDER` and the `LLM_*` / `OLLAMA_*` variables). `openai_compatible` calls an online API in the OpenAI format (Groq, DeepInfra, OpenAI...), `ollama` a local server, and `fake` fills every section with placeholder text so the pipeline can be exercised without any LLM. Templates live in `gravai/minutes/templates/`, see the README there. The HTTP contract for generating minutes is in `docs/API_MINUTES.md`. Generation runs as background jobs (`gravai/jobs/`: SQLite store, one worker thread, one executor per job kind) so HTTP clients only poll:
 
 ```bash
-# API with the fake LLM (no Ollama needed)
-LLM_PROVIDER=fake uv run fastapi dev api/app.py
+# API with the fake LLM (no LLM needed)
+LLM_PROVIDER=fake uv run fastapi dev gravai/api/app.py
 
 curl http://localhost:8000/minutes/templates
-curl -X POST http://localhost:8000/minutes/from-transcript -H "Content-Type: application/json" -d @minutes/tests/fixtures/reuniao_dell.json
+curl -X POST http://localhost:8000/minutes/from-transcript -H "Content-Type: application/json" -d @datasets/reunioes/ES2004a/transcricao.json
 curl http://localhost:8000/minutes/jobs/<id>            # poll until status is done
 curl -OJ http://localhost:8000/minutes/jobs/<id>/download
 ```

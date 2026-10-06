@@ -1,0 +1,3498 @@
+{
+ "meeting_id": "ES2004c",
+ "source": "QMSum/AMI",
+ "utterances": [
+  {
+   "speaker": "Paula",
+   "start": 0.0,
+   "end": 3.08,
+   "text": "I'll wait until you're all um hooked up."
+  },
+  {
+   "speaker": "Marina",
+   "start": 3.48,
+   "end": 4.63,
+   "text": "Oh good grief."
+  },
+  {
+   "speaker": "Marina",
+   "start": 5.03,
+   "end": 5.42,
+   "text": "'Kay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 5.82,
+   "end": 6.2,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 6.6,
+   "end": 6.98,
+   "text": "Oh."
+  },
+  {
+   "speaker": "Paula",
+   "start": 7.38,
+   "end": 9.69,
+   "text": "Put it on in that way."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 10.09,
+   "end": 10.48,
+   "text": "Oops."
+  },
+  {
+   "speaker": "Paula",
+   "start": 10.88,
+   "end": 11.65,
+   "text": "Thanks. Okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 12.05,
+   "end": 12.43,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 12.83,
+   "end": 15.52,
+   "text": "Welcome back everybody, hope you've had fun."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 15.92,
+   "end": 17.08,
+   "text": "After lunch. Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 17.48,
+   "end": 20.55,
+   "text": "Right um this is our conceptual design meeting,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 20.95,
+   "end": 21.34,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 21.74,
+   "end": 26.35,
+   "text": "um I think we're slightly ahead of ourselves from the last meeting,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 26.75,
+   "end": 27.14,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 27.54,
+   "end": 31.0,
+   "text": "Yeah, yeah I was getting that impression as well."
+  },
+  {
+   "speaker": "Paula",
+   "start": 31.4,
+   "end": 34.09,
+   "text": "I th I I think yeah um."
+  },
+  {
+   "speaker": "Marina",
+   "start": 34.49,
+   "end": 34.88,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 35.28,
+   "end": 39.89,
+   "text": "This is where we talk about um properties, materials, user-interface and trend-watching."
+  },
+  {
+   "speaker": "Diego",
+   "start": 40.29,
+   "end": 40.68,
+   "text": "Etcetera."
+  },
+  {
+   "speaker": "Marina",
+   "start": 41.08,
+   "end": 41.46,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 41.86,
+   "end": 88.4,
+   "text": "So I think we've touched on a few things to do with that already, but we'll just go over it. Um the minutes from the last time. Um we had a couple of um changes in our plans in that we couldn't use teletext, it wasn't gonna be a control for everything um and that we had to incorporate the image of the company into it somehow. Um we have decided on a leaving out the voice recognition, we've decided on there being a flip design and um a different shape from what's normal. We were thinking a shell, but something along those lines, just a different shape from what's normal, um. You were going to look into the rechargeable batteries"
+  },
+  {
+   "speaker": "Diego",
+   "start": 88.8,
+   "end": 89.18,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 89.58,
+   "end": 95.35,
+   "text": "and we were gonna think about the port and an alarm for getting it lost,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 95.75,
+   "end": 96.91,
+   "text": "things like that,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 97.31,
+   "end": 97.69,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 98.09,
+   "end": 103.09,
+   "text": "um and our market was going to be young, business, kind of range."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 103.49,
+   "end": 103.88,
+   "text": "'Kay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 104.28,
+   "end": 107.74,
+   "text": "Okay, so shall we start with the first presentation?"
+  },
+  {
+   "speaker": "Marina",
+   "start": 108.14,
+   "end": 108.91,
+   "text": "Shall I?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 109.31,
+   "end": 109.69,
+   "text": "Yep."
+  },
+  {
+   "speaker": "Paula",
+   "start": 110.09,
+   "end": 111.63,
+   "text": "Yes if you feel"
+  },
+  {
+   "speaker": "Marina",
+   "start": 112.03,
+   "end": 113.95,
+   "text": "Okay. We just connect up."
+  },
+  {
+   "speaker": "Marina",
+   "start": 114.35,
+   "end": 145.12,
+   "text": "Thank you. There we go. Okay um so we decided on our market and so this feedback from the marketing department is really about trend watching. Um the methods we used to decide on uh current trends and so on, market trends, were that we did our traditional uh our usual market research study uh with a hundred subjects and the the general feedback from them is that the most im uh w I'm sorry I'm slightly tongue-tied after lunch,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 145.52,
+   "end": 146.29,
+   "text": "It's okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 146.69,
+   "end": 224.0,
+   "text": "sorry Project Manager. Um we decided on the most important aspect i uh required in a remote control device and we'll come to that later. So that was one of the first things we did. Also with our company um being forerunners in uh putting fashion into technology, we also looked at a fashion update um using our consultants on fashion and design in Paris and Milan. Uh so the general findings from that was uh in the market trends the most important aspect for remote controls were people want a fancy look and feel, rather than the the current functional look and feel of remote controls. They also also want a remote control to be technologically innovative, and of course, as we predicted, that it should be easy to use. Now I should point out that the first of those findings, fancy look and feel, is the most important, is twice as important as the second, technologically innovative, which is in turn twice as important as being easy to use. So possibly that the feature that we put first is actually third is still important, but it's third in order of preference for the the subject group we looked at."
+  },
+  {
+   "speaker": "Paula",
+   "start": 224.4,
+   "end": 224.78,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 225.18,
+   "end": 271.72,
+   "text": "Okay, um, now the fashion update which relates to very personal preferences among our subject group, um we found from our um consultants in Paris and Milan who des attended all the design and fashion fairs there, that fruit and vegetables are going to be the theme for clothes, shoes and furniture. So should we be thinking of using something like that in our remote control design too? There also seems to be um a trend towards a spongy feel to materials, uh again in contrast to last year. So a lot of interesting feedback there, both from our market research departments and from our people in Paris and Milan. Be interesting to see what our design people make of that."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 272.12,
+   "end": 272.51,
+   "text": "'Kay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 272.91,
+   "end": 275.22,
+   "text": "Okay thank you very much. Um"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 275.62,
+   "end": 276.0,
+   "text": "Yep."
+  },
+  {
+   "speaker": "Paula",
+   "start": 276.4,
+   "end": 280.25,
+   "text": "let's start from the inside and work our way out."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 280.65,
+   "end": 282.57,
+   "text": "Fine. It's okay with me."
+  },
+  {
+   "speaker": "Diego",
+   "start": 282.97,
+   "end": 283.74,
+   "text": "Yeah, okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 284.14,
+   "end": 286.83,
+   "text": "Unless anyone has any questions about that?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 287.23,
+   "end": 289.54,
+   "text": "I don't think so, not yet."
+  },
+  {
+   "speaker": "Marina",
+   "start": 289.94,
+   "end": 291.09,
+   "text": "Not yet? 'Kay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 291.49,
+   "end": 293.03,
+   "text": "Um, yes, thank you."
+  },
+  {
+   "speaker": "Diego",
+   "start": 293.43,
+   "end": 294.58,
+   "text": "That screwed in?"
+  },
+  {
+   "speaker": "Marina",
+   "start": 294.98,
+   "end": 295.37,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 295.77,
+   "end": 297.69,
+   "text": "I hate those little things"
+  },
+  {
+   "speaker": "Diego",
+   "start": 298.09,
+   "end": 298.48,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 298.88,
+   "end": 306.18,
+   "text": "especially if you do them on too tight and you can't get the leverage on them to undo them."
+  },
+  {
+   "speaker": "Marina",
+   "start": 306.58,
+   "end": 307.35,
+   "text": "I know."
+  },
+  {
+   "speaker": "Diego",
+   "start": 307.75,
+   "end": 308.14,
+   "text": "'Kay,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 308.54,
+   "end": 308.92,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 309.32,
+   "end": 348.17,
+   "text": "Okay. Um this is uh all about the design of the actual components and the availability of the components we have in stock at the moment. Okay, first uh the Into the method. The the main idea of the whole thing is just so you sh you just press buttons and it should activate things on the T_V_ and we discussed last meeting that it should be easy to find. Um also in this study I've looked into the availability of some of the materials, 'cause some of the things that we looked at last time aren't un unfortunately aren't available."
+  },
+  {
+   "speaker": "Paula",
+   "start": 348.57,
+   "end": 348.95,
+   "text": "'Kay.."
+  },
+  {
+   "speaker": "Diego",
+   "start": 349.35,
+   "end": 370.89,
+   "text": "Um, findings, I've got my nice little picture there. This is uh the chip called the T_A_ double one eight three five which is what's used in pretty much every remote control 'cause it sends out standard signals, based on your input and um it's pretty much used for all all T_V_ remotes at the moment."
+  },
+  {
+   "speaker": "Paula",
+   "start": 371.29,
+   "end": 371.68,
+   "text": "'Kay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 372.08,
+   "end": 375.92,
+   "text": "Um and then we we're loo looking into battery options."
+  },
+  {
+   "speaker": "Diego",
+   "start": 376.32,
+   "end": 394.78,
+   "text": "There's um actually no rechargeable option available, so we I saw the um the standard double A_ and triple A_ which we thought were a bit bit too bulky at the moment, dynamo charging, I thought that that might be a bit silly to be to be honest,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 395.18,
+   "end": 397.11,
+   "text": "Wa can you explain that?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 397.51,
+   "end": 400.58,
+   "text": "people won't it's it's basically like wind-up radio."
+  },
+  {
+   "speaker": "Paula",
+   "start": 400.98,
+   "end": 402.52,
+   "text": "Like a right, okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 402.92,
+   "end": 407.15,
+   "text": "So you wind up your remote control before you use it."
+  },
+  {
+   "speaker": "Paula",
+   "start": 407.55,
+   "end": 412.55,
+   "text": "How what kind of how l long can you get out of that,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 412.95,
+   "end": 413.72,
+   "text": "It might"
+  },
+  {
+   "speaker": "Paula",
+   "start": 414.12,
+   "end": 422.58,
+   "text": "I mean can you pick it up and then wind it for two minutes and then that's it for the night? Or"
+  },
+  {
+   "speaker": "Diego",
+   "start": 422.98,
+   "end": 446.83,
+   "text": "You Yeah, yeah, oh yeah I presu you wouldn't have to wind it for very long, but I don't I don't think it's really sort of necessary when you th you think of the next two options, like the the solar charging, 'cause most people have the light on in the room anyway so they could get when when you got T_V_."
+  },
+  {
+   "speaker": "Paula",
+   "start": 447.23,
+   "end": 449.54,
+   "text": "That doesn't count though does it?"
+  },
+  {
+   "speaker": "Marina",
+   "start": 449.94,
+   "end": 453.02,
+   "text": "Does does light charge as as sunlight does?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 453.42,
+   "end": 455.72,
+   "text": "I thought it was U_V_ like"
+  },
+  {
+   "speaker": "Diego",
+   "start": 456.12,
+   "end": 456.51,
+   "text": "No."
+  },
+  {
+   "speaker": "Marina",
+   "start": 456.91,
+   "end": 457.68,
+   "text": "Artificial light?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 458.08,
+   "end": 459.62,
+   "text": "Is it? Alright i"
+  },
+  {
+   "speaker": "Paula",
+   "start": 460.02,
+   "end": 460.78,
+   "text": "Any, any"
+  },
+  {
+   "speaker": "Marina",
+   "start": 461.18,
+   "end": 462.72,
+   "text": "Has to be solar."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 463.12,
+   "end": 477.74,
+   "text": "Yep. Regarding those sizes, which one you think will be light because we we have to take into consideration size also, so maybe a standard triple A_ might take lesser space or and dynamo might take more space."
+  },
+  {
+   "speaker": "Diego",
+   "start": 478.14,
+   "end": 487.37,
+   "text": "Yeah it would the d yeah the dynamo would take more space 'cause you actually need a physical sort of handle to wind up."
+  },
+  {
+   "speaker": "Paula",
+   "start": 487.77,
+   "end": 491.23,
+   "text": "I'm pretty sure that solar is from the sun."
+  },
+  {
+   "speaker": "Diego",
+   "start": 491.63,
+   "end": 492.4,
+   "text": "Yeah, okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 492.8,
+   "end": 495.88,
+   "text": "Uh, I don't think it counts electric lights"
+  },
+  {
+   "speaker": "Marina",
+   "start": 496.28,
+   "end": 497.82,
+   "text": "Mm. Artificial light, no."
+  },
+  {
+   "speaker": "Paula",
+   "start": 498.22,
+   "end": 503.22,
+   "text": "no, but I mean not many you don't want to limit your market."
+  },
+  {
+   "speaker": "Marina",
+   "start": 503.62,
+   "end": 504.77,
+   "text": "That's going to"
+  },
+  {
+   "speaker": "Paula",
+   "start": 505.17,
+   "end": 511.71,
+   "text": "I mean people who live in basement flats there's not that many people, but there are people."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 512.11,
+   "end": 512.49,
+   "text": "Uh"
+  },
+  {
+   "speaker": "Marina",
+   "start": 512.89,
+   "end": 513.66,
+   "text": "I know,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 514.06,
+   "end": 514.45,
+   "text": "But"
+  },
+  {
+   "speaker": "Marina",
+   "start": 514.85,
+   "end": 519.46,
+   "text": "different parts of the world too, if we're if we're marketing internationally."
+  },
+  {
+   "speaker": "Diego",
+   "start": 519.86,
+   "end": 520.25,
+   "text": "Yeah"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 520.65,
+   "end": 521.03,
+   "text": "Right."
+  },
+  {
+   "speaker": "Diego",
+   "start": 521.43,
+   "end": 526.82,
+   "text": "and most people most people also watch T_V_ in the in the night anyway."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 527.22,
+   "end": 527.6,
+   "text": "Night."
+  },
+  {
+   "speaker": "Paula",
+   "start": 528.0,
+   "end": 539.54,
+   "text": "Mm, but then it would be charging through the day, I think the point is that it charges through the day and then you've got it charged for the evening."
+  },
+  {
+   "speaker": "Diego",
+   "start": 539.94,
+   "end": 544.94,
+   "text": "But I I think I think the the next one's the best anyway."
+  },
+  {
+   "speaker": "Paula",
+   "start": 545.34,
+   "end": 545.72,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 546.12,
+   "end": 553.05,
+   "text": "The the kinetic charging which is like you get it in r you get it in wrist watches"
+  },
+  {
+   "speaker": "Paula",
+   "start": 553.45,
+   "end": 554.6,
+   "text": "Yeah I've seen"
+  },
+  {
+   "speaker": "Diego",
+   "start": 555.0,
+   "end": 572.69,
+   "text": "and you d you don't even notice it. I mean the amount the amount of probably moving around you'd be doing all the time would would charge it up, I don't think you'd ever need to actually physically start shaking it up to make it work."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 573.09,
+   "end": 580.78,
+   "text": "And are these like uh what are the life of the kinetic battery, it like it runs for long time?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 581.18,
+   "end": 593.11,
+   "text": "Um yeah it's it charges into um some form of it's a smaller cell which it charges into and uh the si the size sort of a watch a watch battery,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 593.51,
+   "end": 593.89,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 594.29,
+   "end": 597.37,
+   "text": "'cause they use them quite frequently in watches."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 597.77,
+   "end": 598.15,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 598.55,
+   "end": 610.09,
+   "text": "And that'll that would l would last for um well I do I d I'm not entirely sure how long it would last but I've never seen one run out."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 610.49,
+   "end": 611.26,
+   "text": "We c"
+  },
+  {
+   "speaker": "Paula",
+   "start": 611.66,
+   "end": 621.28,
+   "text": "But then if you think about a watch, it's on your wrist so it's on your whole bod it's on your body the whole time"
+  },
+  {
+   "speaker": "Diego",
+   "start": 621.68,
+   "end": 622.06,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 622.46,
+   "end": 629.0,
+   "text": "so you're walking around, you're doing things, it is moving a lot of the time. If you'd"
+  },
+  {
+   "speaker": "Diego",
+   "start": 629.4,
+   "end": 630.17,
+   "text": "Yeah and"
+  },
+  {
+   "speaker": "Paula",
+   "start": 630.57,
+   "end": 642.11,
+   "text": "I mean you switch the T_V_ on, then you put it on the side, then you pick it up to change it and then you put it on the side."
+  },
+  {
+   "speaker": "Marina",
+   "start": 642.51,
+   "end": 642.89,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 643.29,
+   "end": 644.83,
+   "text": "Yeah but then again"
+  },
+  {
+   "speaker": "Paula",
+   "start": 645.23,
+   "end": 647.54,
+   "text": "Is it really gonna be enough?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 647.94,
+   "end": 664.48,
+   "text": "I I think it is because if you think about it, the watch, although it's only a tiny amount it's it's um it's always moving for the whole day and they don't run out over night when you leave them on the side."
+  },
+  {
+   "speaker": "Paula",
+   "start": 664.88,
+   "end": 665.26,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 665.66,
+   "end": 677.58,
+   "text": "And th for the same the same reason, you're only using it for a v incredibly short amount of time just to send the signal and then you're finished with it"
+  },
+  {
+   "speaker": "Paula",
+   "start": 677.98,
+   "end": 681.06,
+   "text": "So it's not the draw on it isn't"
+  },
+  {
+   "speaker": "Diego",
+   "start": 681.46,
+   "end": 683.0,
+   "text": "and you put it"
+  },
+  {
+   "speaker": "Marina",
+   "start": 683.4,
+   "end": 683.78,
+   "text": "Hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 684.18,
+   "end": 689.57,
+   "text": "no no I do I don't think the the draw on it would be"
+  },
+  {
+   "speaker": "Marina",
+   "start": 689.97,
+   "end": 690.74,
+   "text": "Mm-hmm. Mm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 691.14,
+   "end": 691.52,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 691.92,
+   "end": 698.08,
+   "text": "Could I just ask referring back to solar charging, is that compatible with um standard batteries?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 698.48,
+   "end": 698.86,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 699.26,
+   "end": 708.49,
+   "text": "I mean, could people put standard batteries in but with a s you know they could leave it in the sunlight for solar charging"
+  },
+  {
+   "speaker": "Diego",
+   "start": 708.89,
+   "end": 715.43,
+   "text": "Ye yeah I think I th uh g y you could have a dual um power thing"
+  },
+  {
+   "speaker": "Marina",
+   "start": 715.83,
+   "end": 718.14,
+   "text": "or the two things not compatible?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 718.54,
+   "end": 720.46,
+   "text": "Like a dual kind of."
+  },
+  {
+   "speaker": "Diego",
+   "start": 720.86,
+   "end": 736.63,
+   "text": "but the the thing with the solar cells is you would need to put them on the case and they because, if you lie on a calculator they they're qui they're quite big and they all they all look i identical."
+  },
+  {
+   "speaker": "Marina",
+   "start": 737.03,
+   "end": 739.72,
+   "text": "Mm. So that affects the exterior design."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 740.12,
+   "end": 742.05,
+   "text": "Solar would be slightly expensives."
+  },
+  {
+   "speaker": "Paula",
+   "start": 742.45,
+   "end": 747.06,
+   "text": "Expensive as well. What kind of price are we looking at for"
+  },
+  {
+   "speaker": "Diego",
+   "start": 747.46,
+   "end": 749.38,
+   "text": "They're they're expensive, they don't"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 749.78,
+   "end": 751.32,
+   "text": "It's twelve point f"
+  },
+  {
+   "speaker": "Paula",
+   "start": 751.72,
+   "end": 754.8,
+   "text": "I presume the normal batteries are the cheapest?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 755.2,
+   "end": 767.89,
+   "text": "Yeah the normal batteries would be the cheapest I'd presume then it would actually be the the solar charging ones, um but the It's i I think they're not very resistant to dropping,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 768.29,
+   "end": 768.68,
+   "text": "Solar."
+  },
+  {
+   "speaker": "Diego",
+   "start": 769.08,
+   "end": 773.69,
+   "text": "'cause if you drop stuff yeah if you if you have y"
+  },
+  {
+   "speaker": "Paula",
+   "start": 774.09,
+   "end": 775.63,
+   "text": "Well they're not designed"
+  },
+  {
+   "speaker": "Diego",
+   "start": 776.03,
+   "end": 785.26,
+   "text": "the size you'd need to charge a remote wouldn't be that big but I mean if remotes always get thrown around and stuff, so."
+  },
+  {
+   "speaker": "Paula",
+   "start": 785.66,
+   "end": 786.43,
+   "text": "Practical-wise okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 786.83,
+   "end": 794.14,
+   "text": "Y I think yeah, practically. I mean calculators you don't really throw around a lot whereas remotes you do,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 794.54,
+   "end": 797.23,
+   "text": "You do get a bit of wear"
+  },
+  {
+   "speaker": "Diego",
+   "start": 797.63,
+   "end": 798.78,
+   "text": "they can t"
+  },
+  {
+   "speaker": "Paula",
+   "start": 799.18,
+   "end": 803.03,
+   "text": "but don't calculators have a battery in them as well?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 803.43,
+   "end": 809.97,
+   "text": "Yeah they do, they yeah they've got dual things, but they're the batteries are smaller I think."
+  },
+  {
+   "speaker": "Paula",
+   "start": 810.37,
+   "end": 810.75,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 811.15,
+   "end": 811.54,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 811.94,
+   "end": 813.48,
+   "text": "Another question is like"
+  },
+  {
+   "speaker": "Marina",
+   "start": 813.88,
+   "end": 815.03,
+   "text": "Again it de"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 815.43,
+   "end": 825.43,
+   "text": "sorry. W w which one would last the longest, because we don't want customers to be like you know charging like a mobile phone every day."
+  },
+  {
+   "speaker": "Diego",
+   "start": 825.83,
+   "end": 826.22,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 826.62,
+   "end": 828.15,
+   "text": "A remote control, like,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 828.55,
+   "end": 829.71,
+   "text": "W m yeah"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 830.11,
+   "end": 833.95,
+   "text": "so we have to s look at the life also."
+  },
+  {
+   "speaker": "Marina",
+   "start": 834.35,
+   "end": 834.74,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 835.14,
+   "end": 854.37,
+   "text": "so the Yeah the the s if you if you had something du uh using the standard batteries and the solar charging, um, I don't think you'd I think the it would d well you know how long the standard double A_s would last in or triple A_s would last."
+  },
+  {
+   "speaker": "Marina",
+   "start": 854.77,
+   "end": 859.77,
+   "text": "It would just detract from the attractiveness of the of the whole feature,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 860.17,
+   "end": 863.63,
+   "text": "Yeah I think i I think it would, yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 864.03,
+   "end": 866.72,
+   "text": "i it's not gonna add anything, okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 867.12,
+   "end": 871.35,
+   "text": "Okay, can we add in uh an attachment to closing feature?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 871.75,
+   "end": 872.14,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 872.54,
+   "end": 877.92,
+   "text": "Can we think about that? 'Cause if we're doing the kinetic thing and it's"
+  },
+  {
+   "speaker": "Diego",
+   "start": 878.32,
+   "end": 878.71,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 879.11,
+   "end": 886.03,
+   "text": "Shouldn't we do some market research on that first before we add it in because I I personally"
+  },
+  {
+   "speaker": "Paula",
+   "start": 886.43,
+   "end": 889.51,
+   "text": "Well add it in to think about um"
+  },
+  {
+   "speaker": "Marina",
+   "start": 889.91,
+   "end": 890.68,
+   "text": "right, okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 891.08,
+   "end": 904.15,
+   "text": "because, where am I? If it is the kinetic thing and it is small and it is portable and it is a different shape and the kinetic is something people don't do kind of"
+  },
+  {
+   "speaker": "Diego",
+   "start": 904.55,
+   "end": 904.94,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 905.34,
+   "end": 918.8,
+   "text": "we're doing something original and different um but if you wore it if it's something you could just clip on your pocket then you would have that less, you you wouldn't lose it so much."
+  },
+  {
+   "speaker": "Diego",
+   "start": 919.2,
+   "end": 919.58,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 919.98,
+   "end": 925.75,
+   "text": "But then maybe that's looking at someone who's just sitting on their own rather than"
+  },
+  {
+   "speaker": "Diego",
+   "start": 926.15,
+   "end": 926.54,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 926.94,
+   "end": 930.02,
+   "text": "the eternal battle for control of the controls."
+  },
+  {
+   "speaker": "Marina",
+   "start": 930.42,
+   "end": 936.57,
+   "text": "It's not something that's come up in any of our uh focus groups and market research,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 936.97,
+   "end": 937.35,
+   "text": "No."
+  },
+  {
+   "speaker": "Marina",
+   "start": 937.75,
+   "end": 941.22,
+   "text": "it's not a thing that people are looking for"
+  },
+  {
+   "speaker": "Paula",
+   "start": 941.62,
+   "end": 942.0,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 942.4,
+   "end": 942.78,
+   "text": "So"
+  },
+  {
+   "speaker": "Marina",
+   "start": 943.18,
+   "end": 946.65,
+   "text": "when we threw it open to the field yeah."
+  },
+  {
+   "speaker": "Diego",
+   "start": 947.05,
+   "end": 947.43,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 947.83,
+   "end": 952.45,
+   "text": "But it's something to put on the side to think about maybe."
+  },
+  {
+   "speaker": "Paula",
+   "start": 952.85,
+   "end": 953.62,
+   "text": "Okay, right."
+  },
+  {
+   "speaker": "Diego",
+   "start": 954.02,
+   "end": 955.94,
+   "text": "Okay, well I'll move on."
+  },
+  {
+   "speaker": "Paula",
+   "start": 956.34,
+   "end": 956.72,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 957.12,
+   "end": 994.43,
+   "text": "Um, my second part of my findings uh the mo most current remotes use this silicone uh P_C_B_ board which pr printed circuit board, which basically has these contacts that are really close together and then when you press down on the rubber button, it'll connect the circuit and each each switch is connected to two uh different legs on the chip and so sends a different message and that then uh gets translated by the chip into a code and then it's fired out of this L_E_D_ in the sequence of l on and off bursts."
+  },
+  {
+   "speaker": "Paula",
+   "start": 994.83,
+   "end": 1009.06,
+   "text": "What kind of things do we have to consider there? Can we what kind of size, does it come in varying sizes or is it just one size and we would have to fit the design of"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1009.46,
+   "end": 1044.08,
+   "text": "Well well this the thi the thing about is um they they can be as big or as small as you want them to be because you can you can print circuit board like that that it's it's simply spaced like that so you can have fit the n the size of the nine buttons in. If you if you see how thin the tracks are, you could you could s you could put them virtually right next to each other and have a much smaller switch on each one,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1044.48,
+   "end": 1045.25,
+   "text": "Mm-hmm. Okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1045.65,
+   "end": 1060.26,
+   "text": "if you if you wanted to but um the there is an option to do to do it like that, or you could have some sort of array of switches which I'll speak about in the next bit"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1060.66,
+   "end": 1061.05,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1061.45,
+   "end": 1091.06,
+   "text": "so that And then to uh yeah, so to conserve battery life the remote should be in a standby mode no while not being used. Now what I was thinking about that was 'cause sometimes when y when you have these things, they've got little lights on behind the buttons, so you can see what all the buttons are, like on a mobile phone, they do it more often than on a than on a T_V_ remote,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1091.46,
+   "end": 1091.85,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1092.25,
+   "end": 1092.63,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1093.03,
+   "end": 1107.65,
+   "text": "but you could you could have lights behind the buttons and um after like five or ten seconds of not being used I'd have that turned off, if we decided to go for buttons that could light up."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1108.05,
+   "end": 1108.43,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1108.83,
+   "end": 1121.91,
+   "text": "Um, the case material, I've a been sent what the factory can actually give us, the there's the plastic which I think we were gonna go for anyway as the main case case housing"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1122.31,
+   "end": 1122.69,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1123.09,
+   "end": 1134.25,
+   "text": "and the the main problems with the well you could go for wood but I think it would be a bit impractical. Titanium um very expensive just to process,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1134.65,
+   "end": 1135.03,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1135.43,
+   "end": 1146.2,
+   "text": "which to make it is expensive, and rubber, well you're saying that people like this uh spongy feel this year, so perhaps uh some something made of rubber,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1146.6,
+   "end": 1146.98,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1147.38,
+   "end": 1161.23,
+   "text": "but I was thinking more of the buttons, because the buttons which they've they've said that they've they've put across are what is used in some stress ball manufacture and it's meant to be anti R_S_I_."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1161.63,
+   "end": 1162.02,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1162.42,
+   "end": 1162.8,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1163.2,
+   "end": 1202.43,
+   "text": "I'm no I'm not sure how that would work because surely your fingers would still be moving over the short distances but that's what they said. Um the problem with the casing is that uh there's quite um there's quite a few design restrictions that they've got on the shape of the case. If you go for titanium they can only do a standard box shape, whereas if you come to plastic they can they can be a little more they can they can do sort of curved shapes. But whether whether or not because we'd have it in two separate units"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1202.83,
+   "end": 1203.98,
+   "text": "Second thing is"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1204.38,
+   "end": 1205.15,
+   "text": "Hinged, yeah."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1205.55,
+   "end": 1207.09,
+   "text": "for the flip phone."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1207.49,
+   "end": 1215.18,
+   "text": "yeah and second question is like, a mobile you can change the cover, you call it a skin or whatever."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1215.58,
+   "end": 1215.97,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1216.37,
+   "end": 1226.75,
+   "text": "So in this case if you're looking at like a customer can change the colour like from green, parrot green to chilli red or something like that."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1227.15,
+   "end": 1227.54,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1227.94,
+   "end": 1231.4,
+   "text": "So is that feature available in like uh titanium,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1231.8,
+   "end": 1232.95,
+   "text": "Yeah I th"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1233.35,
+   "end": 1236.43,
+   "text": "or it's like only specific to plastic or"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1236.83,
+   "end": 1244.52,
+   "text": "Uh. Yeah in in titanium I don't I don't think it would be available at all really, the ju just"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1244.92,
+   "end": 1245.31,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1245.71,
+   "end": 1259.55,
+   "text": "it w well you could make it available in the titanium, it was just it would be so expensive to buy a new case for it, because of the expense of how much titanium is is"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1259.95,
+   "end": 1260.34,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1260.74,
+   "end": 1268.43,
+   "text": "it's light and strong but I think it should be left for aircraft design rather than for for a remote."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1268.83,
+   "end": 1280.37,
+   "text": "It does mark quite easily too if you let it fall. I've got a mobile phone myself which is titanium and it does mark very easily if you drop it."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1280.77,
+   "end": 1281.54,
+   "text": "Yeah, yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1281.94,
+   "end": 1290.4,
+   "text": "I was just wondering if we make the basic mould out of plastic but have like a rubber cover that goes over,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1290.8,
+   "end": 1291.57,
+   "text": "Rubber, yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1291.97,
+   "end": 1299.28,
+   "text": "that would give the spongy feel, that also allows us to kind of have different fasciae for the phone."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1299.68,
+   "end": 1302.37,
+   "text": "And you can peel them off yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1302.77,
+   "end": 1303.15,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1303.55,
+   "end": 1310.86,
+   "text": "So instead of the fascia that comes off being plastic, the fascia that comes off would be the rubber,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1311.26,
+   "end": 1313.57,
+   "text": "Like a rubber sleeve almost, yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1313.97,
+   "end": 1314.74,
+   "text": "Something like"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1315.14,
+   "end": 1321.68,
+   "text": "like those pens that you get with the grip, that you can you can pull that off."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1322.08,
+   "end": 1322.46,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1322.86,
+   "end": 1323.25,
+   "text": "Alright."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1323.65,
+   "end": 1324.03,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1324.43,
+   "end": 1324.82,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1325.22,
+   "end": 1327.52,
+   "text": "That could be a good idea."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1327.92,
+   "end": 1328.31,
+   "text": "Hmm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1328.71,
+   "end": 1329.09,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1329.49,
+   "end": 1333.34,
+   "text": "It could it would be comfortable to hold on also."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1333.74,
+   "end": 1334.51,
+   "text": "Okay. Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1334.91,
+   "end": 1335.29,
+   "text": "T"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1335.69,
+   "end": 1343.77,
+   "text": "Very cheap way of changing the look of it and people can just buy a new one if they want to."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1344.17,
+   "end": 1344.55,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1344.95,
+   "end": 1350.34,
+   "text": "Well that's been really popular with mobile phones so I don't see why not."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1350.74,
+   "end": 1351.51,
+   "text": "Mm. Yeah."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1351.91,
+   "end": 1352.68,
+   "text": "Also the"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1353.08,
+   "end": 1353.46,
+   "text": "'Kay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1353.86,
+   "end": 1363.09,
+   "text": "just just going back to the interface designs with the buttons, the I kno we were planning to do some sort of touch screen."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1363.49,
+   "end": 1363.88,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1364.28,
+   "end": 1410.05,
+   "text": "Now what I was saying before about instead of having you could have just a bare P_C_B_ circuit board and I'm sure you could probably get it in different colours and so just by touching it with your finger it'd make the connection over if you had them close enough, that would be one option. Um the second option th they offer rubber buttons, but I thought that an L_C_D_ type of screen 'cause one they're incredibly thin um and don't take up much space, two they you can have them in a sort of array and you can arrange the buttons on the screen in a sort of set thing and you could have them like a touch"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1410.45,
+   "end": 1414.29,
+   "text": "Sorry I didn't get the last part, you're talking of"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1414.69,
+   "end": 1416.23,
+   "text": "display. Uh what what"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1416.63,
+   "end": 1423.17,
+   "text": "Just what you said I I didn't get the uh meaning of it completely, you're saying like"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1423.57,
+   "end": 1428.95,
+   "text": "Oh on the on the L_C_D_ screen you could becau you could fit it"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1429.35,
+   "end": 1429.74,
+   "text": "Uh-huh."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1430.14,
+   "end": 1438.22,
+   "text": "the problem with it basically is that it's flat and so you can't do lots of curve curved things with it,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1438.62,
+   "end": 1439.0,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1439.4,
+   "end": 1439.78,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1440.18,
+   "end": 1453.26,
+   "text": "but um you can you wouldn't have with the L_C_D_ you'd have the wires coming off, you wouldn't have that with the with the L_C_D_, you'd only have that with the printed circuit board."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1453.66,
+   "end": 1454.05,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1454.45,
+   "end": 1456.37,
+   "text": "With W also with the"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1456.77,
+   "end": 1467.15,
+   "text": "I don't s sorry to interrupt, I don't see why the curved thing is a problem, if we for example had a shell, once we open that"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1467.55,
+   "end": 1467.94,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1468.34,
+   "end": 1470.65,
+   "text": "Oh it would be flat inside."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1471.05,
+   "end": 1474.12,
+   "text": "You could have a flat screen inside, yeah,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1474.52,
+   "end": 1477.22,
+   "text": "yeah, so it'd be f yeah, yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1477.62,
+   "end": 1478.0,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1478.4,
+   "end": 1482.63,
+   "text": "but I'm just wondering whether we want an L_C_D_ screen inside."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1483.03,
+   "end": 1484.57,
+   "text": "Have I misunderstood you?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1484.97,
+   "end": 1489.97,
+   "text": "It wouldn't be like full colour, it would just be black and white,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1490.37,
+   "end": 1490.75,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1491.15,
+   "end": 1493.46,
+   "text": "but there'd be touch touch buttons,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1493.86,
+   "end": 1494.25,
+   "text": "'Kay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1494.65,
+   "end": 1503.88,
+   "text": "so you wouldn't be pressing down on 'em, w or we could have rubber buttons which are made of this material which is anti-R_S_I_."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1504.28,
+   "end": 1518.12,
+   "text": "I think it would be good to have a contrast between, if the whole thing is gonna be this rubber thing it would be good to open it up and see something quite fancy looking inside."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1518.52,
+   "end": 1518.91,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1519.31,
+   "end": 1520.46,
+   "text": "Is rubber. Mm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1520.86,
+   "end": 1521.25,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1521.65,
+   "end": 1529.72,
+   "text": "Now how would you distinguish, if you had it bare, how would you distinguish where you had to press, I mean"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1530.12,
+   "end": 1534.74,
+   "text": "Yeah I hadn't I hadn't really thought of that to be honest."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1535.14,
+   "end": 1535.52,
+   "text": "Uh"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1535.92,
+   "end": 1556.69,
+   "text": "I just had another idea, I don't know if it helps with that, but just to do with the R_S_I_. Is it possible, just as an option, when we open it up, people can use their fingers to press the button, or we have inside like a small pointer thing when people want to."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1557.09,
+   "end": 1562.86,
+   "text": "Yeah you could, you could have some sort of stylus that you could pull out"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1563.26,
+   "end": 1565.95,
+   "text": "Like one of the palm pop thing."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1566.35,
+   "end": 1570.58,
+   "text": "but I I think they could get a bit easily lost,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1570.98,
+   "end": 1571.37,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1571.77,
+   "end": 1575.62,
+   "text": "Absolutely, f for somebody who very often, if he would"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1576.02,
+   "end": 1577.17,
+   "text": "'cause I had"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1577.57,
+   "end": 1577.95,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1578.35,
+   "end": 1580.66,
+   "text": "It would have to be attached."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1581.06,
+   "end": 1583.75,
+   "text": "They're easy to replace as well, cheap."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1584.15,
+   "end": 1584.54,
+   "text": "Hmm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1584.94,
+   "end": 1593.78,
+   "text": "a person who switches channels very often or does use a particular function very often will find it very irritating to use a"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1594.18,
+   "end": 1594.95,
+   "text": "Yeah. Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1595.35,
+   "end": 1603.82,
+   "text": "and he might spoil the touch-pad very fast compared to a button like, if you keep punching with an pointer or whatever."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1604.22,
+   "end": 1604.6,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1605.0,
+   "end": 1605.38,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1605.78,
+   "end": 1606.17,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1606.57,
+   "end": 1607.34,
+   "text": "Yeah okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1607.74,
+   "end": 1618.89,
+   "text": "Yeah just a thought they wouldn't actually need one and they could use anything they've got, couldn't they? A pencil or a pen, so they wouldn't really need a"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1619.29,
+   "end": 1623.14,
+   "text": "Okay, we'll talk about that so if you finish your"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1623.54,
+   "end": 1624.31,
+   "text": "Yeah that's"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1624.71,
+   "end": 1627.02,
+   "text": "and we'll come back to that."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1627.42,
+   "end": 1630.49,
+   "text": "yeah that that's the end of m my"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1630.89,
+   "end": 1632.43,
+   "text": "That's you, right okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1632.83,
+   "end": 1644.37,
+   "text": "And just one small question before like you are, regarding the circuit, since we are hav having a flip-top, we can customise the two circuits for different type of buttons"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1644.77,
+   "end": 1645.15,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1645.55,
+   "end": 1655.94,
+   "text": "like we are keeping the standard buttons on the top and the more complex buttons under this thing, so we can divide the circuit like you know."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1656.34,
+   "end": 1660.18,
+   "text": "Uh yeah. Yeah yeah that that would be fairly simple,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1660.58,
+   "end": 1660.97,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1661.37,
+   "end": 1671.37,
+   "text": "I mean you'd you'd actually have two separate you'd have two separate circuit boards but they'd be joined by wires or like some cabling between them,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1671.77,
+   "end": 1672.54,
+   "text": "Okay. Okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1672.94,
+   "end": 1673.32,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1673.72,
+   "end": 1678.34,
+   "text": "'cause in the in the actual flip bit you'd have some linking."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1678.74,
+   "end": 1689.51,
+   "text": "I'll just raise another point while it occurs to me, it kind of applies to both our designers here, so I'm not sure how it would fit in."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1689.91,
+   "end": 1690.29,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1690.69,
+   "end": 1704.54,
+   "text": "If we flip open, now you know how you've got some mirrors in nightclubs that are mirrors when you turn to them and you turn away and it gives like an advertising display, you seen those?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1704.94,
+   "end": 1705.32,
+   "text": "No."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1705.72,
+   "end": 1723.42,
+   "text": "And they kind of respond to the turn of your body. Is it possible that when we open our flip-top shell it's a little compact mirror and when you press a button it then goes onto the phone display th uh the remote control display thing."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1723.82,
+   "end": 1728.05,
+   "text": "We're marketing to guys as much as we are to women."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1728.45,
+   "end": 1728.83,
+   "text": "Um."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1729.23,
+   "end": 1732.31,
+   "text": "They don't look at themselves? Just a thought."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1732.71,
+   "end": 1747.71,
+   "text": "Well it's a remote control, you were sitting watching T_V_ are you gonna want to sort of open it and say oh shit I should go and have a shower and do my hair before I put the T_"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1748.11,
+   "end": 1754.26,
+   "text": "Yeah. I know what you mean, it's with us using the ideas for a mobile ph"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1754.66,
+   "end": 1761.58,
+   "text": "it's with us using the ideas for mobile phones I kinda got sidetracked onto that I think, okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1761.98,
+   "end": 1763.14,
+   "text": "Yeah, no, no."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1763.54,
+   "end": 1769.31,
+   "text": "trying to think of other features we can build in that wouldn't cost too much"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1769.71,
+   "end": 1770.09,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1770.49,
+   "end": 1773.95,
+   "text": "but maybe we'll leave that one on the side."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1774.35,
+   "end": 1774.74,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1775.14,
+   "end": 1775.52,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1775.92,
+   "end": 1776.31,
+   "text": "'Kay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1776.71,
+   "end": 1788.63,
+   "text": "I mean you can you could do it, you could have a 'cause if you if you just put the full charge through an L_C_D_ display it'll completely blank it out,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1789.03,
+   "end": 1789.42,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1789.82,
+   "end": 1796.35,
+   "text": "but I don't know if you could get any mirror effect on it, I'm not sure about"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1796.75,
+   "end": 1799.45,
+   "text": "Oh I think forget about the mirror"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1799.85,
+   "end": 1800.62,
+   "text": "Okay, okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1801.02,
+   "end": 1804.48,
+   "text": "that was just a very quick passing thought yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1804.88,
+   "end": 1838.34,
+   "text": "Okay, uh would like to share something which I did here. First thing is uh basically on design we just took the input from the previous meeting, especially from the marketing and industrial design, to check on the customer needs and feasibility. Second is we checked into competitors, the picture here shows one of the standard models offered by competitors here. So y you generally see there's not much of variety and like marketing team said uh, people need trendy, they are bored of black and white."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1838.74,
+   "end": 1839.12,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1839.52,
+   "end": 1844.14,
+   "text": "So you generally see rectangular shape, very monotonous kind of designs here."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1844.54,
+   "end": 1844.92,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1845.32,
+   "end": 1851.48,
+   "text": "And uh second thing is there's too much of confusion here. No particular remote is standard."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1851.88,
+   "end": 1852.26,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1852.66,
+   "end": 1873.43,
+   "text": "Like, some some people have a Here you see this? This is on a I I I found th that uh only common feature is the ch uh channel control and uh volume control, rest other buttons, they are in a very disorganized and they are not consistent th with other models and all."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1873.83,
+   "end": 1874.22,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1874.62,
+   "end": 1885.38,
+   "text": "Okay, and second as already discussed with William, we are going to have m maybe a G_ G_U_I_ interface in the f in the middle of the flip-top"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1885.78,
+   "end": 1886.17,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1886.57,
+   "end": 1888.49,
+   "text": "and g graphic user interface"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1888.89,
+   "end": 1891.2,
+   "text": "Sorry what does that stand for?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1891.6,
+   "end": 1892.37,
+   "text": "Which means"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1892.77,
+   "end": 1898.92,
+   "text": "basically which is what we d do in computer, have icons or touch pad or whatever,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 1899.32,
+   "end": 1899.71,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1900.11,
+   "end": 1900.49,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1900.89,
+   "end": 1901.66,
+   "text": "which is"
+  },
+  {
+   "speaker": "Diego",
+   "start": 1902.06,
+   "end": 1908.98,
+   "text": "If you if yeah if you have like buttons that appear on the screen in this L_C_D_ screen."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1909.38,
+   "end": 1917.85,
+   "text": "Like you have on a l uh icons or something y you have is a good example of G_U_I_ graphic user interface."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1918.25,
+   "end": 1918.63,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1919.03,
+   "end": 1919.42,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1919.82,
+   "end": 1927.89,
+   "text": "So basically not point or click Press any particular device, he just has to click on that particular icon to simplify."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1928.29,
+   "end": 1928.68,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1929.08,
+   "end": 1946.77,
+   "text": "And on the top m repetitive buttons which are like volume or channel changing and all could be on the pointing device, that means the use of button. So he need not use a pointer to keep changing the channel if a person is frequent surfer."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1947.17,
+   "end": 1947.55,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 1947.95,
+   "end": 1959.49,
+   "text": "So we are having a combination of boards, so f on the s simpler board, on the top we have this button, rubber buttons, to keep frequently changing the channels."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1959.89,
+   "end": 1967.97,
+   "text": "Can we swap that round so th that the ones that we use all the time are on the bottom part?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 1968.37,
+   "end": 1976.06,
+   "text": "'Cause if you're thinking about holding it you would be using your thumbs to press, just like a mobile phone."
+  },
+  {
+   "speaker": "Diego",
+   "start": 1976.46,
+   "end": 1976.85,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 1977.25,
+   "end": 1999.55,
+   "text": "No you'd hold it you don't if you flip it open then you'd be Wouldn't you? Isn't that the idea? You us if we just use the shell as an example again, you open that, you've got your L_C_D_ display there and you've got the buttons there so you're holding it in the palm of your hand, yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 1999.95,
+   "end": 2002.65,
+   "text": "Yeah. That's what I was just saying,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2003.05,
+   "end": 2007.28,
+   "text": "Yeah, yeah but you can do it with your thumb li"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2007.68,
+   "end": 2008.06,
+   "text": "But"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2008.46,
+   "end": 2013.08,
+   "text": "and then have the and then have the L_C_D_ at the top"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2013.48,
+   "end": 2013.86,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2014.26,
+   "end": 2018.49,
+   "text": "and then be able to touch that for the other controls,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2018.89,
+   "end": 2019.66,
+   "text": "Mm-hmm. Mm-hmm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2020.06,
+   "end": 2022.37,
+   "text": "Okay and you mean to the"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2022.77,
+   "end": 2027.38,
+   "text": "so have the um the volume and the programme, things like that,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2027.78,
+   "end": 2029.32,
+   "text": "And the lower distance."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2029.72,
+   "end": 2031.26,
+   "text": "on the lower side."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2031.66,
+   "end": 2032.82,
+   "text": "Oh f perfect."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2033.22,
+   "end": 2033.6,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2034.0,
+   "end": 2034.38,
+   "text": "Hmm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2034.78,
+   "end": 2072.86,
+   "text": "So the findings are too many cluttered buttons. Repetition of certain but buttons which I already explained, example the volume and channel control buttons. All are confusing and in inconsistent. Okay we had a latest finding of voice recognition, there was a mail which mentions that our division has developed a new speech recognition s feature. We have to check into the for financial f feasibility whether we can incorporate it this at a low cost, but for like we had g um s response from the customers that they would like to have the feature of finding it."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2073.26,
+   "end": 2073.65,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2074.05,
+   "end": 2080.2,
+   "text": "So it could be like, where is the remote, and the remote answers I am here."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2080.6,
+   "end": 2080.98,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2081.38,
+   "end": 2087.54,
+   "text": "Some kind of thing or it gives a b bleep sound or some kind of sound"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2087.94,
+   "end": 2088.32,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2088.72,
+   "end": 2096.42,
+   "text": "and if this can be incorporated this would be more uh you can say trendy also? And technologically innovative also."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2096.82,
+   "end": 2097.2,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2097.6,
+   "end": 2119.91,
+   "text": "So we we can check into the financial feasibility of incorporating this. My personal preferences would be like, as already uh marketing department, they want something to do with fruit so I wouldn't say the design should be like a fruit, but yeah we can take inspiration from fruit colours, like the vibrant colours, uh red chilli uh"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2120.31,
+   "end": 2120.69,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2121.09,
+   "end": 2121.48,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2121.88,
+   "end": 2131.88,
+   "text": "tomato red or whatever and second thing is cer certain standard buttons we should have, like for example, i if you see the previous slide uh"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2132.28,
+   "end": 2133.43,
+   "text": "Well, yeah we"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2133.83,
+   "end": 2144.6,
+   "text": "I think most of the users would now be well acquainted with this cer central pattern, here, so we we we would not change h that particular pattern"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2145.0,
+   "end": 2145.38,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2145.78,
+   "end": 2150.4,
+   "text": "because i this is the most consistent thing in all remote controls."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2150.8,
+   "end": 2155.03,
+   "text": "I can't see that, is that play and stop and things?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2155.43,
+   "end": 2158.12,
+   "text": "This is central one, the one you"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2158.52,
+   "end": 2160.83,
+   "text": "Or is that volume and channel?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2161.23,
+   "end": 2173.54,
+   "text": "yeah volume and channel. So keep that m that standardised because that's the most common feature across all models, if you look at all the models, it's here. This and voice recognition."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2173.94,
+   "end": 2187.4,
+   "text": "Okay. Right. Okay. Um I'm not sure how long we've got left, but we need to make a decision about um the things we've discussed. So, we agree on Do we agree on the battery?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2187.8,
+   "end": 2188.57,
+   "text": "The kinetic."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2188.97,
+   "end": 2189.35,
+   "text": "Kinetic?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2189.75,
+   "end": 2190.14,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2190.54,
+   "end": 2190.92,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2191.32,
+   "end": 2200.17,
+   "text": "Um, that means that there's no function for li the port, you know that it sits in, then pressing the button then having"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2200.57,
+   "end": 2200.95,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2201.35,
+   "end": 2205.2,
+   "text": "so we could incorporate voice recognition for the finding it."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2205.6,
+   "end": 2206.75,
+   "text": "Yeah I think"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2207.15,
+   "end": 2212.15,
+   "text": "It's a bi i it's like a g it's a gadget, it's a"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2212.55,
+   "end": 2218.71,
+   "text": "I mean if Yeah it is it is qui it's quite a cool feature to have"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2219.11,
+   "end": 2219.88,
+   "text": "selling point."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2220.28,
+   "end": 2228.74,
+   "text": "and also if they've got it if they've got these parts already in stock, then it won't be cheap to re-manufacture them,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2229.14,
+   "end": 2229.52,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2229.92,
+   "end": 2242.23,
+   "text": "uh or it will be cheap sorry to re-manufacture them. So do you reckon that's a good idea that, where's the remote, I'm here thing? I think that would be quite fun."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2242.63,
+   "end": 2244.17,
+   "text": "I think the only"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2244.57,
+   "end": 2244.95,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2245.35,
+   "end": 2255.74,
+   "text": "I think the only pitfall that we would have would be how much it's going to cost if that means we have to cut down somewhere else,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2256.14,
+   "end": 2256.52,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2256.92,
+   "end": 2261.92,
+   "text": "but I think pretty much we've used cheap relatively cheap and simple things."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2262.32,
+   "end": 2262.71,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2263.11,
+   "end": 2263.49,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2263.89,
+   "end": 2265.43,
+   "text": "The L_C_D_'s not cheap."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2265.83,
+   "end": 2276.98,
+   "text": "Yeah to s th well it's it's not as expensive as it would be if it was full colour 'cause if we've just got a black and white one,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2277.38,
+   "end": 2277.77,
+   "text": "Hmm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2278.17,
+   "end": 2281.25,
+   "text": "I mean they use them in calculators so."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2281.65,
+   "end": 2282.42,
+   "text": "Yeah, okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2282.82,
+   "end": 2286.28,
+   "text": "Maybe we could start with the black and white."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2286.68,
+   "end": 2287.06,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2287.46,
+   "end": 2290.15,
+   "text": "That that way we could upgrade later."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2290.55,
+   "end": 2292.48,
+   "text": "And you could yeah. Okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2292.88,
+   "end": 2295.18,
+   "text": "Yeah, we talked about kinetic charging,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2295.58,
+   "end": 2295.97,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2296.37,
+   "end": 2303.29,
+   "text": "we've deci seem to have decided on that, did we decide on double A_ or triple A_ batteries?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2303.69,
+   "end": 2304.08,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2304.48,
+   "end": 2306.02,
+   "text": "Well you cou um."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2306.42,
+   "end": 2308.72,
+   "text": "Do you want like a back-up?"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2309.12,
+   "end": 2320.66,
+   "text": "No, one of the decisions we had to make was whether we had double A_ or triple A_ batteries 'cause they've still got to be charged this way haven't they?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2321.06,
+   "end": 2329.14,
+   "text": "K no the kinetic ones come come with um a sort of w watch a battery that goes in a watch."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2329.54,
+   "end": 2332.62,
+   "text": "I oh I see. Right, okay, got you."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2333.02,
+   "end": 2336.09,
+   "text": "So it's a lot smaller, so it would"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2336.49,
+   "end": 2339.18,
+   "text": "Got you on that okay, didn't realise."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2339.58,
+   "end": 2346.12,
+   "text": "Um, okay so we've got battery. The inside components is pretty standardised across the board isn't it?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2346.52,
+   "end": 2346.91,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2347.31,
+   "end": 2347.69,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2348.09,
+   "end": 2357.71,
+   "text": "So there's not a really a decision to be made there, um. The buttons what did you give us as our The bare-board L_C_D_ or"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2358.11,
+   "end": 2364.65,
+   "text": "Yeah the well I think were we're going for the L_C_D_ on that one, on the buttons,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2365.05,
+   "end": 2369.28,
+   "text": "on the on the on on the top one we're gonna"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2369.68,
+   "end": 2373.14,
+   "text": "On the top one okay you've got the touch"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2373.54,
+   "end": 2373.92,
+   "text": "yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2374.32,
+   "end": 2375.48,
+   "text": "okay and then"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2375.88,
+   "end": 2381.65,
+   "text": "On the bottom we were gonna have the rubber, the rubber ones, the anti-R_S_I_ ones."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2382.05,
+   "end": 2382.82,
+   "text": "Okay, okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2383.22,
+   "end": 2385.91,
+   "text": "Sorry could you repeat that last part?"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2386.31,
+   "end": 2396.69,
+   "text": "Um, okay on we've got the flip the flip-screen, the top one is gonna be the L_C_D_ and the bottom one is gonna be the rubberised buttons."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2397.09,
+   "end": 2398.63,
+   "text": "L_C_D_ screen. Mm-hmm. Okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2399.03,
+   "end": 2400.57,
+   "text": "And for the sorry."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2400.97,
+   "end": 2402.12,
+   "text": "No, it's fine."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2402.52,
+   "end": 2406.37,
+   "text": "For the body design I think plastic, uh w yeah"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2406.77,
+   "end": 2407.15,
+   "text": "Plastic,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2407.55,
+   "end": 2409.48,
+   "text": "we could use the body,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2409.88,
+   "end": 2411.03,
+   "text": "For the inside."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2411.43,
+   "end": 2411.82,
+   "text": "okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2412.22,
+   "end": 2419.91,
+   "text": "for the inside and uh rubber as a padding or for the grip, something like to add to the design."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2420.31,
+   "end": 2420.69,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2421.09,
+   "end": 2421.48,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2421.88,
+   "end": 2422.26,
+   "text": "Mm-hmm,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2422.66,
+   "end": 2428.43,
+   "text": "so we decided on a rubber casing for the plastic shell, a variety of designs,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2428.83,
+   "end": 2429.6,
+   "text": "Plast right."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2430.0,
+   "end": 2432.69,
+   "text": "Oh I think so, I think so."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2433.09,
+   "end": 2451.55,
+   "text": "okay. and it is just uh although it's rubberised and spongy, apart from that we're just going to go for sort of vegetable and fruit colours, we're not gonna try and make it actually a vegetable or fruit design or anything else, like a shell that we discussed,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2451.95,
+   "end": 2452.72,
+   "text": "Mm no."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2453.12,
+   "end": 2454.66,
+   "text": "No I think I"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2455.06,
+   "end": 2456.98,
+   "text": "just go for the colours."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2457.38,
+   "end": 2457.77,
+   "text": "It's"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2458.17,
+   "end": 2463.55,
+   "text": "we don't wanna be tacky if we've got a kind of different shape anyway"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2463.95,
+   "end": 2464.34,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2464.74,
+   "end": 2479.35,
+   "text": "um the fact the m the material that we would be using would be cheap, so we could make it red, we could make it um psychedelic, you know, we could make it black and white zebra stripes,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2479.75,
+   "end": 2480.14,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2480.54,
+   "end": 2487.08,
+   "text": "but that's not really what we're focusing on, what we're focusing on is the m you know"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2487.48,
+   "end": 2488.25,
+   "text": "The feel."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2488.65,
+   "end": 2491.34,
+   "text": "yes. So we could just pick anything."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2491.74,
+   "end": 2514.43,
+   "text": "'Kay. Mm-hmm. Is that going to be this image I've got in my head of something kind of shaped like that, maybe about that size, made of plastic, fits into the palm of the hand, rubberised cover that's spongy. Is that really going to fit fancy look and feel which was the major thing that people wanted, market research,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2514.83,
+   "end": 2516.37,
+   "text": "Uh I it's different."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2516.77,
+   "end": 2517.92,
+   "text": "It's just different"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2518.32,
+   "end": 2519.48,
+   "text": "is that fancy?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2519.88,
+   "end": 2526.42,
+   "text": "it's just different from everything else and I mean, I'm trying to imagine um clean looking houses,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2526.82,
+   "end": 2527.2,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2527.6,
+   "end": 2529.52,
+   "text": "sort of beige and black"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2529.92,
+   "end": 2530.31,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2530.71,
+   "end": 2537.25,
+   "text": "um so you either want something that goes with that, which is what's on the market anyway,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2537.65,
+   "end": 2538.42,
+   "text": "Mm-hmm. Mm-hmm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2538.82,
+   "end": 2550.35,
+   "text": "or you want something that contrasts as you know like you get clocks now that are more of a talking point than an actual clock because they're so interesting and"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2550.75,
+   "end": 2551.14,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2551.54,
+   "end": 2566.92,
+   "text": "Mm-hmm. Yeah. I'm just kind of pushing at that to see if you came out with anything else, but I mean I totally agree. We looked at those remotes, I mean they are kind of anonymous, very similar looking things."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2567.32,
+   "end": 2567.71,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2568.11,
+   "end": 2575.03,
+   "text": "This would definitely be different enough, I just wondered if anybody could come up with something even more"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2575.43,
+   "end": 2590.05,
+   "text": "And you would just have an across the b you would have so many different options that you could do, you could have um a plain black one, you could have sparkly pink glittery ones for your little"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2590.45,
+   "end": 2610.83,
+   "text": "Well the thing is the rubberised covers are going to be s relatively cheap to produce, that if in a year's time we we get feedback from the design fairs that show something else is coming I mean it's so easy for us to just produce that and it can be slipped on,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2611.23,
+   "end": 2611.62,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2612.02,
+   "end": 2612.4,
+   "text": "Right."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2612.8,
+   "end": 2615.88,
+   "text": "And ones tha ones that have rubbery spikes"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2616.28,
+   "end": 2618.58,
+   "text": "which is another beauty of it."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2618.98,
+   "end": 2623.22,
+   "text": "y you know, you could just go so far with it,"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2623.62,
+   "end": 2625.54,
+   "text": "You can you can just"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2625.94,
+   "end": 2628.25,
+   "text": "Acupressure, you could talk of acupressures."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2628.65,
+   "end": 2629.03,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2629.43,
+   "end": 2634.05,
+   "text": "like a puffer fish, you could just, you could take it wherever,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2634.45,
+   "end": 2637.52,
+   "text": "so I think that's quite a flexible thing."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2637.92,
+   "end": 2638.31,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2638.71,
+   "end": 2647.17,
+   "text": "And finally the body should be retouchable, may maybe ch you can change the body or the case casing the case outside,"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2647.57,
+   "end": 2647.95,
+   "text": "Yes."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2648.35,
+   "end": 2655.28,
+   "text": "it should be moulded it with the design in such a way you can change it every time."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2655.68,
+   "end": 2659.14,
+   "text": "Yeah, yeah j with these rubber these rubberised ca"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2659.54,
+   "end": 2659.92,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2660.32,
+   "end": 2666.48,
+   "text": "not the actual uh plastic outside case, just the rubber thing that goes round the outside."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2666.88,
+   "end": 2668.03,
+   "text": "Okay. The rubber."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2668.43,
+   "end": 2674.2,
+   "text": "Yeah. Okay we've got five minutes, um, or that might've been up for a while."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2674.6,
+   "end": 2674.98,
+   "text": "Fine."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2675.38,
+   "end": 2678.46,
+   "text": "Mm, so can I just recap uh Sarah,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2678.86,
+   "end": 2679.25,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2679.65,
+   "end": 2703.11,
+   "text": "for the decisions that we've made, kinetic charging, the watch-type batteries, um L_C_D_ display on th the top side of the flip top, rubberised buttons on the bottom side, we're gonna use fruit and vegetable colours for the rubber cover, the case itself is plastic. That's how far we've got, what else do we have to add to our decisions here?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2703.51,
+   "end": 2706.97,
+   "text": "Fine, uh we were talking of voice recognition also"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2707.37,
+   "end": 2707.75,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2708.15,
+   "end": 2714.31,
+   "text": "because that we are not for how to look it uh remote control if it's lost."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2714.71,
+   "end": 2715.09,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2715.49,
+   "end": 2717.8,
+   "text": "So, are we looking at voice?"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2718.2,
+   "end": 2727.82,
+   "text": "Yes, it was just, there was just a cost issue with that, but it's a good idea we just need to check on the cost,"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2728.22,
+   "end": 2735.14,
+   "text": "Or maybe like uh William was suggesting in the last thing some devices you put on key chains."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2735.54,
+   "end": 2736.69,
+   "text": "is that right?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2737.09,
+   "end": 2739.02,
+   "text": "For l yeah, the whistle."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2739.42,
+   "end": 2742.11,
+   "text": "Oh yeah, yeah the whistle ones, yeah."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2742.51,
+   "end": 2748.66,
+   "text": "So we can if financially voice recognition is not feasible we could go for a whistle."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2749.06,
+   "end": 2750.98,
+   "text": "And incorporating the company logo?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2751.38,
+   "end": 2751.77,
+   "text": "Yep."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2752.17,
+   "end": 2752.94,
+   "text": "Have you"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2753.34,
+   "end": 2758.34,
+   "text": "Uh sorry I didn't mention this, but we'll be incorporating in the design."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2758.74,
+   "end": 2759.12,
+   "text": "Mm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2759.52,
+   "end": 2759.91,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2760.31,
+   "end": 2776.46,
+   "text": "'Cause I took it from the feedback you gave in the last meeting from y from y your report, it's not just a case of having a little R_R_ hidden somewhere, they do want it to be obvious that it's our product"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2776.86,
+   "end": 2778.02,
+   "text": "Well they do,"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2778.42,
+   "end": 2779.18,
+   "text": "don't they?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2779.58,
+   "end": 2782.28,
+   "text": "but I think we can you could"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2782.68,
+   "end": 2788.83,
+   "text": "Since it's the only one of its kind on the market it's obviously gonna be ours."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2789.23,
+   "end": 2794.62,
+   "text": "well it is, it is, I think you just address that with um advertising."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2795.02,
+   "end": 2795.4,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2795.8,
+   "end": 2800.42,
+   "text": "Um, you associate the name with the individual product that it is"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2800.82,
+   "end": 2801.2,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2801.6,
+   "end": 2804.29,
+   "text": "and that does the work for you."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2804.69,
+   "end": 2805.08,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2805.48,
+   "end": 2819.32,
+   "text": "Obviously it'll have a logo on it just like everything, but everything else has a logo on it. The point is that it's got to stand out somehow differently but I think it does, without that"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2819.72,
+   "end": 2820.11,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2820.51,
+   "end": 2822.82,
+   "text": "so I'm not worried about that."
+  },
+  {
+   "speaker": "Marina",
+   "start": 2823.22,
+   "end": 2837.45,
+   "text": "Okay. Did we I know at the last meeting we spoke about a beeper, I think that was you talked about a beeper for a location, have we just rejected that in favour of voice recognition then?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2837.85,
+   "end": 2839.38,
+   "text": "Depending on how i"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2839.78,
+   "end": 2842.48,
+   "text": "Yeah, depending on the expense of it."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2842.88,
+   "end": 2849.03,
+   "text": "I mean we've got this memo saying that it's something that the company's looking into, so"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2849.43,
+   "end": 2852.12,
+   "text": "And they've got in stock, so yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2852.52,
+   "end": 2866.75,
+   "text": "um that seems to make sense, but if it turns out that it's hugely expensive we'd have to cut down somewhere else, then it's worth thinking about. But I think we'll find out more about cost afterwards."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2867.15,
+   "end": 2867.54,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2867.94,
+   "end": 2871.02,
+   "text": "Right I'm going to wrap it up there."
+  },
+  {
+   "speaker": "Diego",
+   "start": 2871.42,
+   "end": 2871.8,
+   "text": "Okay."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2872.2,
+   "end": 2872.58,
+   "text": "Fine."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2872.98,
+   "end": 2876.83,
+   "text": "I got a end meeting now message on my mo"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2877.23,
+   "end": 2877.62,
+   "text": "Mm-hmm."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2878.02,
+   "end": 2878.4,
+   "text": "yeah"
+  },
+  {
+   "speaker": "Diego",
+   "start": 2878.8,
+   "end": 2879.57,
+   "text": "Did it?"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2879.97,
+   "end": 2880.35,
+   "text": "Yeah."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2880.75,
+   "end": 2881.52,
+   "text": "so. Um"
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2881.92,
+   "end": 2883.46,
+   "text": "Again a questionnaire huh?"
+  },
+  {
+   "speaker": "Paula",
+   "start": 2883.86,
+   "end": 2888.86,
+   "text": "so I think we've probably got it says, closing we have forty minutes"
+  },
+  {
+   "speaker": "Marina",
+   "start": 2889.26,
+   "end": 2891.18,
+   "text": "You got to go through."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2891.58,
+   "end": 2896.97,
+   "text": "so I um think we've probably got about that time before we come back."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2897.37,
+   "end": 2905.83,
+   "text": "It's either that or we only had forty minutes to discuss what we just discussed and don't know how long that took."
+  },
+  {
+   "speaker": "Ulisses",
+   "start": 2906.23,
+   "end": 2910.46,
+   "text": "I think we are pretty going in a clear direction now."
+  },
+  {
+   "speaker": "Paula",
+   "start": 2910.86,
+   "end": 2912.4,
+   "text": "Is everyone happy? Okay."
+  }
+ ]
+}

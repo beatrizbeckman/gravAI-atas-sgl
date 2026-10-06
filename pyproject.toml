@@ -1,22 +1,59 @@
 [project]
 name = "gravai"
 version = "0.1.0"
-description = "Add your description here"
+description = "Records online meetings per participant, transcribes them with whisper and generates meeting minutes with an LLM"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi[standard]>=0.135.1",
-    "groq>=0.7.0",
-    "httpx>=0.28.1",
-    "playwright",
-    "pyaudio>=0.2.14",
-    "pytest>=9.0.2",
-    "websockets>=16.0",
-    "opuslib>=3.0.1",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "python-dotenv>=1.0",
     "requests>=2.34.2",
-    "sqlalchemy>=2.0",
-    "psycopg2-binary>=2.9",  # PostgreSQL adapter
-    "alembic>=1.13",  # Database migrations
-    "tiktoken>=0.14.0",
+    "websockets>=16.0",
+    "playwright",
     "python-docx>=1.2.0",
+    # /analyze_transcript (legacy debate analysis via Groq) and LLM_PROVIDER=groq
+    "groq>=0.7.0",
+    "tiktoken>=0.14.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "httpx>=0.28.1",  # fastapi.testclient
+    "ruff>=0.16.10",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["tmp", "experiments/results", "datasets/raw", ".venv"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # bugbear
+    "SIM",  # simplify
+    "C4",   # comprehensions
+    "RUF",  # ruff-specific
+]
+ignore = [
+    "E501",   # line length: the formatter wraps code; long strings (prompts, messages) are left as they are
+    "RUF001", "RUF002", "RUF003",  # pt-BR text legitimately uses characters that look ambiguous (·, –, …)
+    "B008",   # fastapi dependency defaults (Query(...)) in function signatures
+    "SIM108", # ternaries are not always clearer than if/else
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011", "SIM117"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff.format]
+quote-style = "double"
