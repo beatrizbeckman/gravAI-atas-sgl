@@ -55,6 +55,7 @@ ROOT = os.path.dirname(HERE)
 # provider -> (base url, name of the .env variable with the key)
 PROVIDERS = {
     "groq": ("https://api.groq.com/openai/v1", "GROQ"),
+    "openrouter": ("https://openrouter.ai/api/v1", "OPEN_ROUTER"),
     "deepinfra": ("https://api.deepinfra.com/v1/openai", "DEEP_INFRA"),
     "openai": ("https://api.openai.com/v1", "OPENAI_API_KEY"),
 }
@@ -331,7 +332,11 @@ def main():
         help="transcript JSONs (default: every datasets/reunioes/*/transcricao.json)",
     )
     parser.add_argument("--models", nargs="*", default=DEFAULT_MODELS, help="provider:model (default: %(default)s)")
-    parser.add_argument("--out", default=os.path.join(HERE, "results", datetime.now().strftime("%Y-%m-%d_%H%M")))
+    parser.add_argument(
+        "--out",
+        default=None,
+        help="run folder (default: experiments/results/<provider of the first model>/<date_time>)",
+    )
     parser.add_argument("--timeout", type=int, default=180, help="seconds per LLM request")
     parser.add_argument(
         "--max-chars",
@@ -347,6 +352,9 @@ def main():
     )
     args = parser.parse_args()
     extra = json.loads(args.extra) if args.extra else None
+    if args.out is None:
+        first_provider = args.models[0].split(":", 1)[0]
+        args.out = os.path.join(HERE, "results", first_provider, datetime.now().strftime("%Y-%m-%d_%H%M"))
 
     for m in args.models:
         provider = m.split(":", 1)[0]

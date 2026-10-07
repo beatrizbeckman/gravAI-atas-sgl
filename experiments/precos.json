@@ -1,5 +1,43 @@
 {
   "_comment": "US$ por milhao de tokens, conferidos nas paginas de preco dos provedores em 06/10/2026. Modelo ausente => custo n/d. Atualize ao adicionar modelos.",
-  "openai/gpt-oss-20b": {"input_per_m": 0.075, "output_per_m": 0.30, "provider": "groq"},
-  "openai/gpt-oss-120b": {"input_per_m": 0.15, "output_per_m": 0.60, "provider": "groq"}
+  "openai/gpt-oss-20b": {
+    "input_per_m": 0.075,
+    "output_per_m": 0.3,
+    "provider": "groq"
+  },
+  "openai/gpt-oss-120b": {
+    "input_per_m": 0.15,
+    "output_per_m": 0.6,
+    "provider": "groq"
+  },
+  "google/gemma-4-26b-a4b-it:free": {
+    "input_per_m": 0.0,
+    "output_per_m": 0.0,
+    "provider": "openrouter",
+    "_note": "plano gratuito do OpenRouter em 07/10/2026"
+  },
+  "liquid/lfm-2.5-2.6b:free": {
+    "input_per_m": 0.0,
+    "output_per_m": 0.0,
+    "provider": "openrouter",
+    "_note": "plano gratuito do OpenRouter em 07/10/2026"
+  },
+  "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": {
+    "input_per_m": 0.0,
+    "output_per_m": 0.0,
+    "provider": "openrouter",
+    "_note": "plano gratuito do OpenRouter em 07/10/2026"
+  },
+  "google/gemma-4-31b-it:free": {
+    "input_per_m": 0.0,
+    "output_per_m": 0.0,
+    "provider": "openrouter",
+    "_note": "plano gratuito do OpenRouter em 07/10/2026"
+  },
+  "nvidia/nemotron-3-super-120b-a12b:free": {
+    "input_per_m": 0.0,
+    "output_per_m": 0.0,
+    "provider": "openrouter",
+    "_note": "plano gratuito do OpenRouter em 07/10/2026"
+  }
 }

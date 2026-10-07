@@ -179,6 +179,13 @@ def openai_chat(
     _raise_for_provider_error(response, model, base_url)
 
     body = response.json()
+    if isinstance(body, dict) and "error" in body and "choices" not in body:
+        # OpenRouter answers 200 with the upstream failure in the body, e.g.
+        # {"error": {"message": "Upstream error ...", "code": 502}}. Surface the code
+        # so a transient one (5xx/429) is retried like a real HTTP error.
+        error = body["error"] if isinstance(body["error"], dict) else {"message": str(body["error"])}
+        code = error.get("code") or response.status_code
+        raise RuntimeError(f"The LLM provider returned an error ({code}) for model '{model}': {error.get('message')}")
     try:
         choice = body["choices"][0]
         content = choice["message"]["content"] or ""
@@ -201,8 +208,12 @@ RATE_LIMIT_WAITS = (20, 40, 60, 90, 120)
 
 
 def is_rate_limit_error(exc: Exception) -> bool:
-    """429, or the 413 Groq answers when the per-minute budget is nearly used up."""
-    return "429" in str(exc) or "413" in str(exc)
+    """
+    Worth waiting and trying again: 429, the 413 Groq answers when the per-minute
+    budget is nearly used up, and the 5xx a saturated free upstream returns.
+    """
+    text = str(exc)
+    return any(f"({code})" in text or f"error {code}" in text for code in (429, 413, 500, 502, 503, 504))
 
 
 def openai_chat_retrying(

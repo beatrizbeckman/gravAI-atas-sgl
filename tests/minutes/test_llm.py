@@ -190,3 +190,45 @@ def test_openai_chat_optional_max_tokens_and_extra(monkeypatch):
 
     llm.openai_chat("s", "u", **CFG, max_tokens=8000, extra={"reasoning_effort": "low"})
     assert sent["max_tokens"] == 8000 and sent["reasoning_effort"] == "low"
+
+
+@pytest.mark.parametrize(
+    "status, retried",
+    [(429, True), (413, True), (500, True), (503, True), (401, False), (404, False)],
+)
+def test_openai_chat_retrying_waits_only_on_transient_errors(monkeypatch, status, retried):
+    answers = iter([FakeResponse(status, text="busy"), FakeResponse(200, OPENAI_OK)])
+    monkeypatch.setattr(requests, "post", lambda *a, **k: next(answers))
+    waited = []
+    monkeypatch.setattr(llm.time, "sleep", waited.append)
+
+    if retried:
+        reply = llm.openai_chat_retrying("s", "u", waits=(1,), log=lambda m: None, **CFG)
+        assert reply.content == '{"resumo": "ok"}'
+        assert waited == [1]
+    else:
+        with pytest.raises(RuntimeError):
+            llm.openai_chat_retrying("s", "u", waits=(1,), log=lambda m: None, **CFG)
+        assert waited == []
+
+
+def test_openai_chat_retrying_retries_upstream_error_inside_200_body(monkeypatch):
+    # OpenRouter style: HTTP 200 whose body carries the upstream failure.
+    upstream = {"id": "gen-1", "error": {"message": "Upstream error: ResourceExhausted", "code": 502}}
+    answers = iter([FakeResponse(200, upstream), FakeResponse(200, OPENAI_OK)])
+    monkeypatch.setattr(requests, "post", lambda *a, **k: next(answers))
+    waited = []
+    monkeypatch.setattr(llm.time, "sleep", waited.append)
+
+    reply = llm.openai_chat_retrying("s", "u", waits=(1,), log=lambda m: None, **CFG)
+
+    assert reply.content == '{"resumo": "ok"}'
+    assert waited == [1]
+
+
+def test_openai_chat_reports_non_transient_error_inside_200_body(monkeypatch):
+    body = {"error": {"message": "Invalid model", "code": 400}}
+    monkeypatch.setattr(requests, "post", lambda *a, **k: FakeResponse(200, body))
+
+    with pytest.raises(RuntimeError, match=r"\(400\).*Invalid model"):
+        llm.openai_chat("s", "u", **CFG)
