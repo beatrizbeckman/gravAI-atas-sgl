@@ -35,8 +35,9 @@ venv/
 !.vscode/launch.json
 .DS_Store
 Thumbs.db
-# running work log, kept out of the repo on purpose
+# running work log and LLM comparison notes, kept out of the repo on purpose
 DIARIO_PARTE1.md
+LLMS.md
 # dataset build caches (translation chunks, raw downloads)
 datasets/raw/
 datasets/reunioes/*/traducao_cache.json
