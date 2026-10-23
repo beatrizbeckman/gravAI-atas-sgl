@@ -39,6 +39,7 @@ class MinutesRequest(BaseModel):
 
     template: str
     header: dict[str, Any]
+    project_id: str | None = Field(default=None, min_length=1, max_length=100)
     participants: list[str] | None = None
     custom: CustomSpec | None = None
 
@@ -131,7 +132,7 @@ def list_templates() -> dict:
 @router.post("/from-transcript", status_code=202)
 def from_transcript(body: FromTranscriptRequest, request: Request) -> dict:
     params = {**body.job_params(), "utterances": [u.model_dump() for u in body.utterances]}
-    job = _jobs(request).enqueue("from_transcript", body.template, body.header, params)
+    job = _jobs(request).enqueue("from_transcript", body.template, body.header, params, body.project_id)
     return job.public()
 
 
@@ -146,7 +147,7 @@ def from_recording(body: FromRecordingRequest, request: Request) -> dict:
             detail=f"no transcription in {body.tracks_dir}: expected {SESSION_TRANSCRIPTION_FILE} or track_*_transcription_segments.json + vad_timeline.json",
         )
     params = {**body.job_params(), "tracks_dir": tracks_dir}
-    job = _jobs(request).enqueue("from_recording", body.template, body.header, params)
+    job = _jobs(request).enqueue("from_recording", body.template, body.header, params, body.project_id)
     return job.public()
 
 
@@ -166,7 +167,7 @@ def record_and_generate(body: RecordAndGenerateRequest, request: Request) -> dic
     params = {**body.job_params(), "meeting_url": body.meeting_url}
     if body.max_recording_seconds:
         params["max_recording_seconds"] = body.max_recording_seconds
-    job = runtime.enqueue("record_and_generate", body.template, body.header, params)
+    job = runtime.enqueue("record_and_generate", body.template, body.header, params, body.project_id)
     return job.public()
 
 
@@ -175,8 +176,10 @@ def list_jobs(
     request: Request,
     limit: int = Query(20, ge=1, le=100),
     status: str | None = Query(None, pattern="^(queued|running|done|failed)$"),
+    project_id: str | None = Query(None, min_length=1, max_length=100),
 ) -> dict:
-    return {"jobs": [j.public() for j in _jobs(request).store.list(limit=limit, status=status)]}
+    jobs = _jobs(request).store.list(limit=limit, status=status, project_id=project_id)
+    return {"jobs": [j.public() for j in jobs]}
 
 
 @router.get("/jobs/{job_id}")

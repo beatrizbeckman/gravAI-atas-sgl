@@ -29,7 +29,7 @@ class JobsRuntime:
         self.worker.stop(timeout=5)
         self.store.close()
 
-    def enqueue(self, kind: str, template: str, header: dict, params: dict):
-        job = self.store.create(kind, template, header, params)
+    def enqueue(self, kind: str, template: str, header: dict, params: dict, project_id: str | None = None):
+        job = self.store.create(kind, template, header, params, project_id)
         self.worker.submit(job.id)
         return job

@@ -1,3 +1,5 @@
+import sqlite3
+
 import pytest
 
 from gravai.jobs.store import JobStore
@@ -105,3 +107,43 @@ def test_jobs_survive_reopening_the_file(tmp_path):
     second = JobStore(path)
     assert second.get(job.id).header == {"projeto": "Persistente"}
     second.close()
+
+
+def test_list_filters_by_project_alone_and_with_status(store):
+    a = store.create("from_transcript", "dell", {}, {}, project_id="sgl-1")
+    b = store.create("from_transcript", "dell", {}, {}, project_id="sgl-2")
+    c = store.create("from_transcript", "dell", {}, {}, project_id="sgl-1")
+    store.create("from_transcript", "dell", {}, {})  # no project
+    store.update(a.id, status="done")
+
+    assert store.get(b.id).project_id == "sgl-2"
+    assert {j.id for j in store.list(project_id="sgl-1")} == {a.id, c.id}
+    assert [j.id for j in store.list(project_id="sgl-1", status="done")] == [a.id]
+    assert store.list(project_id="nobody") == []
+    assert len(store.list()) == 4
+
+
+def test_database_from_before_project_id_is_migrated(tmp_path):
+    # The table as it was created by the first version of the API, already holding a job.
+    path = str(tmp_path / "old.sqlite3")
+    conn = sqlite3.connect(path)
+    conn.executescript(
+        """
+        CREATE TABLE jobs (
+            id TEXT PRIMARY KEY, kind TEXT NOT NULL, status TEXT NOT NULL, stage TEXT,
+            template TEXT NOT NULL, header TEXT NOT NULL, params TEXT NOT NULL, result TEXT,
+            error TEXT, minutes TEXT, participants TEXT, docx_path TEXT,
+            created_at TEXT NOT NULL, updated_at TEXT NOT NULL, finished_at TEXT
+        );
+        INSERT INTO jobs (id, kind, status, template, header, params, created_at, updated_at)
+        VALUES ('old', 'from_transcript', 'done', 'dell', '{}', '{}', '2026-10-01T00:00:00Z', '2026-10-01T00:00:00Z');
+        """
+    )
+    conn.close()
+
+    store = JobStore(path)
+    assert store.get("old").project_id is None
+    new = store.create("from_transcript", "dell", {}, {}, project_id="sgl-1")
+    assert [j.id for j in store.list(project_id="sgl-1")] == [new.id]
+    store.close()
+    JobStore(path).close()  # opening an already migrated file again is a no-op

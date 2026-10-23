@@ -42,6 +42,8 @@ class Job(BaseModel):
     stage: JobStage | None = None
     template: str
     header: dict
+    # Set by the client (the SGL) to list the minutes of one project; the API only stores and filters it.
+    project_id: str | None = None
     created_at: str
     updated_at: str
     finished_at: str | None = None
@@ -60,6 +62,7 @@ class Job(BaseModel):
         "stage",
         "template",
         "header",
+        "project_id",
         "created_at",
         "updated_at",
         "finished_at",

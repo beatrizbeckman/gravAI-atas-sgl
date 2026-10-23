@@ -85,6 +85,7 @@ def test_from_transcript_full_cycle(client, runtime, dell_body, speakers):
         "stage",
         "template",
         "header",
+        "project_id",
         "created_at",
         "updated_at",
         "finished_at",
@@ -242,6 +243,21 @@ def test_jobs_listing_and_404(client, runtime, dell_body):
     assert client.get("/minutes/jobs?status=bogus").status_code == 422
     assert client.get("/minutes/jobs/does-not-exist").status_code == 404
     assert client.get("/minutes/jobs/does-not-exist/download").status_code == 404
+
+
+def test_jobs_are_listed_per_project(client, runtime, dell_body):
+    first = client.post("/minutes/from-transcript", json={**dell_body, "project_id": "sgl-7"}).json()
+    client.post("/minutes/from-transcript", json={**dell_body, "project_id": "sgl-8"})
+    client.post("/minutes/from-transcript", json=dell_body)  # clients that do not send it keep working
+
+    assert first["project_id"] == "sgl-7"
+    runtime.worker.run(first["id"])
+    assert client.get(f"/minutes/jobs/{first['id']}").json()["project_id"] == "sgl-7"
+    listed = client.get("/minutes/jobs?project_id=sgl-7").json()["jobs"]
+    assert [j["id"] for j in listed] == [first["id"]]
+    assert client.get("/minutes/jobs?project_id=sgl-7&status=queued").json()["jobs"] == []
+    assert len(client.get("/minutes/jobs").json()["jobs"]) == 3
+    assert client.post("/minutes/from-transcript", json={**dell_body, "project_id": ""}).status_code == 422
 
 
 def test_failed_job_is_reported_with_its_code(client, runtime, dell_body, monkeypatch):
