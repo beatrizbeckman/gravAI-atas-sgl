@@ -58,7 +58,7 @@ class Settings(BaseSettings):
 
     # Minutes generation
     LLM_PROVIDER: str = Field(
-        "ollama",
+        "openai_compatible",
         description=(
             "Who generates the minutes: 'openai_compatible' (online API in the OpenAI format: DeepInfra, Groq, OpenAI...), "
             "'ollama' (local), 'groq' (legacy), or 'fake' (placeholder text, no LLM; for demos and tests)"
@@ -75,10 +75,11 @@ class Settings(BaseSettings):
         alias="OLLAMA_NUM_CTX",
     )
     LLM_BASE_URL: str = Field(
-        "https://api.deepinfra.com/v1/openai",
+        "https://api.groq.com/openai/v1",
         description=(
             "Base URL of the online provider when LLM_PROVIDER='openai_compatible' "
-            "(DeepInfra: https://api.deepinfra.com/v1/openai, Groq: https://api.groq.com/openai/v1)"
+            "(Groq: https://api.groq.com/openai/v1, OpenRouter: https://openrouter.ai/api/v1, "
+            "DeepInfra: https://api.deepinfra.com/v1/openai)"
         ),
         alias="LLM_BASE_URL",
     )
@@ -86,7 +87,8 @@ class Settings(BaseSettings):
         "", description="API key of the online provider; sent as 'Authorization: Bearer <key>'", alias="LLM_API_KEY"
     )
     LLM_MODEL: str = Field(
-        "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        # Only model with 5/5 minutes in the experiments on the Groq free tier (LLMS.md)
+        "openai/gpt-oss-120b",
         description="Model id at the online provider, in the provider's own naming",
         alias="LLM_MODEL",
     )
