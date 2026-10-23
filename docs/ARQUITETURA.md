@@ -332,15 +332,17 @@ Essa é a interface que o SGL, ou qualquer outro cliente, chama. O contrato comp
 | Endpoint | O que recebe | O que faz |
 |---|---|---|
 | `GET /minutes/templates` | nada | lista os templates com os campos de cabeçalho, para montar o formulário |
-| `POST /minutes/from-transcript` | template, header, utterances | cria job `from_transcript`, devolve 202 |
+| `POST /minutes/from-transcript` | template, header, utterances, project_id (opcional) | cria job `from_transcript`, devolve 202 |
 | `POST /minutes/from-recording` | template, header, tracks_dir | confere que a pasta tem transcrição, cria job |
 | `POST /minutes/record-and-generate` | template, header, meeting_url | confere que é link do Teams e que não há gravação em curso, cria job |
-| `GET /minutes/jobs` | limit, status | últimos jobs |
+| `GET /minutes/jobs` | limit, status, project_id | últimos jobs, opcionalmente só os de um projeto do SGL |
 | `GET /minutes/jobs/{id}` | id | o objeto de job, para polling |
 | `GET /minutes/jobs/{id}/result` | id | a ata em JSON, antes de virar docx. Útil para pré-visualizar e para avaliar qualidade |
 | `GET /minutes/jobs/{id}/download` | id | o `.docx` |
 
 A validação acontece **antes** de criar o job, com Pydantic: template desconhecido, cabeçalho sem campo obrigatório, lista de falas vazia ou `custom` mal formado dão 422 na hora. Erros durante a execução nunca viram 500, viram `status: failed` com um `error.code`.
+
+Desde a versão 1.1 do contrato (23/10/2026), os três `POST` aceitam `project_id`, que o job guarda para o SGL listar as atas de cada projeto, e a API aceita chamadas do navegador vindas das origens em `CORS_ORIGINS` (`gravai/api/cors.py`). O modelo personalizado de cada projeto fica no SGL e vai no `custom` de cada requisição.
 
 ### `gravai/api/demo.py` e `gravai/api/static/demo.html` — o cliente de referência
 

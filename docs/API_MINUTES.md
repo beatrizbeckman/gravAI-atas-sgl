@@ -2,13 +2,18 @@
 
 Contrato HTTP para gerar atas de reunião (`.docx`) a partir de transcrições ou gravações feitas pelo GravAI. Este documento é a referência para qualquer cliente da API: a página de demonstração do próprio GravAI, o SGL ou um script.
 
-Versão do contrato: **1.0** (01/10/2026). Mudanças incompatíveis sobem a versão. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
+Versão do contrato: **1.1** (23/10/2026). Mudanças incompatíveis sobem a versão principal (2.0); acréscimos que não quebram clientes antigos sobem a secundária. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
+
+| Versão | O que mudou |
+|---|---|
+| 1.0 (01/10/2026) | Primeira versão: templates, três formas de criar job, acompanhamento e download. |
+| 1.1 (23/10/2026) | `project_id` opcional nos jobs e filtro `GET /minutes/jobs?project_id=` (3, 3.5, 4.1, 4.5); CORS configurável para clientes no navegador (7); LLM online como padrão (Groq, `openai/gpt-oss-120b`). Nada que funcionava na 1.0 mudou. |
 
 ---
 
 ## 1. Visão geral
 
-Gerar uma ata é lento (de dezenas de segundos a alguns minutos com um LLM local; horas quando inclui gravar a reunião). Por isso a API é **assíncrona**: cada `POST` cria um *job*, devolve o `job_id` imediatamente e o cliente consulta o status até ele terminar.
+Gerar uma ata é lento (de alguns segundos a vários minutos, conforme o LLM e os limites do provedor; horas quando inclui gravar a reunião). Por isso a API é **assíncrona**: cada `POST` cria um *job*, devolve o `job_id` imediatamente e o cliente consulta o status até ele terminar.
 
 ```
 cliente ──POST /minutes/from-transcript──► API  (202 Accepted, {"id": "..."} )
@@ -85,6 +90,7 @@ Os três `POST` compartilham o bloco de **especificação da ata**:
 {
   "template": "dell",
   "header": {"projeto": "Portal de Suporte", "numero": "007", "data": "29/09/2026", "horario": "14:00 – 14:45"},
+  "project_id": "sgl-42",
   "participants": ["Ana", "Bruno", "Carla", "Diego"],
   "custom": null
 }
@@ -94,6 +100,7 @@ Os três `POST` compartilham o bloco de **especificação da ata**:
 |---|---|---|---|
 | `template` | string | sim | `dell`, `professores`, `daily` ou `custom`. |
 | `header` | objeto | sim | Chaves conforme `GET /minutes/templates`. Faltando campo obrigatório → `422`. Chaves desconhecidas são ignoradas. |
+| `project_id` | string (1 a 100 caracteres) | não | Identificador do projeto no sistema cliente (no SGL, o id do projeto). A API não interpreta: só guarda no job e permite listar por ele (4.5). Omitido → `null`. Ver 3.5. |
 | `participants` | lista de strings | não | Nomes a listar na ata. Quando omitido, a API usa os falantes da transcrição. Quando informado, substitui a lista da transcrição **só na seção de participantes**; os nomes dentro do texto continuam sendo os da transcrição. |
 | `custom` | objeto | só quando `template = "custom"` | Ver 3.4. |
 
@@ -221,6 +228,23 @@ O cliente descreve a ata em vez de escolher um modelo fixo. Duas formas, exclude
 
 Mandar `instructions` e `sections` juntos, ou nenhum dos dois → `422`.
 
+### 3.5 Uso por projeto (SGL)
+
+No SGL cada projeto tem as suas atas e pode ter o seu modelo de ata. A divisão de responsabilidades:
+
+| Quem | Guarda / faz |
+|---|---|
+| **SGL** | Cadastro dos projetos, quem pode ver o quê, e o modelo de ata escolhido por projeto: o id de um template fixo (`dell`, `professores`, `daily`) ou o objeto `custom` completo (3.4), salvo no banco do SGL. |
+| **API** | Gera a ata, guarda o job com o `project_id` recebido e lista os jobs por projeto. Não guarda projetos nem modelos personalizados. |
+
+Fluxo:
+
+1. Usuário abre o projeto `sgl-42` no SGL. O SGL lista as atas dele com `GET /minutes/jobs?project_id=sgl-42&status=done`.
+2. Usuário pede uma ata nova. O SGL monta o corpo com o template do projeto (ou o `custom` salvo), o cabeçalho e `"project_id": "sgl-42"`, e chama um dos `POST` de 3.1 a 3.3.
+3. O SGL acompanha o job (4.2) e oferece o download (4.3) quando terminar.
+
+O modelo personalizado vai **inteiro em cada requisição**: assim a API não tem uma segunda cópia que possa ficar diferente da que está no SGL, e mudar o modelo de um projeto não exige nenhuma chamada extra.
+
 ---
 
 ## 4. Acompanhar jobs
@@ -237,6 +261,7 @@ Todas as respostas que envolvem job têm este formato:
   "stage": null,
   "template": "dell",
   "header": {"projeto": "Portal de Suporte", "numero": "007", "data": "29/09/2026", "horario": "14:00 – 14:45"},
+  "project_id": "sgl-42",
   "created_at": "2026-10-01T14:03:12Z",
   "updated_at": "2026-10-01T14:04:40Z",
   "finished_at": "2026-10-01T14:04:40Z",
@@ -246,7 +271,7 @@ Todas as respostas que envolvem job têm este formato:
     "participants": ["Ana", "Bruno", "Carla", "Diego"],
     "utterances": 27,
     "parts": 1,
-    "llm_model": "qwen2.5:7b-instruct",
+    "llm_model": "openai/gpt-oss-120b",
     "generation_seconds": 84.3
   },
   "error": null
@@ -259,16 +284,16 @@ Todas as respostas que envolvem job têm este formato:
 | `kind` | `from_transcript`, `from_recording` ou `record_and_generate`. |
 | `status` | `queued` (na fila), `running` (executando), `done` (ata pronta), `failed` (erro; ver `error`). |
 | `stage` | Só quando `running`: `recording`, `transcribing`, `normalizing`, `generating` (LLM), `rendering` (docx). `null` nos outros status. |
-| `template`, `header` | Ecos da requisição. |
+| `template`, `header`, `project_id` | Ecos da requisição (`project_id` é `null` quando não foi enviado). |
 | `created_at`, `updated_at`, `finished_at` | ISO 8601 em UTC. `finished_at` é `null` até `done`/`failed`. |
-| `result` | `null` até `done`. `parts` é em quantas partes a transcrição foi dividida para o LLM (1 = coube de uma vez). |
+| `result` | `null` até `done`. `parts` é em quantas partes a transcrição foi dividida para o LLM (1 = coube de uma vez; partes de cerca de 24 mil caracteres). |
 | `error` | `null` exceto em `failed`. Objeto `{"code": "...", "message": "..."}`. |
 
 Códigos de `error.code`:
 
 | `code` | Significado | O que o cliente faz |
 |---|---|---|
-| `llm_unreachable` | Servidor Ollama fora do ar ou modelo não baixado. | Avisar o operador; tentar de novo mais tarde. |
+| `llm_unreachable` | O LLM não respondeu ou recusou a chamada: provedor online fora do ar, chave ausente ou inválida, sem saldo (402), limite de uso (429) mesmo após as novas tentativas, tempo esgotado; ou servidor Ollama fora do ar / modelo não baixado. `message` traz o motivo. | Avisar o operador; tentar de novo mais tarde. |
 | `llm_invalid_response` | O modelo não devolveu JSON válido ou deixou seção obrigatória vazia, mesmo após as tentativas. | Tentar de novo; se persistir, revisar a transcrição (muito curta ou sem conteúdo). |
 | `empty_transcript` | Após a normalização não sobrou nenhuma fala. | Checar a gravação/transcrição. |
 | `transcription_failed` | Whisper falhou ou não respondeu. | Avisar o operador. |
@@ -281,7 +306,7 @@ Devolve o objeto de job. `404` se o id não existe.
 
 **Polling recomendado:** a cada **5 s** para `from_transcript` e `from_recording`; a cada **30 s** para `record_and_generate` (que dura a reunião inteira). Parar quando `status` for `done` ou `failed`.
 
-Duração típica (LLM local 7B em GPU): 30 s a 3 min para uma reunião de 1 h. Em CPU, multiplique por 10.
+Duração típica com o padrão (Groq gratuito, `openai/gpt-oss-120b`): de 2 a 11 min para as reuniões do dataset, quase tudo esperando o limite de uso por minuto do provedor (a geração em si leva de 8 a 52 s). Com LLM local 7B em GPU, 30 s a 3 min para 1 h de reunião; em CPU, multiplique por 10.
 
 ### 4.3 `GET /minutes/jobs/{id}/download`
 
@@ -318,7 +343,15 @@ Formato de cada valor conforme o `type` da seção: `paragraph` → string; `bul
 
 ### 4.5 `GET /minutes/jobs`
 
-Lista os jobs mais recentes (para a página de demonstração). Query: `limit` (padrão 20, máximo 100), `status` (filtro opcional).
+Lista os jobs mais recentes, do mais novo para o mais antigo. Query, todos opcionais e combináveis:
+
+| Parâmetro | Descrição |
+|---|---|
+| `limit` | Padrão 20, máximo 100. |
+| `status` | `queued`, `running`, `done` ou `failed`. |
+| `project_id` | Só os jobs criados com esse `project_id` (3.5). Jobs sem projeto só aparecem na listagem sem esse filtro. |
+
+Exemplo: `GET /minutes/jobs?project_id=sgl-42&status=done&limit=50`.
 
 ```json
 {"jobs": [{"...objeto de job..."}, {"..."}]}
@@ -341,7 +374,7 @@ Em `422` o `detail` é a lista de erros de validação do FastAPI (campo, mensag
 | `400` | `meeting_url` não é do Teams. |
 | `404` | Job inexistente; `tracks_dir` inexistente. |
 | `409` | Já há uma gravação em andamento; download/result de job não concluído. |
-| `422` | Corpo inválido: template desconhecido, campo obrigatório do cabeçalho ausente, `utterances` vazia, `custom` mal formado, pasta sem transcrição. |
+| `422` | Corpo ou query inválidos: template desconhecido, campo obrigatório do cabeçalho ausente, `utterances` vazia, `custom` mal formado, `project_id` vazio ou com mais de 100 caracteres, pasta sem transcrição. |
 | `500` | Erro inesperado ao **criar** o job (erros durante a execução vão para `status: failed`, nunca para `500`). |
 
 ---
@@ -364,7 +397,13 @@ curl http://localhost:8000/minutes/jobs/6f1c2a0e-3b7d-4a7e-9f2a-0c1d2e3f4a5b
 # 4. Baixar quando status = done
 curl -OJ http://localhost:8000/minutes/jobs/6f1c2a0e-3b7d-4a7e-9f2a-0c1d2e3f4a5b/download
 
-# 5. Gravação já transcrita
+# 5. Atas de um projeto (SGL): criar com project_id e listar só as dele
+curl -X POST http://localhost:8000/minutes/from-transcript \
+  -H "Content-Type: application/json" \
+  -d '{"project_id":"sgl-42","template":"daily","header":{"projeto":"GravAI","data":"23/10/2026 · 09:00 – 09:15"},"utterances":[{"speaker":"Ana","start":0,"end":5,"text":"Ontem terminei o filtro por projeto."}]}'
+curl "http://localhost:8000/minutes/jobs?project_id=sgl-42"
+
+# 6. Gravação já transcrita
 curl -X POST http://localhost:8000/minutes/from-recording \
   -H "Content-Type: application/json" \
   -d '{"template":"daily","header":{"projeto":"GravAI","data":"01/10/2026 · 09:00 – 09:15"},"tracks_dir":"./tmp/5d3136ef-0d7f-4664-a8d8-28ecc6b4929e_tracks"}'
@@ -390,11 +429,14 @@ async function waitForJob(id) {
 
 | Variável (`.env`) | Efeito visível |
 |---|---|
-| `LLM_PROVIDER`, `OLLAMA_HOST`, `OLLAMA_MODEL` | Qual LLM gera a ata; aparece em `result.llm_model`. |
-| `OLLAMA_NUM_CTX` | Tamanho de contexto. Transcrições maiores que o contexto são divididas (`result.parts > 1`). |
+| `LLM_PROVIDER` | Quem gera a ata: `openai_compatible` (padrão, API online no formato da OpenAI), `ollama` (local) ou `fake` (texto marcador, sem LLM; só para demonstrar a estrutura). |
+| `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL` | Provedor e modelo online. Padrão: Groq (`https://api.groq.com/openai/v1`) com `openai/gpt-oss-120b`. O modelo aparece em `result.llm_model`. |
+| `LLM_MAX_TOKENS` | Teto da resposta do provedor online (padrão 8000; modelos que raciocinam gastam parte dele antes de responder). |
+| `OLLAMA_HOST`, `OLLAMA_MODEL`, `OLLAMA_NUM_CTX` | Servidor, modelo e contexto quando `LLM_PROVIDER=ollama`. |
 | `LLM_TIMEOUT_SECONDS` | Tempo máximo de uma chamada ao LLM; estourar vira `failed` com `llm_unreachable`. |
 | `MAX_RECORDING_SECONDS` | Teto padrão de `record-and-generate`. |
 | `SAVE_DIR` | Onde as gravações e os `.docx` são salvos. |
+| `CORS_ORIGINS` | Origens web autorizadas a chamar a API **pelo navegador**, separadas por vírgula (ex.: `http://sgl.lab,http://localhost:8080`). Vazio (padrão): só as páginas servidas pela própria API, como `/demo`. `*` não é aceito. Só é necessário quando o JavaScript das páginas do SGL chama a API direto; se o SGL chama pelo servidor (PHP), não. Liberados: `GET` e `POST`, cabeçalho `Content-Type`; o `Content-Disposition` do download fica legível para o navegador. |
 
 ---
 
@@ -402,6 +444,6 @@ async function waitForJob(id) {
 
 - Jobs e seus arquivos persistem em SQLite e em disco; sobrevivem a reinício da API. Jobs que estavam `running` quando a API caiu voltam como `failed` (`internal`, "interrupted by restart").
 - Jobs são executados **um por vez** na ordem de criação (fila única). Um `record_and_generate` em andamento não bloqueia a criação de outros jobs, mas eles só rodam depois dele.
-- Não há autenticação nesta versão. A API deve ficar em rede interna.
+- Não há autenticação nesta versão. A API deve ficar em rede interna. O `project_id` organiza as atas, mas não protege: quem alcança a API pode listar qualquer projeto. O controle de acesso por projeto fica no SGL.
 - Os nomes dos participantes vêm do nome de exibição no Teams. Fala de duas pessoas no mesmo instante pode ser atribuída à pessoa errada; identificação por voz é a Parte 2 do projeto.
 - O LLM é instruído a não inventar conteúdo, mas pode errar. A ata deve ser revisada por uma pessoa antes de ser distribuída; o campo "Ata gerada automaticamente pelo GravAI" no rodapé existe para isso.
