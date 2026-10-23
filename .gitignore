@@ -43,3 +43,5 @@ datasets/raw/
 datasets/reunioes/*/traducao_cache.json
 # experiment runs (prompts, raw replies, docx); commit a run on purpose with git add -f
 experiments/results/
+
+*.md
