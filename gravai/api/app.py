@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 
+from gravai.api.cors import add_cors
 from gravai.api.demo import router as demo_router
 from gravai.api.minutes import router as minutes_router
 from gravai.config import Settings
@@ -27,6 +28,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(description="record_bot", lifespan=lifespan)
+add_cors(app, Settings().CORS_ORIGINS)
 app.include_router(minutes_router)
 app.include_router(demo_router)
 
