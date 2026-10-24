@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     stage         TEXT,
     template      TEXT NOT NULL,
     header        TEXT NOT NULL,
+    project_id    TEXT,
     params        TEXT NOT NULL,
     result        TEXT,
     error         TEXT,
@@ -38,6 +39,10 @@ CREATE INDEX IF NOT EXISTS jobs_created_at ON jobs (created_at);
 CREATE INDEX IF NOT EXISTS jobs_status ON jobs (status);
 """
 
+# Columns added after the first version of the table. A database created before them
+# (the servers already have one) gets them on open; CREATE TABLE IF NOT EXISTS does not.
+_ADDED_COLUMNS = {"project_id": "TEXT"}
+
 
 class JobStore:
     def __init__(self, path: str):
@@ -49,16 +54,26 @@ class JobStore:
         self._conn.row_factory = sqlite3.Row
         with self._lock:
             self._conn.executescript(_SCHEMA)
+            self._migrate()
+
+    def _migrate(self) -> None:
+        existing = {r["name"] for r in self._conn.execute("PRAGMA table_info(jobs)")}
+        for column, sql_type in _ADDED_COLUMNS.items():
+            if column not in existing:
+                self._conn.execute(f"ALTER TABLE jobs ADD COLUMN {column} {sql_type}")
+        self._conn.execute("CREATE INDEX IF NOT EXISTS jobs_project_id ON jobs (project_id)")
+        self._conn.commit()
 
     # ------------------------------------------------------------ writes
 
-    def create(self, kind: str, template: str, header: dict, params: dict) -> Job:
+    def create(self, kind: str, template: str, header: dict, params: dict, project_id: str | None = None) -> Job:
         now = utcnow()
         job = Job(
             id=str(uuid.uuid4()),
             kind=kind,
             template=template,
             header=header,
+            project_id=project_id,
             params=params,
             created_at=now,
             updated_at=now,
@@ -119,12 +134,12 @@ class JobStore:
             row = self._conn.execute("SELECT * FROM jobs WHERE id = ?", [job_id]).fetchone()
         return _from_row(row) if row else None
 
-    def list(self, limit: int = 20, status: str | None = None) -> list[Job]:
-        """Most recent first."""
-        query, args = "SELECT * FROM jobs", []
-        if status:
-            query += " WHERE status = ?"
-            args.append(status)
+    def list(self, limit: int = 20, status: str | None = None, project_id: str | None = None) -> list[Job]:
+        """Most recent first, optionally only one status and/or one project."""
+        filters = {"status": status, "project_id": project_id}
+        conditions = [f"{column} = ?" for column, value in filters.items() if value]
+        args: list = [value for value in filters.values() if value]
+        query = "SELECT * FROM jobs" + (" WHERE " + " AND ".join(conditions) if conditions else "")
         query += " ORDER BY created_at DESC, rowid DESC LIMIT ?"
         args.append(limit)
         with self._lock:

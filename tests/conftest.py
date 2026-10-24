@@ -76,6 +76,12 @@ FILLED_MINUTES = {
 }
 
 
+@pytest.fixture(autouse=True)
+def _no_api_key(monkeypatch):
+    """An API_KEY in the local .env must not leak into the tests; the ones about the key set it."""
+    monkeypatch.setenv("API_KEY", "")
+
+
 @pytest.fixture(scope="session")
 def _meeting_file() -> dict:
     return load_meeting(MEETING_ID)

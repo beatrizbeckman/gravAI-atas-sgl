@@ -133,7 +133,7 @@ def test_record_and_generate_runs_record_transcribe_normalize_generate(env, stor
     calls = []
 
     class FakeRecorder:
-        def record_meeting_with_ws_audio_server(self, url, max_seconds=None):
+        def record_meeting_with_ws_audio_server(self, url, max_seconds=None, stop_event=None):
             calls.append(("record", url, max_seconds))
             _write_recording(folder, {"Ana": [seg(0.0, 2.0, "Fala da Ana.")]})
             return str(folder)
@@ -157,9 +157,33 @@ def test_record_and_generate_runs_record_transcribe_normalize_generate(env, stor
     assert not executors.RECORDING_LOCK.locked()
 
 
+def test_record_and_generate_fills_date_and_time_from_the_recording(env, store, worker, monkeypatch):
+    folder = env / "timed_tracks"
+
+    class FakeRecorder:
+        def record_meeting_with_ws_audio_server(self, url, max_seconds=None, stop_event=None):
+            _write_recording(folder, {"Ana": [seg(0.0, 2.0, "Fala da Ana.")]})
+            # 2026-10-24 13:05 to 14:10 UTC, as the recorder writes it.
+            meta = {"page_start_ms": 1792847100000, "page_end_ms": 1792851000000}
+            (folder / "vad_timeline.json").write_text(json.dumps({"meta": meta, "events": []}), encoding="utf-8")
+            return str(folder)
+
+    monkeypatch.setattr("gravai.recording.teams.TeamsMeetingRecorder", FakeRecorder)
+    monkeypatch.setattr(executors, "_transcribe", lambda tracks_dir: None)
+    monkeypatch.setenv("TIMEZONE", "America/Fortaleza")
+
+    job = store.create(
+        "record_and_generate", "dell", {"projeto": "X"}, {"meeting_url": "https://teams.live.com/meet/1"}
+    )
+    done = worker.run(job.id)
+
+    assert done.status == "done", done.error
+    assert done.header["data"] == "24/10/2026" and done.header["horario"] == "10:05 – 11:10"
+
+
 def test_record_and_generate_failures_are_recording_failed(env, store, worker, monkeypatch):
     class BrokenRecorder:
-        def record_meeting_with_ws_audio_server(self, url, max_seconds=None):
+        def record_meeting_with_ws_audio_server(self, url, max_seconds=None, stop_event=None):
             raise RuntimeError("Rejected from joining the meeting")
 
     monkeypatch.setattr("gravai.recording.teams.TeamsMeetingRecorder", BrokenRecorder)

@@ -14,6 +14,7 @@ import traceback
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from gravai.jobs.callback import deliver_in_background
 from gravai.jobs.models import Job
 from gravai.jobs.store import JobStore
 from gravai.minutes.generate import MinutesError
@@ -33,12 +34,15 @@ class ExecutionOutcome:
 
 
 Executor = Callable[[Job, Callable[[str], None]], ExecutionOutcome]
+# (callback_url, public job) -> None; delivers the webhook of a finished job.
+Notifier = Callable[[str, dict], None]
 
 
 class JobWorker:
-    def __init__(self, store: JobStore, executors: dict[str, Executor]):
+    def __init__(self, store: JobStore, executors: dict[str, Executor], notify: Notifier = deliver_in_background):
         self.store = store
         self.executors = executors
+        self.notify = notify
         self._queue: queue.Queue = queue.Queue()
         self._thread: threading.Thread | None = None
 
@@ -78,10 +82,17 @@ class JobWorker:
                 traceback.print_exc()
 
     def run(self, job_id: str) -> Job:
-        """Runs one job synchronously (the loop calls this; tests can too)."""
+        """Runs one job synchronously (the loop calls this; tests can too), then fires its webhook."""
         job = self.store.get(job_id)
         if job is None or job.status != "queued":
             return job
+        finished = self._execute(job)
+        if callback_url := job.params.get("callback_url"):
+            self.notify(callback_url, finished.public())
+        return finished
+
+    def _execute(self, job: Job) -> Job:
+        job_id = job.id
         self.store.update(job_id, status="running", stage=None)
 
         def progress(stage: str) -> None:

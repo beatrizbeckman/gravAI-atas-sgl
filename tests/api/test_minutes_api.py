@@ -85,6 +85,7 @@ def test_from_transcript_full_cycle(client, runtime, dell_body, speakers):
         "stage",
         "template",
         "header",
+        "project_id",
         "created_at",
         "updated_at",
         "finished_at",
@@ -228,6 +229,59 @@ def test_record_and_generate_validations_and_queueing(client, runtime):
     assert client.post("/minutes/record-and-generate", json=body).status_code == 409
 
 
+def test_callback_url_is_kept_in_the_job_and_must_be_http(client, runtime, dell_body):
+    created = client.post(
+        "/minutes/from-transcript", json={**dell_body, "callback_url": "https://sgl.lab/atas/webhook"}
+    )
+    assert created.status_code == 202
+    assert runtime.store.get(created.json()["id"]).params["callback_url"] == "https://sgl.lab/atas/webhook"
+    assert client.post("/minutes/from-transcript", json={**dell_body, "callback_url": "ftp://x"}).status_code == 422
+
+
+def test_record_and_generate_may_leave_date_and_time_to_the_recording(client, runtime, dell_body):
+    body = {"template": "dell", "header": {"projeto": "X"}, "meeting_url": "https://teams.live.com/meet/1"}
+    assert client.post("/minutes/record-and-generate", json=body).status_code == 202
+    # Without a recording there is nothing to take the date from.
+    no_date = {**dell_body, "header": {"projeto": "X"}}
+    assert client.post("/minutes/from-transcript", json=no_date).status_code == 422
+    # The project is never filled by the API.
+    assert client.post("/minutes/record-and-generate", json={**body, "header": {}}).status_code == 422
+
+
+def test_stop_ends_the_recording_of_a_running_job(client, runtime, monkeypatch):
+    body = {
+        "template": "daily",
+        "header": {"projeto": "X", "data": "01/10/2026"},
+        "meeting_url": "https://teams.live.com/meet/1",
+    }
+    job_id = client.post("/minutes/record-and-generate", json=body).json()["id"]
+    calls = []
+    monkeypatch.setattr("gravai.recording.pipeline.request_stop", lambda: calls.append(1) or True)
+
+    # Still queued: nothing to stop yet.
+    assert client.post(f"/minutes/jobs/{job_id}/stop").status_code == 409
+    runtime.store.update(job_id, status="running", stage="recording")
+    stopped = client.post(f"/minutes/jobs/{job_id}/stop")
+    assert stopped.status_code == 202 and stopped.json()["id"] == job_id
+    assert calls == [1]
+
+    # Already past the recording, or a job that never records.
+    runtime.store.update(job_id, stage="transcribing")
+    assert client.post(f"/minutes/jobs/{job_id}/stop").status_code == 409
+    other = runtime.store.create("from_transcript", "dell", {}, {})
+    runtime.store.update(other.id, status="running", stage="recording")
+    assert client.post(f"/minutes/jobs/{other.id}/stop").status_code == 409
+    assert client.post("/minutes/jobs/does-not-exist/stop").status_code == 404
+
+
+def test_stop_while_the_bot_is_still_starting_asks_to_retry(client, runtime, monkeypatch):
+    job = runtime.store.create("record_and_generate", "daily", {}, {"meeting_url": "https://teams.live.com/meet/1"})
+    runtime.store.update(job.id, status="running", stage="recording")
+    monkeypatch.setattr("gravai.recording.pipeline.request_stop", lambda: False)
+    response = client.post(f"/minutes/jobs/{job.id}/stop")
+    assert response.status_code == 409 and "try again" in response.json()["detail"]
+
+
 # ----------------------------------------------------------------- jobs
 
 
@@ -242,6 +296,21 @@ def test_jobs_listing_and_404(client, runtime, dell_body):
     assert client.get("/minutes/jobs?status=bogus").status_code == 422
     assert client.get("/minutes/jobs/does-not-exist").status_code == 404
     assert client.get("/minutes/jobs/does-not-exist/download").status_code == 404
+
+
+def test_jobs_are_listed_per_project(client, runtime, dell_body):
+    first = client.post("/minutes/from-transcript", json={**dell_body, "project_id": "sgl-7"}).json()
+    client.post("/minutes/from-transcript", json={**dell_body, "project_id": "sgl-8"})
+    client.post("/minutes/from-transcript", json=dell_body)  # clients that do not send it keep working
+
+    assert first["project_id"] == "sgl-7"
+    runtime.worker.run(first["id"])
+    assert client.get(f"/minutes/jobs/{first['id']}").json()["project_id"] == "sgl-7"
+    listed = client.get("/minutes/jobs?project_id=sgl-7").json()["jobs"]
+    assert [j["id"] for j in listed] == [first["id"]]
+    assert client.get("/minutes/jobs?project_id=sgl-7&status=queued").json()["jobs"] == []
+    assert len(client.get("/minutes/jobs").json()["jobs"]) == 3
+    assert client.post("/minutes/from-transcript", json={**dell_body, "project_id": ""}).status_code == 422
 
 
 def test_failed_job_is_reported_with_its_code(client, runtime, dell_body, monkeypatch):

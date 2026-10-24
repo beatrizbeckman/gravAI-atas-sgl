@@ -1,10 +1,11 @@
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 
 from gravai.api.demo import router as demo_router
 from gravai.api.minutes import router as minutes_router
+from gravai.api.security import require_api_key
 from gravai.config import Settings
 from gravai.jobs.runtime import JobsRuntime
 from gravai.recording import pipeline
@@ -34,7 +35,7 @@ app.include_router(demo_router)
 # so a recording that blocks for the whole meeting does not freeze the rest of the API.
 
 
-@app.post("/record_meeting")
+@app.post("/record_meeting", dependencies=[Depends(require_api_key)])
 def record_meeting(meeting_url: str, slice_tracks: bool = True) -> dict:
     _validate_meeting_url(meeting_url)
     try:
@@ -47,7 +48,7 @@ def record_meeting(meeting_url: str, slice_tracks: bool = True) -> dict:
     return {"recording_path": tracks_dir, "session_metadata_path": metadata_path, "session": session}
 
 
-@app.post("/transcribe")
+@app.post("/transcribe", dependencies=[Depends(require_api_key)])
 def transcribe(tracks_output_dir: str) -> dict:
     _validate_tracks_dir(tracks_output_dir)
     try:
@@ -61,7 +62,7 @@ def transcribe(tracks_output_dir: str) -> dict:
     }
 
 
-@app.post("/record_meeting_and_transcribe")
+@app.post("/record_meeting_and_transcribe", dependencies=[Depends(require_api_key)])
 def record_meeting_and_transcribe(meeting_url: str) -> dict:
     _validate_meeting_url(meeting_url)
     try:
@@ -78,7 +79,7 @@ def record_meeting_and_transcribe(meeting_url: str) -> dict:
     }
 
 
-@app.post("/analyze_transcript")
+@app.post("/analyze_transcript", dependencies=[Depends(require_api_key)])
 def analyze_transcript(tracks_output_dir: str) -> dict:
     _validate_tracks_dir(tracks_output_dir)
 

@@ -69,6 +69,7 @@ Duas coisas para guardar desse desenho:
 | `gravai/api/demo.py` + `gravai/api/static/demo.html` | **Página de demonstração** que faz o papel do SGL | TCC Parte 1 |
 | `gravai/config.py` | Leitura do `.env` | GravAI original, com variáveis novas |
 | `docs/API_MINUTES.md` | Contrato HTTP da API de atas | TCC Parte 1 |
+| `docs/INTEGRACAO_SGL.md` | Guia para o dev do SGL implementar a aba "Reuniões" | TCC Parte 1 |
 | `docker/Dockerfile`, `docker-compose*.yaml`, `Makefile` | Empacotamento e comandos | GravAI original, ajustado |
 | `tmp/` | Gravações, docx gerados e o SQLite dos jobs. Não vai para o git | runtime |
 
@@ -332,15 +333,20 @@ Essa é a interface que o SGL, ou qualquer outro cliente, chama. O contrato comp
 | Endpoint | O que recebe | O que faz |
 |---|---|---|
 | `GET /minutes/templates` | nada | lista os templates com os campos de cabeçalho, para montar o formulário |
-| `POST /minutes/from-transcript` | template, header, utterances | cria job `from_transcript`, devolve 202 |
+| `POST /minutes/from-transcript` | template, header, utterances, project_id (opcional) | cria job `from_transcript`, devolve 202 |
 | `POST /minutes/from-recording` | template, header, tracks_dir | confere que a pasta tem transcrição, cria job |
 | `POST /minutes/record-and-generate` | template, header, meeting_url | confere que é link do Teams e que não há gravação em curso, cria job |
-| `GET /minutes/jobs` | limit, status | últimos jobs |
+| `GET /minutes/jobs` | limit, status, project_id | últimos jobs, opcionalmente só os de um projeto do SGL |
 | `GET /minutes/jobs/{id}` | id | o objeto de job, para polling |
+| `POST /minutes/jobs/{id}/stop` | id | o bot sai da reunião; o job segue para transcrição e ata |
 | `GET /minutes/jobs/{id}/result` | id | a ata em JSON, antes de virar docx. Útil para pré-visualizar e para avaliar qualidade |
 | `GET /minutes/jobs/{id}/download` | id | o `.docx` |
 
 A validação acontece **antes** de criar o job, com Pydantic: template desconhecido, cabeçalho sem campo obrigatório, lista de falas vazia ou `custom` mal formado dão 422 na hora. Erros durante a execução nunca viram 500, viram `status: failed` com um `error.code`.
+
+Desde a versão 1.1 do contrato (23/10/2026), os três `POST` aceitam `project_id`, que o job guarda para o SGL listar as atas de cada projeto. O modelo personalizado de cada projeto fica no SGL e vai no `custom` de cada requisição.
+
+A versão 1.2 (24/10/2026) fecha o fluxo da aba de reunião do SGL (contrato, seção 3.6): `POST /minutes/jobs/{id}/stop` encerra a gravação (`recording/pipeline.request_stop`, que acende um evento lido pelo processo do Playwright a cada segundo); em `record-and-generate`, data e horário vazios são preenchidos com o tempo real da gravação (`minutes/meeting_time.py`, fuso `TIMEZONE`); `callback_url` faz a API avisar o SGL quando o job termina (`jobs/callback.py`, em uma thread separada, três tentativas); e `API_KEY` exige o cabeçalho `X-API-Key` nas rotas de atas e de gravação (`api/security.py`).
 
 ### `gravai/api/demo.py` e `gravai/api/static/demo.html` — o cliente de referência
 

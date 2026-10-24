@@ -7,19 +7,22 @@ work itself happens in the jobs worker (jobs/).
 import os
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field, model_validator
+from pydantic import AnyHttpUrl, BaseModel, Field, model_validator
 
+from gravai.api.security import require_api_key
 from gravai.jobs.runtime import JobsRuntime
 from gravai.minutes.custom_template import CustomSpec
 from gravai.minutes.generate import missing_header_fields, prepare_utterances, resolve_template
+from gravai.minutes.meeting_time import fillable_fields
 from gravai.minutes.templates import available_templates, load_template
 from gravai.minutes.transcript_normalizer import SESSION_TRANSCRIPTION_FILE
+from gravai.recording import pipeline as recording_pipeline
 from gravai.recording.pipeline import RECORDING_LOCK
 from gravai.recording.utils import is_teams_meeting_url
 
-router = APIRouter(prefix="/minutes", tags=["minutes"])
+router = APIRouter(prefix="/minutes", tags=["minutes"], dependencies=[Depends(require_api_key)])
 
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
@@ -39,8 +42,11 @@ class MinutesRequest(BaseModel):
 
     template: str
     header: dict[str, Any]
+    project_id: str | None = Field(default=None, min_length=1, max_length=100)
     participants: list[str] | None = None
     custom: CustomSpec | None = None
+    # Webhook: where to POST the job when it finishes (done or failed). See jobs/callback.py.
+    callback_url: AnyHttpUrl | None = None
 
     @model_validator(mode="after")
     def check_template_and_header(self):
@@ -50,10 +56,14 @@ class MinutesRequest(BaseModel):
             template = resolve_template(self.template, self.custom)
         except ValueError as exc:
             raise ValueError(str(exc)) from exc
-        missing = missing_header_fields(template, self.header)
+        missing = [k for k in missing_header_fields(template, self.header) if k not in self.filled_by_server(template)]
         if missing:
             raise ValueError(f"missing required header fields for template '{self.template}': {', '.join(missing)}")
         return self
+
+    def filled_by_server(self, template) -> set[str]:
+        """Header fields the client may leave out because the API fills them itself."""
+        return set()
 
     def job_params(self) -> dict:
         params: dict = {}
@@ -61,6 +71,8 @@ class MinutesRequest(BaseModel):
             params["participants"] = self.participants
         if self.custom is not None:
             params["custom"] = self.custom.model_dump(exclude_none=True)
+        if self.callback_url is not None:
+            params["callback_url"] = str(self.callback_url)
         return params
 
 
@@ -81,6 +93,10 @@ class FromRecordingRequest(MinutesRequest):
 class RecordAndGenerateRequest(MinutesRequest):
     meeting_url: str = Field(min_length=1)
     max_recording_seconds: int | None = Field(default=None, ge=60)
+
+    def filled_by_server(self, template) -> set[str]:
+        # Date and time come from the recording (minutes/meeting_time.py) when not sent.
+        return fillable_fields(template)
 
 
 # -------------------------------------------------------------- helpers
@@ -131,7 +147,7 @@ def list_templates() -> dict:
 @router.post("/from-transcript", status_code=202)
 def from_transcript(body: FromTranscriptRequest, request: Request) -> dict:
     params = {**body.job_params(), "utterances": [u.model_dump() for u in body.utterances]}
-    job = _jobs(request).enqueue("from_transcript", body.template, body.header, params)
+    job = _jobs(request).enqueue("from_transcript", body.template, body.header, params, body.project_id)
     return job.public()
 
 
@@ -146,7 +162,7 @@ def from_recording(body: FromRecordingRequest, request: Request) -> dict:
             detail=f"no transcription in {body.tracks_dir}: expected {SESSION_TRANSCRIPTION_FILE} or track_*_transcription_segments.json + vad_timeline.json",
         )
     params = {**body.job_params(), "tracks_dir": tracks_dir}
-    job = _jobs(request).enqueue("from_recording", body.template, body.header, params)
+    job = _jobs(request).enqueue("from_recording", body.template, body.header, params, body.project_id)
     return job.public()
 
 
@@ -166,7 +182,7 @@ def record_and_generate(body: RecordAndGenerateRequest, request: Request) -> dic
     params = {**body.job_params(), "meeting_url": body.meeting_url}
     if body.max_recording_seconds:
         params["max_recording_seconds"] = body.max_recording_seconds
-    job = runtime.enqueue("record_and_generate", body.template, body.header, params)
+    job = runtime.enqueue("record_and_generate", body.template, body.header, params, body.project_id)
     return job.public()
 
 
@@ -175,13 +191,31 @@ def list_jobs(
     request: Request,
     limit: int = Query(20, ge=1, le=100),
     status: str | None = Query(None, pattern="^(queued|running|done|failed)$"),
+    project_id: str | None = Query(None, min_length=1, max_length=100),
 ) -> dict:
-    return {"jobs": [j.public() for j in _jobs(request).store.list(limit=limit, status=status)]}
+    jobs = _jobs(request).store.list(limit=limit, status=status, project_id=project_id)
+    return {"jobs": [j.public() for j in jobs]}
 
 
 @router.get("/jobs/{job_id}")
 def get_job(job_id: str, request: Request) -> dict:
     return _get_job(request, job_id).public()
+
+
+@router.post("/jobs/{job_id}/stop", status_code=202)
+def stop_recording(job_id: str, request: Request) -> dict:
+    """The "end meeting" button: the bot leaves, then the job transcribes and generates as usual."""
+    job = _get_job(request, job_id)
+    if job.kind != "record_and_generate" or job.status != "running" or job.stage != "recording":
+        raise HTTPException(
+            status_code=409,
+            detail=f"job is not recording a meeting (kind {job.kind}, status {job.status}, stage {job.stage})",
+        )
+    if not recording_pipeline.request_stop():
+        raise HTTPException(
+            status_code=409, detail="the bot is still starting the recording; try again in a few seconds"
+        )
+    return job.public()
 
 
 @router.get("/jobs/{job_id}/result")

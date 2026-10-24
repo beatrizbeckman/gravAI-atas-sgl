@@ -184,6 +184,7 @@ class MeetingRecorder(BaseModel):
         vad_events: list[dict],
         vad_meta: dict,
         max_seconds: int | None = None,
+        stop_event=None,
     ) -> Session:
         pass
 
@@ -201,8 +202,12 @@ class MeetingRecorder(BaseModel):
         ws_port: int | None = None,
         debug: bool = False,
         max_seconds: int | None = None,
+        stop_event=None,
     ):
-        """Records until the meeting ends or max_seconds (default MAX_RECORDING_SECONDS) elapse. Returns the tracks folder."""
+        """
+        Records until the meeting ends, max_seconds (default MAX_RECORDING_SECONDS) elapse or
+        stop_event (a multiprocessing Event) is set. Returns the tracks folder.
+        """
         settings = Settings()
         debug = debug or settings.RECORDING_DEBUG
 
@@ -228,6 +233,7 @@ class MeetingRecorder(BaseModel):
                 vad_events,
                 vad_meta,
                 max_seconds,
+                stop_event,
             ),
         )
         p_join_browser.start()
@@ -337,6 +343,7 @@ class TeamsMeetingRecorder(MeetingRecorder):
         vad_events: list[dict],
         vad_meta: dict,
         max_seconds: int | None = None,
+        stop_event=None,
     ) -> Session:
         page = None
         with sync_playwright() as p:
@@ -401,6 +408,9 @@ class TeamsMeetingRecorder(MeetingRecorder):
                 deadline = time.time() + (max_seconds or Settings().MAX_RECORDING_SECONDS)
                 while True:
                     _drain_vad_events()
+                    if stop_event is not None and stop_event.is_set():
+                        print("Stop requested by the API, leaving the meeting.")
+                        break
                     try:
                         rejected_h1_locator.wait_for(state="visible", timeout=200)
                     except Exception:
