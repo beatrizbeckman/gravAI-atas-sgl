@@ -2,12 +2,13 @@
 
 Contrato HTTP para gerar atas de reunião (`.docx`) a partir de transcrições ou gravações feitas pelo GravAI. Este documento é a referência para qualquer cliente da API: a página de demonstração do próprio GravAI, o SGL ou um script.
 
-Versão do contrato: **1.1** (23/10/2026). Mudanças incompatíveis sobem a versão principal (2.0); acréscimos que não quebram clientes antigos sobem a secundária. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
+Versão do contrato: **1.2** (24/10/2026). Mudanças incompatíveis sobem a versão principal (2.0); acréscimos que não quebram clientes antigos sobem a secundária. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
 
 | Versão | O que mudou |
 |---|---|
 | 1.0 (01/10/2026) | Primeira versão: templates, três formas de criar job, acompanhamento e download. |
 | 1.1 (23/10/2026) | `project_id` opcional nos jobs e filtro `GET /minutes/jobs?project_id=` (3, 3.5, 4.1, 4.5); CORS configurável para clientes no navegador (7); LLM online como padrão (Groq, `openai/gpt-oss-120b`). Nada que funcionava na 1.0 mudou. |
+| 1.2 (24/10/2026) | Fluxo da aba de reunião do SGL (3.6): encerrar a gravação (`POST /minutes/jobs/{id}/stop`, 4.6), data e horário preenchidos pela gravação (3.3), aviso de conclusão por webhook (`callback_url`, 4.7) e chave de acesso opcional (`X-API-Key`, 1.1). Com `API_KEY` vazio, nada que funcionava na 1.1 mudou. |
 
 ---
 
@@ -30,6 +31,16 @@ Três maneiras de criar um job, da mais simples à mais completa:
 | `POST /minutes/record-and-generate` | link de reunião do Teams | grava → transcreve → normaliza → LLM → `.docx` |
 
 Base URL de desenvolvimento: `http://localhost:8000`. Todos os corpos são JSON em UTF-8. Datas e horas em texto, no formato que vai aparecer na ata (a API não converte).
+
+### 1.1 Chave de acesso
+
+Quando o servidor tem `API_KEY` configurada (seção 7), toda chamada a `/minutes/*` e às rotas de gravação (`/record_meeting`, `/transcribe`, `/record_meeting_and_transcribe`, `/analyze_transcript`) precisa do cabeçalho:
+
+```
+X-API-Key: <a chave combinada>
+```
+
+Sem ele, ou com a chave errada → `401`. A chave fica **no servidor do SGL** (nunca no JavaScript de uma página, onde qualquer um a leria). A página `/demo`, o Swagger (`/docs`) e o contrato (`/openapi.json`) continuam abertos; a `/demo` pede a chave na primeira resposta `401` e a guarda só na aba aberta. Com `API_KEY` vazia (padrão), nenhuma chave é pedida.
 
 ---
 
@@ -92,7 +103,8 @@ Os três `POST` compartilham o bloco de **especificação da ata**:
   "header": {"projeto": "Portal de Suporte", "numero": "007", "data": "29/09/2026", "horario": "14:00 – 14:45"},
   "project_id": "sgl-42",
   "participants": ["Ana", "Bruno", "Carla", "Diego"],
-  "custom": null
+  "custom": null,
+  "callback_url": "https://sgl.lab/api/atas/webhook"
 }
 ```
 
@@ -103,6 +115,7 @@ Os três `POST` compartilham o bloco de **especificação da ata**:
 | `project_id` | string (1 a 100 caracteres) | não | Identificador do projeto no sistema cliente (no SGL, o id do projeto). A API não interpreta: só guarda no job e permite listar por ele (4.5). Omitido → `null`. Ver 3.5. |
 | `participants` | lista de strings | não | Nomes a listar na ata. Quando omitido, a API usa os falantes da transcrição. Quando informado, substitui a lista da transcrição **só na seção de participantes**; os nomes dentro do texto continuam sendo os da transcrição. |
 | `custom` | objeto | só quando `template = "custom"` | Ver 3.4. |
+| `callback_url` | URL `http`/`https` | não | Para onde a API faz um `POST` com o job quando ele terminar (`done` ou `failed`). Ver 4.7. |
 
 ### 3.1 `POST /minutes/from-transcript`
 
@@ -170,6 +183,10 @@ Fluxo completo: o bot entra na reunião, grava até ela acabar, transcreve, norm
 |---|---|
 | `meeting_url` | Link do Teams (`teams.live.com` ou `teams.microsoft.com`). Outro domínio → `400`. |
 | `max_recording_seconds` | Opcional, mínimo 60. Teto de segurança caso o fim da reunião não seja detectado. Padrão: `MAX_RECORDING_SECONDS` do servidor (7200). |
+
+**Fim da gravação.** O bot sai da reunião quando o Teams mostra que ela acabou ou que ele foi removido, quando o cliente pede (`POST /minutes/jobs/{id}/stop`, 4.6) ou quando `max_recording_seconds` estoura. O que foi gravado segue para transcrição e ata nos três casos.
+
+**Data e horário pela gravação.** Só nesta rota, os campos de cabeçalho cujo `format` é `DD/MM/AAAA`, `HH:MM – HH:MM` ou `DD/MM/AAAA · HH:MM – HH:MM` podem ser omitidos ou enviados vazios: a API preenche com o momento em que o bot entrou e saiu da reunião, no fuso `TIMEZONE` do servidor. Ex.: no `dell`, `{"projeto": "X"}` vira `{"projeto": "X", "data": "24/10/2026", "horario": "10:05 – 11:10"}`. Campo enviado pelo cliente nunca é sobrescrito. O cabeçalho final aparece no job (`header`) e na ata.
 
 Só **uma gravação por vez**: se já houver um job `record_and_generate` gravando **ou ainda na fila**, a resposta é `409` com `detail` explicando. Jobs dos outros tipos não têm essa restrição.
 
@@ -244,6 +261,39 @@ Fluxo:
 3. O SGL acompanha o job (4.2) e oferece o download (4.3) quando terminar.
 
 O modelo personalizado vai **inteiro em cada requisição**: assim a API não tem uma segunda cópia que possa ficar diferente da que está no SGL, e mudar o modelo de um projeto não exige nenhuma chamada extra.
+
+### 3.6 Fluxo da aba de reunião do SGL
+
+O caso principal da integração: na aba de reunião de um projeto, o usuário escolhe o modelo de ata, inicia a reunião, o bot grava e transcreve, e no fim a ata aparece no SGL.
+
+```
+Usuário (SGL)            Servidor do SGL                          API GravAI
+─────────────            ───────────────                          ──────────
+abre a aba de reunião ─► GET  /minutes/templates ───────────────► lista de modelos (cache: muda pouco)
+escolhe modelo, cola
+o link do Teams,
+"Iniciar reunião" ─────► POST /minutes/record-and-generate ─────► 202 job (queued)
+                         { template | custom, header: {projeto},
+                           meeting_url, project_id, callback_url }
+                         guarda job.id na reunião do SGL
+                                                                   bot entra (admitir na sala de espera)
+mostra a etapa ◄──────── GET  /minutes/jobs/{id} a cada 30 s ────► running · recording
+"Encerrar reunião" ────► POST /minutes/jobs/{id}/stop ───────────► 202; o bot sai
+                                                                   running · transcribing → generating → rendering
+                         POST callback_url ◄────────────────────── job done (ou failed)
+mostra a ata ◄────────── GET  /minutes/jobs/{id}/result ─────────► seções em JSON
+"Baixar Word" ─────────► GET  /minutes/jobs/{id}/download ───────► .docx
+```
+
+Pontos de atenção:
+
+1. **Chamadas pelo servidor do SGL.** Com `API_KEY`, quem chama é o PHP do SGL (que guarda a chave). Se as páginas do SGL chamarem direto pelo navegador, configurar `CORS_ORIGINS` e não usar `API_KEY` exposta no JavaScript.
+2. **O SGL guarda o `job.id`** na reunião dele. É por esse id que acompanha, encerra e baixa; o `project_id` serve para listar as atas do projeto.
+3. **Cabeçalho mínimo:** `projeto` (e os obrigatórios do modelo que não são data/hora, como `professores` no template `professores`). Data e horário vêm da gravação (3.3).
+4. **Admissão do bot.** O bot entra como convidado e pode ficar na sala de espera do Teams; alguém precisa admiti-lo. O job fica em `running · recording` desde que o bot começa a entrar.
+5. **Acompanhar ou ser avisado.** Com `callback_url`, o SGL não precisa consultar até o fim: recebe o job pronto (4.7). Mesmo assim, consultar a cada 30 s enquanto a aba estiver aberta mostra a etapa ao usuário e serve de reserva se o aviso falhar.
+6. **Uma reunião por vez** no servidor (3.3): enquanto uma grava, outra tentativa recebe `409`; o SGL deve mostrar "o gravador está ocupado, tente mais tarde".
+7. **Revisão.** A ata é um rascunho gerado por IA: o SGL deve deixar claro que precisa de revisão antes de ser distribuída (seção 8).
 
 ---
 
@@ -353,6 +403,33 @@ Lista os jobs mais recentes, do mais novo para o mais antigo. Query, todos opcio
 
 Exemplo: `GET /minutes/jobs?project_id=sgl-42&status=done&limit=50`.
 
+### 4.6 `POST /minutes/jobs/{id}/stop`
+
+O botão "Encerrar reunião": o bot sai do Teams e o job continua normalmente (transcrição, ata). Sem corpo. Responde `202` com o objeto de job (ainda em `running · recording`; a etapa muda nos segundos seguintes).
+
+- `404`: job não existe.
+- `409`: o job não está gravando (outro tipo, ainda na fila, ou já em outra etapa), ou o bot ainda está abrindo o Teams; neste caso, tentar de novo em alguns segundos.
+
+O pedido é atendido quando o bot já está dentro da reunião (ele confere a cada segundo). Se ainda estiver na sala de espera, sai assim que for admitido.
+
+### 4.7 Aviso de conclusão (`callback_url`)
+
+Quando um job criado com `callback_url` termina (`done` ou `failed`), a API faz:
+
+```
+POST <callback_url>
+Content-Type: application/json
+X-API-Key: <API_KEY do servidor, quando configurada>
+
+{ ...objeto de job (4.1)... }
+```
+
+- O receptor deve responder `2xx` em até 10 s e processar depois, se for demorado. Sem `2xx`, a API tenta mais duas vezes (após 2 s e 10 s) e desiste.
+- O `X-API-Key` permite ao SGL confirmar que o aviso veio da API: comparar com a chave combinada e recusar se for diferente.
+- Tratar o aviso pelo `id` do job, sem supor que chega exatamente uma vez: se a resposta do SGL se perder, o mesmo job pode chegar de novo.
+- Jobs interrompidos por reinício da API (`internal`, "interrupted by restart") não geram aviso. Para não perder nenhum, o SGL pode conferir de tempos em tempos os jobs que ainda não recebeu (`GET /minutes/jobs?project_id=...`).
+- O aviso não é enviado para jobs sem `callback_url`.
+
 ```json
 {"jobs": [{"...objeto de job..."}, {"..."}]}
 ```
@@ -372,9 +449,10 @@ Em `422` o `detail` é a lista de erros de validação do FastAPI (campo, mensag
 | Status | Quando |
 |---|---|
 | `400` | `meeting_url` não é do Teams. |
+| `401` | `API_KEY` configurada no servidor e cabeçalho `X-API-Key` ausente ou errado (1.1). |
 | `404` | Job inexistente; `tracks_dir` inexistente. |
-| `409` | Já há uma gravação em andamento; download/result de job não concluído. |
-| `422` | Corpo ou query inválidos: template desconhecido, campo obrigatório do cabeçalho ausente, `utterances` vazia, `custom` mal formado, `project_id` vazio ou com mais de 100 caracteres, pasta sem transcrição. |
+| `409` | Já há uma gravação em andamento; download/result de job não concluído; `stop` em job que não está gravando. |
+| `422` | Corpo ou query inválidos: template desconhecido, campo obrigatório do cabeçalho ausente, `utterances` vazia, `custom` mal formado, `project_id` vazio ou com mais de 100 caracteres, `callback_url` que não é `http`/`https`, pasta sem transcrição. |
 | `500` | Erro inesperado ao **criar** o job (erros durante a execução vão para `status: failed`, nunca para `500`). |
 
 ---
@@ -407,6 +485,14 @@ curl "http://localhost:8000/minutes/jobs?project_id=sgl-42"
 curl -X POST http://localhost:8000/minutes/from-recording \
   -H "Content-Type: application/json" \
   -d '{"template":"daily","header":{"projeto":"GravAI","data":"01/10/2026 · 09:00 – 09:15"},"tracks_dir":"./tmp/5d3136ef-0d7f-4664-a8d8-28ecc6b4929e_tracks"}'
+
+# 7. Aba de reunião do SGL (3.6), com chave de acesso
+KEY="a chave do .env do servidor"
+curl -X POST http://localhost:8000/minutes/record-and-generate \
+  -H "Content-Type: application/json" -H "X-API-Key: $KEY" \
+  -d '{"project_id":"sgl-42","template":"dell","header":{"projeto":"Portal de Suporte"},"meeting_url":"https://teams.live.com/meet/...","callback_url":"https://sgl.lab/api/atas/webhook"}'
+# → 202 {"id": "6f1c...", "status": "queued", ...}; admitir o bot no Teams
+curl -X POST -H "X-API-Key: $KEY" http://localhost:8000/minutes/jobs/6f1c2a0e-3b7d-4a7e-9f2a-0c1d2e3f4a5b/stop
 ```
 
 > Os arquivos `datasets/reunioes/<id>/transcricao.json` têm exatamente o formato do corpo de `from-transcript` (mais um campo `meta`, ignorado pela API) e servem de exemplo de requisição.
@@ -436,7 +522,9 @@ async function waitForJob(id) {
 | `LLM_TIMEOUT_SECONDS` | Tempo máximo de uma chamada ao LLM; estourar vira `failed` com `llm_unreachable`. |
 | `MAX_RECORDING_SECONDS` | Teto padrão de `record-and-generate`. |
 | `SAVE_DIR` | Onde as gravações e os `.docx` são salvos. |
-| `CORS_ORIGINS` | Origens web autorizadas a chamar a API **pelo navegador**, separadas por vírgula (ex.: `http://sgl.lab,http://localhost:8080`). Vazio (padrão): só as páginas servidas pela própria API, como `/demo`. `*` não é aceito. Só é necessário quando o JavaScript das páginas do SGL chama a API direto; se o SGL chama pelo servidor (PHP), não. Liberados: `GET` e `POST`, cabeçalho `Content-Type`; o `Content-Disposition` do download fica legível para o navegador. |
+| `API_KEY` | Chave exigida no cabeçalho `X-API-Key` (1.1) e enviada nos avisos de `callback_url` (4.7). Vazia (padrão): API aberta. Gerar com `python -c "import secrets; print(secrets.token_urlsafe(32))"`. |
+| `TIMEZONE` | Fuso usado para escrever data e horário da gravação no cabeçalho (3.3). Padrão `America/Fortaleza` (Campina Grande, UTC−3). |
+| `CORS_ORIGINS` | Origens web autorizadas a chamar a API **pelo navegador**, separadas por vírgula (ex.: `http://sgl.lab,http://localhost:8080`). Vazio (padrão): só as páginas servidas pela própria API, como `/demo`. `*` não é aceito. Só é necessário quando o JavaScript das páginas do SGL chama a API direto; se o SGL chama pelo servidor (PHP), não. Liberados: `GET` e `POST`, cabeçalhos `Content-Type` e `X-API-Key`; o `Content-Disposition` do download fica legível para o navegador. |
 
 ---
 
@@ -444,6 +532,6 @@ async function waitForJob(id) {
 
 - Jobs e seus arquivos persistem em SQLite e em disco; sobrevivem a reinício da API. Jobs que estavam `running` quando a API caiu voltam como `failed` (`internal`, "interrupted by restart").
 - Jobs são executados **um por vez** na ordem de criação (fila única). Um `record_and_generate` em andamento não bloqueia a criação de outros jobs, mas eles só rodam depois dele.
-- Não há autenticação nesta versão. A API deve ficar em rede interna. O `project_id` organiza as atas, mas não protege: quem alcança a API pode listar qualquer projeto. O controle de acesso por projeto fica no SGL.
+- A autenticação é uma chave única compartilhada (`API_KEY`), sem usuários nem permissões por projeto. Quem tem a chave pode listar qualquer projeto e mandar o bot a qualquer reunião: ela deve ficar só no servidor do SGL. O `project_id` organiza as atas, mas não protege; o controle de quem vê o quê fica no SGL. Mesmo com chave, a API deve ficar em rede interna.
 - Os nomes dos participantes vêm do nome de exibição no Teams. Fala de duas pessoas no mesmo instante pode ser atribuída à pessoa errada; identificação por voz é a Parte 2 do projeto.
 - O LLM é instruído a não inventar conteúdo, mas pode errar. A ata deve ser revisada por uma pessoa antes de ser distribuída; o campo "Ata gerada automaticamente pelo GravAI" no rodapé existe para isso.
