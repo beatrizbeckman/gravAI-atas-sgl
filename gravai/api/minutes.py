@@ -15,6 +15,7 @@ from gravai.api.security import require_api_key
 from gravai.jobs.runtime import JobsRuntime
 from gravai.minutes.custom_template import CustomSpec
 from gravai.minutes.generate import missing_header_fields, prepare_utterances, resolve_template
+from gravai.minutes.meeting_time import fillable_fields
 from gravai.minutes.templates import available_templates, load_template
 from gravai.minutes.transcript_normalizer import SESSION_TRANSCRIPTION_FILE
 from gravai.recording import pipeline as recording_pipeline
@@ -53,10 +54,14 @@ class MinutesRequest(BaseModel):
             template = resolve_template(self.template, self.custom)
         except ValueError as exc:
             raise ValueError(str(exc)) from exc
-        missing = missing_header_fields(template, self.header)
+        missing = [k for k in missing_header_fields(template, self.header) if k not in self.filled_by_server(template)]
         if missing:
             raise ValueError(f"missing required header fields for template '{self.template}': {', '.join(missing)}")
         return self
+
+    def filled_by_server(self, template) -> set[str]:
+        """Header fields the client may leave out because the API fills them itself."""
+        return set()
 
     def job_params(self) -> dict:
         params: dict = {}
@@ -84,6 +89,10 @@ class FromRecordingRequest(MinutesRequest):
 class RecordAndGenerateRequest(MinutesRequest):
     meeting_url: str = Field(min_length=1)
     max_recording_seconds: int | None = Field(default=None, ge=60)
+
+    def filled_by_server(self, template) -> set[str]:
+        # Date and time come from the recording (minutes/meeting_time.py) when not sent.
+        return fillable_fields(template)
 
 
 # -------------------------------------------------------------- helpers

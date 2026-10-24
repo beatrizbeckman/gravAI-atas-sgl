@@ -55,6 +55,14 @@ class Settings(BaseSettings):
         description="Stop recording after this many seconds if the meeting end is not detected",
         alias="MAX_RECORDING_SECONDS",
     )
+    TIMEZONE: str = Field(
+        "America/Fortaleza",
+        description=(
+            "IANA timezone of the meetings, used to write the recorded date and time in the minutes header "
+            "(the container clock is UTC). America/Fortaleza = Campina Grande, UTC-3 all year"
+        ),
+        alias="TIMEZONE",
+    )
     API_KEY: str = Field(
         "",
         description=(

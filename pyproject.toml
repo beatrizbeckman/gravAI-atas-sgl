@@ -16,6 +16,7 @@ dependencies = [
     # /analyze_transcript (legacy debate analysis via Groq) and LLM_PROVIDER=groq
     "groq>=0.7.0",
     "tiktoken>=0.14.0",
+    "tzdata>=2026.5",
 ]
 
 [dependency-groups]

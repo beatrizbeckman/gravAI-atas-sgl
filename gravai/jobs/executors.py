@@ -12,11 +12,19 @@ utterances come from, the third also records and transcribes first.
 import json
 import os
 from collections.abc import Callable
+from datetime import UTC, datetime
 
 from gravai.config import Settings
 from gravai.jobs.models import Job
 from gravai.jobs.worker import ExecutionOutcome
-from gravai.minutes.generate import GenerationResult, MinutesError, generate_minutes, suggest_filename
+from gravai.minutes.generate import (
+    GenerationResult,
+    MinutesError,
+    generate_minutes,
+    resolve_template,
+    suggest_filename,
+)
+from gravai.minutes.meeting_time import fill_meeting_time, recording_span
 from gravai.minutes.transcript_normalizer import normalize_session
 from gravai.recording import pipeline
 from gravai.recording.pipeline import RECORDING_LOCK  # noqa: F401  (re-exported: tests and the API lock on it)
@@ -46,12 +54,17 @@ def run_from_recording(job: Job, progress: Progress) -> ExecutionOutcome:
 
 
 def run_record_and_generate(job: Job, progress: Progress) -> ExecutionOutcome:
+    started = datetime.now(UTC)
     tracks_dir = _record(job, progress)
+    # When the bot was inside the meeting; the job's own clock if the recorder left no timeline.
+    start, end = recording_span(tracks_dir) or (started, datetime.now(UTC))
+    template = resolve_template(job.template, job.params.get("custom"))
+    header = fill_meeting_time(template, job.header, start, end, Settings().TIMEZONE)
     progress("transcribing")
     _transcribe(tracks_dir)
     progress("normalizing")
     utterances = _normalize(tracks_dir)
-    return _generate(job, utterances, progress)
+    return _generate(job, utterances, progress, header)
 
 
 EXECUTORS = {
@@ -64,12 +77,13 @@ EXECUTORS = {
 # ------------------------------------------------------------------ steps
 
 
-def _generate(job: Job, utterances: list, progress: Progress) -> ExecutionOutcome:
-    filename = suggest_filename(job.template, job.header)
+def _generate(job: Job, utterances: list, progress: Progress, header: dict | None = None) -> ExecutionOutcome:
+    header = header if header is not None else job.header
+    filename = suggest_filename(job.template, header)
     output_path = os.path.join(minutes_output_dir(), job.id, filename)
     result: GenerationResult = generate_minutes(
         job.template,
-        job.header,
+        header,
         utterances,
         output_path,
         participants=job.params.get("participants"),

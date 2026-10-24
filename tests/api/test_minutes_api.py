@@ -229,6 +229,16 @@ def test_record_and_generate_validations_and_queueing(client, runtime):
     assert client.post("/minutes/record-and-generate", json=body).status_code == 409
 
 
+def test_record_and_generate_may_leave_date_and_time_to_the_recording(client, runtime, dell_body):
+    body = {"template": "dell", "header": {"projeto": "X"}, "meeting_url": "https://teams.live.com/meet/1"}
+    assert client.post("/minutes/record-and-generate", json=body).status_code == 202
+    # Without a recording there is nothing to take the date from.
+    no_date = {**dell_body, "header": {"projeto": "X"}}
+    assert client.post("/minutes/from-transcript", json=no_date).status_code == 422
+    # The project is never filled by the API.
+    assert client.post("/minutes/record-and-generate", json={**body, "header": {}}).status_code == 422
+
+
 def test_stop_ends_the_recording_of_a_running_job(client, runtime, monkeypatch):
     body = {
         "template": "daily",
