@@ -7,10 +7,11 @@ work itself happens in the jobs worker (jobs/).
 import os
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, Field, model_validator
 
+from gravai.api.security import require_api_key
 from gravai.jobs.runtime import JobsRuntime
 from gravai.minutes.custom_template import CustomSpec
 from gravai.minutes.generate import missing_header_fields, prepare_utterances, resolve_template
@@ -20,7 +21,7 @@ from gravai.recording import pipeline as recording_pipeline
 from gravai.recording.pipeline import RECORDING_LOCK
 from gravai.recording.utils import is_teams_meeting_url
 
-router = APIRouter(prefix="/minutes", tags=["minutes"])
+router = APIRouter(prefix="/minutes", tags=["minutes"], dependencies=[Depends(require_api_key)])
 
 DOCX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 

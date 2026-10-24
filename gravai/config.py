@@ -55,6 +55,14 @@ class Settings(BaseSettings):
         description="Stop recording after this many seconds if the meeting end is not detected",
         alias="MAX_RECORDING_SECONDS",
     )
+    API_KEY: str = Field(
+        "",
+        description=(
+            "Shared secret the clients (the SGL) send in the X-API-Key header to call /minutes/* and the "
+            "recording endpoints. Empty: no key is asked, anyone who reaches the API can use it"
+        ),
+        alias="API_KEY",
+    )
     CORS_ORIGINS: str = Field(
         "",
         description=(

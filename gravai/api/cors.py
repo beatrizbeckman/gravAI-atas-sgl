@@ -25,7 +25,7 @@ def add_cors(app: FastAPI, origins: str) -> None:
         CORSMiddleware,
         allow_origins=allowed,
         allow_methods=["GET", "POST"],
-        allow_headers=["Content-Type"],
+        allow_headers=["Content-Type", "X-API-Key"],
         # Lets the browser read the .docx file name sent by /minutes/jobs/{id}/download.
         expose_headers=["Content-Disposition"],
     )

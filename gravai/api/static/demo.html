@@ -141,12 +141,40 @@ Ou um JSON: [{&quot;speaker&quot;: &quot;Ana&quot;, &quot;start&quot;: 0, &quot;
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
+  // API_KEY on the server: the page asks for it on the first 401 and keeps it in this tab only.
+  const KEY_STORE = "gravai-api-key";
+  const readKey = () => { try { return sessionStorage.getItem(KEY_STORE) || ""; } catch { return ""; } };
+  const saveKey = (key) => { try { sessionStorage.setItem(KEY_STORE, key); } catch { /* private mode: ask again next time */ } };
+  const authFetch = async (path, options = {}) => {
+    const send = () => fetch(path, { ...options, headers: { ...(options.headers || {}), ...(readKey() ? { "X-API-Key": readKey() } : {}) } });
+    let res = await send();
+    if (res.status === 401) {
+      const key = window.prompt("Esta API pede uma chave de acesso (API_KEY do servidor):");
+      if (key) { saveKey(key.trim()); res = await send(); }
+    }
+    return res;
+  };
   const api = async (path, options) => {
-    const res = await fetch(path, options);
+    const res = await authFetch(path, options);
     const data = res.headers.get("content-type")?.includes("json") ? await res.json() : null;
     if (!res.ok) throw new Error(describeError(res.status, data));
     return data;
   };
+  // A plain link cannot send the key header, so the .docx is fetched and saved from memory.
+  const downloadFile = async (url, filename) => {
+    const res = await authFetch(url);
+    if (!res.ok) throw new Error(`download: HTTP ${res.status}`);
+    const href = URL.createObjectURL(await res.blob());
+    const a = Object.assign(document.createElement("a"), { href, download: filename });
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(href);
+  };
+  document.addEventListener("click", (ev) => {
+    const link = ev.target.closest("[data-download]");
+    if (!link) return;
+    ev.preventDefault();
+    downloadFile(link.dataset.download, link.dataset.filename).catch((err) => alert(err.message));
+  });
   const describeError = (status, data) => {
     if (!data || !data.detail) return `HTTP ${status}`;
     if (typeof data.detail === "string") return data.detail;
@@ -316,6 +344,8 @@ Ou um JSON: [{&quot;speaker&quot;: &quot;Ana&quot;, &quot;start&quot;: 0, &quot;
     if (job.status === "done") {
       $("done").style.display = "block";
       $("download").href = job.result.download_url;
+      $("download").dataset.download = job.result.download_url;
+      $("download").dataset.filename = job.result.filename;
       $("download").textContent = `Baixar ${job.result.filename}`;
       $("metrics").innerHTML = [
         `<span><b>${job.result.participants.length}</b> participantes</span>`,
@@ -373,7 +403,7 @@ Ou um JSON: [{&quot;speaker&quot;: &quot;Ana&quot;, &quot;start&quot;: 0, &quot;
         <span class="id">${j.id.slice(0, 8)}</span>
         <span class="grow">${j.template} · ${STATUS[j.status] || j.status}${j.stage ? " · " + (STAGES[j.stage] || j.stage) : ""} · ${j.created_at.replace("T", " ").replace("Z", "")}</span>
         <button class="link" data-watch="${j.id}">abrir</button>
-        ${j.status === "done" ? `<a href="${j.result.download_url}">.docx</a>` : ""}
+        ${j.status === "done" ? `<a href="${j.result.download_url}" data-download="${j.result.download_url}" data-filename="${j.result.filename}">.docx</a>` : ""}
       </li>`).join("") : `<li class="hint">Nenhum job ainda.</li>`;
   }
   $("jobs").addEventListener("click", (ev) => { if (ev.target.dataset.watch) watch(ev.target.dataset.watch); });
