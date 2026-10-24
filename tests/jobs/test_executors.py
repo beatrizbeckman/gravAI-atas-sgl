@@ -133,7 +133,7 @@ def test_record_and_generate_runs_record_transcribe_normalize_generate(env, stor
     calls = []
 
     class FakeRecorder:
-        def record_meeting_with_ws_audio_server(self, url, max_seconds=None):
+        def record_meeting_with_ws_audio_server(self, url, max_seconds=None, stop_event=None):
             calls.append(("record", url, max_seconds))
             _write_recording(folder, {"Ana": [seg(0.0, 2.0, "Fala da Ana.")]})
             return str(folder)
@@ -159,7 +159,7 @@ def test_record_and_generate_runs_record_transcribe_normalize_generate(env, stor
 
 def test_record_and_generate_failures_are_recording_failed(env, store, worker, monkeypatch):
     class BrokenRecorder:
-        def record_meeting_with_ws_audio_server(self, url, max_seconds=None):
+        def record_meeting_with_ws_audio_server(self, url, max_seconds=None, stop_event=None):
             raise RuntimeError("Rejected from joining the meeting")
 
     monkeypatch.setattr("gravai.recording.teams.TeamsMeetingRecorder", BrokenRecorder)

@@ -8,6 +8,7 @@ the same files to the recording folder whoever calls it.
 from __future__ import annotations
 
 import json
+import multiprocessing as mp
 import os
 import threading
 
@@ -18,6 +19,8 @@ SESSION_TRANSCRIPTION_FILE = "session_transcription.json"
 
 # The WS audio server and the Playwright recorder support a single meeting at a time.
 RECORDING_LOCK = threading.Lock()
+# Set while a recording runs: request_stop() sets it and the recorder process leaves the meeting.
+_stop_event = None
 
 
 class RecordingBusy(RuntimeError):
@@ -29,12 +32,32 @@ def record_meeting(meeting_url: str, max_seconds: int | None = None) -> str:
     # Imported here: Playwright and the WS server are heavy and only needed for this step.
     from gravai.recording.teams import TeamsMeetingRecorder
 
+    global _stop_event
     if not RECORDING_LOCK.acquire(blocking=False):
         raise RecordingBusy("A meeting is already being recorded. Try again when it finishes.")
+    # The recorder runs in a spawned process, so the event must come from the same start method.
+    _stop_event = mp.get_context("spawn").Event()
     try:
-        return TeamsMeetingRecorder().record_meeting_with_ws_audio_server(meeting_url, max_seconds=max_seconds)
+        return TeamsMeetingRecorder().record_meeting_with_ws_audio_server(
+            meeting_url, max_seconds=max_seconds, stop_event=_stop_event
+        )
     finally:
+        _stop_event = None
         RECORDING_LOCK.release()
+
+
+def request_stop() -> bool:
+    """
+    Asks the recording in progress to leave the meeting now; what was recorded is kept
+    and the next steps (slicing, whisper, minutes) run as usual. The recorder checks
+    the request about once a second, once it is inside the meeting. False when no
+    recording is running.
+    """
+    event = _stop_event
+    if event is None:
+        return False
+    event.set()
+    return True
 
 
 def slice_tracks(tracks_dir: str) -> tuple[str, Session]:

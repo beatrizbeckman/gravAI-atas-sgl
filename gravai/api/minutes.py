@@ -16,6 +16,7 @@ from gravai.minutes.custom_template import CustomSpec
 from gravai.minutes.generate import missing_header_fields, prepare_utterances, resolve_template
 from gravai.minutes.templates import available_templates, load_template
 from gravai.minutes.transcript_normalizer import SESSION_TRANSCRIPTION_FILE
+from gravai.recording import pipeline as recording_pipeline
 from gravai.recording.pipeline import RECORDING_LOCK
 from gravai.recording.utils import is_teams_meeting_url
 
@@ -185,6 +186,22 @@ def list_jobs(
 @router.get("/jobs/{job_id}")
 def get_job(job_id: str, request: Request) -> dict:
     return _get_job(request, job_id).public()
+
+
+@router.post("/jobs/{job_id}/stop", status_code=202)
+def stop_recording(job_id: str, request: Request) -> dict:
+    """The "end meeting" button: the bot leaves, then the job transcribes and generates as usual."""
+    job = _get_job(request, job_id)
+    if job.kind != "record_and_generate" or job.status != "running" or job.stage != "recording":
+        raise HTTPException(
+            status_code=409,
+            detail=f"job is not recording a meeting (kind {job.kind}, status {job.status}, stage {job.stage})",
+        )
+    if not recording_pipeline.request_stop():
+        raise HTTPException(
+            status_code=409, detail="the bot is still starting the recording; try again in a few seconds"
+        )
+    return job.public()
 
 
 @router.get("/jobs/{job_id}/result")

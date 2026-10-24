@@ -229,6 +229,40 @@ def test_record_and_generate_validations_and_queueing(client, runtime):
     assert client.post("/minutes/record-and-generate", json=body).status_code == 409
 
 
+def test_stop_ends_the_recording_of_a_running_job(client, runtime, monkeypatch):
+    body = {
+        "template": "daily",
+        "header": {"projeto": "X", "data": "01/10/2026"},
+        "meeting_url": "https://teams.live.com/meet/1",
+    }
+    job_id = client.post("/minutes/record-and-generate", json=body).json()["id"]
+    calls = []
+    monkeypatch.setattr("gravai.recording.pipeline.request_stop", lambda: calls.append(1) or True)
+
+    # Still queued: nothing to stop yet.
+    assert client.post(f"/minutes/jobs/{job_id}/stop").status_code == 409
+    runtime.store.update(job_id, status="running", stage="recording")
+    stopped = client.post(f"/minutes/jobs/{job_id}/stop")
+    assert stopped.status_code == 202 and stopped.json()["id"] == job_id
+    assert calls == [1]
+
+    # Already past the recording, or a job that never records.
+    runtime.store.update(job_id, stage="transcribing")
+    assert client.post(f"/minutes/jobs/{job_id}/stop").status_code == 409
+    other = runtime.store.create("from_transcript", "dell", {}, {})
+    runtime.store.update(other.id, status="running", stage="recording")
+    assert client.post(f"/minutes/jobs/{other.id}/stop").status_code == 409
+    assert client.post("/minutes/jobs/does-not-exist/stop").status_code == 404
+
+
+def test_stop_while_the_bot_is_still_starting_asks_to_retry(client, runtime, monkeypatch):
+    job = runtime.store.create("record_and_generate", "daily", {}, {"meeting_url": "https://teams.live.com/meet/1"})
+    runtime.store.update(job.id, status="running", stage="recording")
+    monkeypatch.setattr("gravai.recording.pipeline.request_stop", lambda: False)
+    response = client.post(f"/minutes/jobs/{job.id}/stop")
+    assert response.status_code == 409 and "try again" in response.json()["detail"]
+
+
 # ----------------------------------------------------------------- jobs
 
 
