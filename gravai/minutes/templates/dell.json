@@ -56,7 +56,7 @@
       "type": "bullets",
       "required": true,
       "allow_empty": true,
-      "instructions": "Sugestões levantadas que ainda não viraram decisão nem ação."
+      "instructions": "Sugestões levantadas que ficaram em aberto: ninguém aceitou nem recusou nesta reunião. Se o grupo concordou com a sugestão, ela vai para decisões, não aqui."
     },
     {
       "key": "duvidas",
@@ -88,7 +88,7 @@
         {"key": "decisao", "label": "Decisão"},
         {"key": "aprovada_por", "label": "Aprovada por", "instructions": "Nome de quem aprovou ou 'Grupo' quando foi consenso."}
       ],
-      "instructions": "Somente o que foi explicitamente decidido. Uma linha por decisão, redigida como afirmação fechada."
+      "instructions": "Escolhas fechadas NESTA reunião: o que o grupo aprovou ou aceitou, mesmo sem a palavra \"decidir\" (por exemplo \"então fica assim\", \"vamos usar X\" sem objeção). Uma linha por decisão, redigida como afirmação fechada. Não entram: decisões de reuniões anteriores que só foram relembradas, propostas sem acordo (vão para ideias) e tarefas (vão para o plano de ação)."
     },
     {
       "key": "plano_acao",
