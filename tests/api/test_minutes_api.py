@@ -229,6 +229,15 @@ def test_record_and_generate_validations_and_queueing(client, runtime):
     assert client.post("/minutes/record-and-generate", json=body).status_code == 409
 
 
+def test_callback_url_is_kept_in_the_job_and_must_be_http(client, runtime, dell_body):
+    created = client.post(
+        "/minutes/from-transcript", json={**dell_body, "callback_url": "https://sgl.lab/atas/webhook"}
+    )
+    assert created.status_code == 202
+    assert runtime.store.get(created.json()["id"]).params["callback_url"] == "https://sgl.lab/atas/webhook"
+    assert client.post("/minutes/from-transcript", json={**dell_body, "callback_url": "ftp://x"}).status_code == 422
+
+
 def test_record_and_generate_may_leave_date_and_time_to_the_recording(client, runtime, dell_body):
     body = {"template": "dell", "header": {"projeto": "X"}, "meeting_url": "https://teams.live.com/meet/1"}
     assert client.post("/minutes/record-and-generate", json=body).status_code == 202

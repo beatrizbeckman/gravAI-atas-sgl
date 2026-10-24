@@ -9,7 +9,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse
-from pydantic import BaseModel, Field, model_validator
+from pydantic import AnyHttpUrl, BaseModel, Field, model_validator
 
 from gravai.api.security import require_api_key
 from gravai.jobs.runtime import JobsRuntime
@@ -45,6 +45,8 @@ class MinutesRequest(BaseModel):
     project_id: str | None = Field(default=None, min_length=1, max_length=100)
     participants: list[str] | None = None
     custom: CustomSpec | None = None
+    # Webhook: where to POST the job when it finishes (done or failed). See jobs/callback.py.
+    callback_url: AnyHttpUrl | None = None
 
     @model_validator(mode="after")
     def check_template_and_header(self):
@@ -69,6 +71,8 @@ class MinutesRequest(BaseModel):
             params["participants"] = self.participants
         if self.custom is not None:
             params["custom"] = self.custom.model_dump(exclude_none=True)
+        if self.callback_url is not None:
+            params["callback_url"] = str(self.callback_url)
         return params
 
 
