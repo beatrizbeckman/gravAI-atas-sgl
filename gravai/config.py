@@ -71,14 +71,6 @@ class Settings(BaseSettings):
         ),
         alias="API_KEY",
     )
-    CORS_ORIGINS: str = Field(
-        "",
-        description=(
-            "Comma-separated web origins allowed to call the API from a browser (the SGL), e.g. "
-            "'http://sgl.lab,http://localhost:8080'. Empty: only pages served by the API itself (/demo)"
-        ),
-        alias="CORS_ORIGINS",
-    )
 
     # Minutes generation
     LLM_PROVIDER: str = Field(

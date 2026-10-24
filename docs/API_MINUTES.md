@@ -7,7 +7,7 @@ Versão do contrato: **1.2** (24/10/2026). Mudanças incompatíveis sobem a vers
 | Versão | O que mudou |
 |---|---|
 | 1.0 (01/10/2026) | Primeira versão: templates, três formas de criar job, acompanhamento e download. |
-| 1.1 (23/10/2026) | `project_id` opcional nos jobs e filtro `GET /minutes/jobs?project_id=` (3, 3.5, 4.1, 4.5); CORS configurável para clientes no navegador (7); LLM online como padrão (Groq, `openai/gpt-oss-120b`). Nada que funcionava na 1.0 mudou. |
+| 1.1 (23/10/2026) | `project_id` opcional nos jobs e filtro `GET /minutes/jobs?project_id=` (3, 3.5, 4.1, 4.5); LLM online como padrão (Groq, `openai/gpt-oss-120b`). Nada que funcionava na 1.0 mudou. |
 | 1.2 (24/10/2026) | Fluxo da aba de reunião do SGL (3.6): encerrar a gravação (`POST /minutes/jobs/{id}/stop`, 4.6), data e horário preenchidos pela gravação (3.3), aviso de conclusão por webhook (`callback_url`, 4.7) e chave de acesso opcional (`X-API-Key`, 1.1). Com `API_KEY` vazio, nada que funcionava na 1.1 mudou. |
 
 ---
@@ -287,7 +287,7 @@ mostra a ata ◄────────── GET  /minutes/jobs/{id}/result �
 
 Pontos de atenção:
 
-1. **Chamadas pelo servidor do SGL.** Com `API_KEY`, quem chama é o PHP do SGL (que guarda a chave). Se as páginas do SGL chamarem direto pelo navegador, configurar `CORS_ORIGINS` e não usar `API_KEY` exposta no JavaScript.
+1. **Chamadas pelo servidor do SGL.** Quem chama a API é o PHP do SGL, que guarda a chave. A API não aceita chamadas feitas pelo JavaScript de páginas de outro endereço (não há CORS), e a chave nunca deve ir para o navegador.
 2. **O SGL guarda o `job.id`** na reunião dele. É por esse id que acompanha, encerra e baixa; o `project_id` serve para listar as atas do projeto.
 3. **Cabeçalho mínimo:** `projeto` (e os obrigatórios do modelo que não são data/hora, como `professores` no template `professores`). Data e horário vêm da gravação (3.3).
 4. **Admissão do bot.** O bot entra como convidado e pode ficar na sala de espera do Teams; alguém precisa admiti-lo. O job fica em `running · recording` desde que o bot começa a entrar.
@@ -524,7 +524,6 @@ async function waitForJob(id) {
 | `SAVE_DIR` | Onde as gravações e os `.docx` são salvos. |
 | `API_KEY` | Chave exigida no cabeçalho `X-API-Key` (1.1) e enviada nos avisos de `callback_url` (4.7). Vazia (padrão): API aberta. Gerar com `python -c "import secrets; print(secrets.token_urlsafe(32))"`. |
 | `TIMEZONE` | Fuso usado para escrever data e horário da gravação no cabeçalho (3.3). Padrão `America/Fortaleza` (Campina Grande, UTC−3). |
-| `CORS_ORIGINS` | Origens web autorizadas a chamar a API **pelo navegador**, separadas por vírgula (ex.: `http://sgl.lab,http://localhost:8080`). Vazio (padrão): só as páginas servidas pela própria API, como `/demo`. `*` não é aceito. Só é necessário quando o JavaScript das páginas do SGL chama a API direto; se o SGL chama pelo servidor (PHP), não. Liberados: `GET` e `POST`, cabeçalhos `Content-Type` e `X-API-Key`; o `Content-Disposition` do download fica legível para o navegador. |
 
 ---
 

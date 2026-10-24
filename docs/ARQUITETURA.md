@@ -344,7 +344,7 @@ Essa é a interface que o SGL, ou qualquer outro cliente, chama. O contrato comp
 
 A validação acontece **antes** de criar o job, com Pydantic: template desconhecido, cabeçalho sem campo obrigatório, lista de falas vazia ou `custom` mal formado dão 422 na hora. Erros durante a execução nunca viram 500, viram `status: failed` com um `error.code`.
 
-Desde a versão 1.1 do contrato (23/10/2026), os três `POST` aceitam `project_id`, que o job guarda para o SGL listar as atas de cada projeto, e a API aceita chamadas do navegador vindas das origens em `CORS_ORIGINS` (`gravai/api/cors.py`). O modelo personalizado de cada projeto fica no SGL e vai no `custom` de cada requisição.
+Desde a versão 1.1 do contrato (23/10/2026), os três `POST` aceitam `project_id`, que o job guarda para o SGL listar as atas de cada projeto. O modelo personalizado de cada projeto fica no SGL e vai no `custom` de cada requisição.
 
 A versão 1.2 (24/10/2026) fecha o fluxo da aba de reunião do SGL (contrato, seção 3.6): `POST /minutes/jobs/{id}/stop` encerra a gravação (`recording/pipeline.request_stop`, que acende um evento lido pelo processo do Playwright a cada segundo); em `record-and-generate`, data e horário vazios são preenchidos com o tempo real da gravação (`minutes/meeting_time.py`, fuso `TIMEZONE`); `callback_url` faz a API avisar o SGL quando o job termina (`jobs/callback.py`, em uma thread separada, três tentativas); e `API_KEY` exige o cabeçalho `X-API-Key` nas rotas de atas e de gravação (`api/security.py`).
 
