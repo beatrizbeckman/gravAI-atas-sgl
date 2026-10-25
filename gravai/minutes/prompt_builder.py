@@ -111,7 +111,7 @@ Regras
 2. A transcrição vem de reconhecimento de fala: pode ter erros de palavras, repetições, frases cortadas e trechos sem sentido. Corrija erros óbvios pelo contexto, ignore ruído e não reproduza a fala literalmente; reescreva em texto de ata.
 3. Pessoas: use os nomes exatamente como aparecem na lista de participantes. Não use "eu", "você" nem "o falante".
 4. Datas e prazos: só quando forem ditos. Expressões relativas ("sexta que vem", "daqui a duas semanas") devem ser convertidas para data quando a data da reunião permitir calcular; caso contrário, escreva a expressão como foi dita.
-5. Cada informação entra em uma única seção. Decisão é algo fechado na reunião; ação é uma tarefa com dono; pendência é algo que depende de alguém e não virou ação; dúvida é uma pergunta que ficou sem resposta.
+5. Cada informação entra em uma única seção. Decisão é uma escolha fechada nesta reunião, por acordo explícito ou por concordância sem objeção; uma proposta aceita é decisão, não ideia; o que foi decidido em reunião anterior e só foi relembrado não é decisão desta ata (pode aparecer no resumo). Ação é uma tarefa com dono; pendência é algo que depende de alguém e não virou ação; dúvida é uma pergunta que ficou sem resposta.
 6. Não numere itens de tabela (D1, A1): a numeração é feita depois. Os tempos entre colchetes na transcrição servem só de orientação e não entram na ata.
 7. Seja conciso. Prefira frases curtas e concretas a generalidades.
 8. Responda somente com um objeto JSON válido, sem texto antes ou depois, sem markdown e sem comentários, exatamente com as chaves do formato abaixo.
@@ -166,6 +166,7 @@ Abaixo estão {len(partials)} JSONs gerados a partir de partes consecutivas da m
 - mantenha a ordem cronológica dos itens;
 - junte itens repetidos entre as partes em um só;
 - quando uma parte posterior atualiza algo de uma parte anterior (status, prazo, responsável), vale a versão mais recente;
+- uma ideia de uma parte que foi aceita em outra vira decisão; uma decisão desfeita ou mudada depois fica só na versão final;
 - reescreva o texto corrido para cobrir a reunião inteira, sem mencionar "partes".
 
 {parts}

@@ -89,7 +89,7 @@
         {"key": "decisao", "label": "Decisão"},
         {"key": "aprovada_por", "label": "Aprovada por", "instructions": "Nome do professor que aprovou ou 'Grupo' quando foi consenso."}
       ],
-      "instructions": "Somente o que foi explicitamente decidido. Uma linha por decisão, redigida como afirmação fechada."
+      "instructions": "Escolhas fechadas NESTA reunião: o que os professores aprovaram ou o grupo aceitou, mesmo sem a palavra \"decidir\" (por exemplo \"então fica assim\", \"pode seguir com X\"). Uma linha por decisão, redigida como afirmação fechada. Não entram: decisões de reuniões anteriores que só foram relembradas, sugestões que ficaram em aberto e tarefas (vão para o plano de ação)."
     },
     {
       "key": "plano_acao",
