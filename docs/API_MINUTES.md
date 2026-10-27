@@ -264,7 +264,7 @@ O modelo personalizado vai **inteiro em cada requisição**: assim a API não te
 
 ### 3.6 Fluxo da aba de reunião do SGL
 
-O caso principal da integração: na aba de reunião de um projeto, o usuário escolhe o modelo de ata, inicia a reunião, o bot grava e transcreve, e no fim a ata aparece no SGL. O passo a passo do lado do SGL (banco, cliente HTTP, controller, webhook, aba em React e testes) está em [`docs/INTEGRACAO_SGL.md`](INTEGRACAO_SGL.md).
+O caso principal da integração: na aba de reunião de um projeto, o usuário escolhe o modelo de ata, inicia a reunião, o bot grava e transcreve, e no fim a ata aparece no SGL.
 
 ```
 Usuário (SGL)            Servidor do SGL                          API GravAI

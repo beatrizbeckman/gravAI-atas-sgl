@@ -69,7 +69,6 @@ Duas coisas para guardar desse desenho:
 | `gravai/api/demo.py` + `gravai/api/static/demo.html` | **Página de demonstração** que faz o papel do SGL | TCC Parte 1 |
 | `gravai/config.py` | Leitura do `.env` | GravAI original, com variáveis novas |
 | `docs/API_MINUTES.md` | Contrato HTTP da API de atas | TCC Parte 1 |
-| `docs/INTEGRACAO_SGL.md` | Guia para o dev do SGL implementar a aba "Reuniões" | TCC Parte 1 |
 | `docker/Dockerfile`, `docker-compose*.yaml`, `Makefile` | Empacotamento e comandos | GravAI original, ajustado |
 | `tmp/` | Gravações, docx gerados e o SQLite dos jobs. Não vai para o git | runtime |
 
