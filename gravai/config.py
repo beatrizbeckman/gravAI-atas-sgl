@@ -103,7 +103,7 @@ class Settings(BaseSettings):
         "", description="API key of the online provider; sent as 'Authorization: Bearer <key>'", alias="LLM_API_KEY"
     )
     LLM_MODEL: str = Field(
-        # Only model with 5/5 minutes in the experiments on the Groq free tier (LLMS.md)
+        # Only model with 5/5 minutes in the experiments on the Groq free tier (experiments/README.md)
         "openai/gpt-oss-120b",
         description="Model id at the online provider, in the provider's own naming",
         alias="LLM_MODEL",
