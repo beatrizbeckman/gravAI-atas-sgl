@@ -53,7 +53,14 @@ def transcribe(audio_file: str, whisper_server_host: str, whisper_server_port: i
         response = requests.post(
             f"http://{whisper_server_host}:{whisper_server_port}/inference",
             files={"file": (os.path.basename(audio_file), audio, "audio/wav")},
-            data={"temperature": "0.0", "response_format": "verbose_json"},
+            data={
+                "temperature": "0.0",
+                "response_format": "verbose_json",
+                # Each 30 s window is transcribed on its own. With the previous window's text as
+                # context, whisper invents a subtitle credit on the silence at the start of a track
+                # and then repeats it in every window, wiping out the real speech that follows.
+                "max_context": "0",
+            },
             # Long meetings on CPU can take a while; fail instead of hanging forever.
             timeout=3_600,
         )
