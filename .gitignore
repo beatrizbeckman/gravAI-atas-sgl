@@ -35,13 +35,15 @@ venv/
 !.vscode/launch.json
 .DS_Store
 Thumbs.db
-# running work log and LLM comparison notes, kept out of the repo on purpose
+# Private notes, kept out of the repo on purpose: work log, LLM comparison notes,
+# TCC context and the integration guide sent straight to the SGL developer.
+# Every other .md (README.md, docs/ARQUITETURA.md, docs/API_MINUTES.md...) is versioned.
 DIARIO_PARTE1.md
 LLMS.md
+CONTEXTO_TCC.md
+docs/INTEGRACAO_SGL.md
 # dataset build caches (translation chunks, raw downloads)
 datasets/raw/
 datasets/reunioes/*/traducao_cache.json
 # experiment runs (prompts, raw replies, docx); commit a run on purpose with git add -f
 experiments/results/
-
-*.md
