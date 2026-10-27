@@ -73,6 +73,7 @@ def test_drops_known_hallucinations_and_loops():
                 seg(0.0, 1.0, "Legendas pela comunidade Amara.org"),
                 seg(2.0, 3.0, "[Música]"),
                 seg(4.0, 5.0, "..."),
+                seg(6.0, 7.0, " Legenda Adriana Zanotto"),
                 seg(10.0, 11.0, "Obrigado."),
                 seg(11.0, 12.0, "Obrigado."),
                 seg(12.0, 13.0, "Obrigado."),
@@ -105,3 +106,11 @@ def test_different_speech_at_the_same_time_is_kept():
         }
     )
     assert [u.speaker for u in result] == ["Ana", "Bruno"]
+
+
+def test_speech_that_mentions_subtitles_is_kept():
+    result = normalize_segments(
+        {"Ana": [seg(0.0, 4.0, "A legenda do gráfico precisa ser revisada antes da entrega.")]},
+        merge_gap_s=None,
+    )
+    assert len(result) == 1

@@ -13,6 +13,8 @@ SESSION_TRANSCRIPTION_FILE = "session_transcription.json"
 # sound tags like [Música] and segments made only of punctuation.
 HALLUCINATION_PATTERN = re.compile(
     r"amara\.org|legenda(s|do)? pela comunidade|legendas? por|obrigad[oa] por assistir|"
+    # a subtitle credit with a name and nothing else, e.g. "Legenda Adriana Zanotto"
+    r"^legendas?:? \S+( \S+){0,3}\.?$|"
     r"inscreva-se|se inscreva|curta e compartilhe|^[\[\(].*[\]\)]$|^\W+$",
     re.IGNORECASE,
 )
