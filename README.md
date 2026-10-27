@@ -132,4 +132,92 @@ curl -OJ http://localhost:8000/minutes/jobs/<id>/download
 
 A demonstration page that drives the same endpoints is served at [http://localhost:8000/demo](http://localhost:8000/demo): pick a template, fill the header, paste a transcript (or point to a recording, or give a Teams link), follow the job and download the `.docx`.
 
+### Testing on a server, the way the SGL calls the API
+
+The SGL (the lab's project system) calls the same HTTP routes from its server, so they can be exercised with `curl` before the SGL side exists. Contract: `docs/API_MINUTES.md` (section 3.6 is the meeting flow).
+
+**1. Configure and start** (Docker with the bundled whisper). Lines that matter in `.env`:
+
+```dotenv
+WHISPER_HOST=whisper
+LLM_PROVIDER=openai_compatible
+LLM_BASE_URL=https://api.groq.com/openai/v1
+LLM_API_KEY=<groq key>
+LLM_MODEL=openai/gpt-oss-120b
+API_KEY=<any secret; clients send it in X-API-Key>
+TIMEZONE=America/Fortaleza
+```
+
+```bash
+sudo docker compose --env-file .env -f docker/docker-compose-whisper.yaml up -d --build
+sudo docker logs --tail 15 gravai-app          # "Application startup complete"
+sudo docker logs -f --tail 20 gravai-app       # keep open in a second terminal
+```
+
+`.env` is read only at startup: after changing it, `restart app`; after changing code, `up -d --build app`.
+
+**2. Shell helpers** (paste again in every new terminal):
+
+```bash
+API=http://localhost:8000
+KEY=<the API_KEY above>
+id_do_job() { python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('id') or d)"; }
+situacao() { curl -sS -H "X-API-Key: $KEY" "$API/minutes/jobs/$1" | python3 -c "import json,sys; j=json.load(sys.stdin); print(j['status'], j['stage'] or '', (j['error'] or {}).get('code',''), (j['error'] or {}).get('message','')[:200])"; }
+acompanhar() { while :; do s=$(situacao "$1"); echo "$(date +%T) $s"; case "$s" in done*|failed*) break;; esac; sleep 15; done; }
+```
+
+**3. Access key**: expect `401` without the key and `200` with it.
+
+```bash
+curl -sS -o /dev/null -w "%{http_code}\n" $API/minutes/templates
+curl -sS -o /dev/null -w "%{http_code}\n" -H "X-API-Key: $KEY" $API/minutes/templates
+```
+
+**4. Minutes from a ready transcript** (a dataset meeting, tagged with a project):
+
+```bash
+python3 -c "import json; d=json.load(open('datasets/reunioes/ES2004a/transcricao.json')); d['project_id']='sgl-teste'; json.dump(d, open('/tmp/es2004a.json','w'))"
+JOB=$(curl -sS -X POST $API/minutes/from-transcript -H "X-API-Key: $KEY" -H "Content-Type: application/json" --data-binary @/tmp/es2004a.json | id_do_job); echo $JOB
+acompanhar $JOB
+curl -sS -H "X-API-Key: $KEY" $API/minutes/jobs/$JOB/result | python3 -m json.tool | less
+```
+
+**5. Minutes from a recording that was already transcribed** (`data` is required here because nothing is recorded):
+
+```bash
+JOB=$(curl -sS -X POST $API/minutes/from-recording -H "X-API-Key: $KEY" -H "Content-Type: application/json" \
+  -d '{"project_id":"sgl-teste","template":"dell","header":{"projeto":"Teste","data":"22/10/2026"},"tracks_dir":"/app/tmp/<session>_tracks"}' | id_do_job); echo $JOB
+acompanhar $JOB
+```
+
+**6. Live meeting: the bot joins, records, is stopped and writes the minutes.** This is the SGL meeting tab. The header carries only the project; date and time come from the recording.
+
+```bash
+LINK='https://teams.live.com/meet/...'           # paste only the link, between single quotes
+JOB=$(curl -sS -X POST $API/minutes/record-and-generate -H "X-API-Key: $KEY" -H "Content-Type: application/json" -d "{\"project_id\":\"sgl-teste\",\"template\":\"dell\",\"header\":{\"projeto\":\"Teste\"},\"meeting_url\":\"$LINK\"}" | id_do_job); echo $JOB
+situacao $JOB                                     # admit "GravAI Bot" in Teams (~40 s); then "running recording"
+# ... talk: a topic, a decision, a task with owner and deadline ...
+curl -sS -X POST -H "X-API-Key: $KEY" $API/minutes/jobs/$JOB/stop -w "\nHTTP %{http_code}\n"   # 202: the bot leaves
+acompanhar $JOB                                   # transcribing -> generating -> done
+curl -sS -H "X-API-Key: $KEY" $API/minutes/jobs/$JOB | python3 -m json.tool | grep -A4 '"header"'   # date and time filled
+```
+
+Ending the meeting for everyone in Teams also makes the bot leave. If everyone only leaves the call, it stays until `MAX_RECORDING_SECONDS`.
+
+**7. Minutes of a project** (what the SGL tab lists):
+
+```bash
+curl -sS -H "X-API-Key: $KEY" "$API/minutes/jobs?project_id=sgl-teste" | python3 -c "import json,sys; [print(j['id'][:8], j['kind'], j['status'], j['header'].get('data','')) for j in json.load(sys.stdin)['jobs']]"
+```
+
+**8. Word files**: download on the server, then copy them on your own machine.
+
+```bash
+for id in $(curl -sS -H "X-API-Key: $KEY" "$API/minutes/jobs?project_id=sgl-teste&status=done" | python3 -c "import json,sys; print(' '.join(j['id'] for j in json.load(sys.stdin)['jobs']))"); do curl -sS -H "X-API-Key: $KEY" "$API/minutes/jobs/$id/download" -o "ata-${id:0:8}.docx"; done; ls -l ata-*.docx
+# on your machine (scp runs where the files go; -P is the SSH port):
+scp -P <port> "<user>@<server>:~/gravAI-atas-sgl/ata-*.docx" .
+```
+
+**When something fails.** `situacao` shows the error code. `llm_unreachable` with `(401)` means a wrong `LLM_API_KEY` (fix `.env`, then `restart app`). A minutes made only of "Legenda ..." lines means whisper got audio it could not understand; measure the tracks with `sudo docker exec gravai-app ffmpeg -hide_banner -i /app/tmp/<session>_tracks/<track>.wav -af volumedetect -f null - 2>&1 | grep max_volume` (around -91 dB is silence).
+
 The project is early-stage and evolving. Expect breaking changes as we harden reliability and multi-platform support.
