@@ -132,6 +132,8 @@ curl -OJ http://localhost:8000/minutes/jobs/<id>/download
 
 A demonstration page that drives the same endpoints is served at [http://localhost:8000/demo](http://localhost:8000/demo): pick a template, fill the header, paste a transcript (or point to a recording, or give a Teams link), follow the job and download the `.docx`.
 
+[http://localhost:8000/demo/sgl](http://localhost:8000/demo/sgl) is only the content of the SGL "Reuniões" tab (the SGL's sidebar, project card and other tabs are not repeated), in the SGL's daisyUI `business` theme (loaded from a CDN, so it needs internet), driving the real API: record a meeting and stop it, the project's minutes (view and Word), and the custom model editor with "describe in text → sections" and "save as the project's model". The project picker, meeting titles and project models live in the browser's localStorage, standing in for what the SGL already has; a button generates minutes from a dataset meeting to demo without Teams.
+
 ### Testing on a server, the way the SGL calls the API
 
 The SGL (the lab's project system) calls the same HTTP routes from its server, so they can be exercised with `curl` before the SGL side exists. Contract: `docs/API_MINUTES.md` (section 3.6 is the meeting flow).
@@ -171,6 +173,13 @@ acompanhar() { while :; do s=$(situacao "$1"); echo "$(date +%T) $s"; case "$s" 
 ```bash
 curl -sS -o /dev/null -w "%{http_code}\n" $API/minutes/templates
 curl -sS -o /dev/null -w "%{http_code}\n" -H "X-API-Key: $KEY" $API/minutes/templates
+```
+
+**3b. Custom minutes from a description** (the SGL "customize the minutes" screen): the LLM turns a description into sections; send the returned `custom` with `"template":"custom"` in any request below.
+
+```bash
+curl -sS -X POST $API/minutes/templates/draft -H "X-API-Key: $KEY" -H "Content-Type: application/json" \
+  -d '{"description":"Quero o objetivo do projeto, as decisões e as tarefas com responsável e prazo."}' | python3 -m json.tool
 ```
 
 **4. Minutes from a ready transcript** (a dataset meeting, tagged with a project):

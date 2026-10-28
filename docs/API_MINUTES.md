@@ -2,13 +2,14 @@
 
 Contrato HTTP para gerar atas de reunião (`.docx`) a partir de transcrições ou gravações feitas pelo GravAI. Este documento é a referência para qualquer cliente da API: a página de demonstração do próprio GravAI, o SGL ou um script.
 
-Versão do contrato: **1.2** (24/10/2026). Mudanças incompatíveis sobem a versão principal (2.0); acréscimos que não quebram clientes antigos sobem a secundária. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
+Versão do contrato: **1.3** (27/10/2026). Mudanças incompatíveis sobem a versão principal (2.0); acréscimos que não quebram clientes antigos sobem a secundária. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
 
 | Versão | O que mudou |
 |---|---|
 | 1.0 (01/10/2026) | Primeira versão: templates, três formas de criar job, acompanhamento e download. |
 | 1.1 (23/10/2026) | `project_id` opcional nos jobs e filtro `GET /minutes/jobs?project_id=` (3, 3.5, 4.1, 4.5); LLM online como padrão (Groq, `openai/gpt-oss-120b`). Nada que funcionava na 1.0 mudou. |
 | 1.2 (24/10/2026) | Fluxo da aba de reunião do SGL (3.6): encerrar a gravação (`POST /minutes/jobs/{id}/stop`, 4.6), data e horário preenchidos pela gravação (3.3), aviso de conclusão por webhook (`callback_url`, 4.7) e chave de acesso opcional (`X-API-Key`, 1.1). Com `API_KEY` vazio, nada que funcionava na 1.1 mudou. |
+| 1.3 (27/10/2026) | Modelo de ata a partir de uma descrição em texto (`POST /minutes/templates/draft`, 3.7). As chamadas ao LLM passam a esperar e tentar de novo quando o provedor limita o uso (429), em vez de falhar o job na hora (`llm_unreachable` só depois das novas tentativas). Nada que funcionava na 1.2 mudou. |
 
 ---
 
@@ -295,6 +296,51 @@ Pontos de atenção:
 6. **Uma reunião por vez** no servidor (3.3): enquanto uma grava, outra tentativa recebe `409`; o SGL deve mostrar "o gravador está ocupado, tente mais tarde".
 7. **Revisão.** A ata é um rascunho gerado por IA: o SGL deve deixar claro que precisa de revisão antes de ser distribuída (seção 8).
 
+### 3.7 `POST /minutes/templates/draft` — modelo de ata a partir de uma descrição
+
+Para a tela "personalizar ata": a pessoa descreve em texto como quer a ata, a IA propõe as **seções** (título, tipo, o que deve conter e, nas tabelas, as colunas), a pessoa revisa e salva como modelo do projeto. O que volta é um objeto `custom` pronto (3.4), aceito como está por qualquer `POST` de geração.
+
+Descrever em texto e mandar como `custom.instructions` também funciona, mas a ata sai como **um bloco de texto só**. Passando pelo rascunho, ela sai **estruturada** (listas e tabelas separadas), como os modelos do laboratório.
+
+**Corpo**
+
+```json
+{
+  "description": "Quero o objetivo do projeto, os números combinados (preço, custo, metas), as escolhas de design com o motivo, as ideias descartadas e as próximas tarefas com quem faz e até quando.",
+  "name": "Ata de kickoff",
+  "tone": "Direto e informal."
+}
+```
+
+| Campo | Regras |
+|---|---|
+| `description` | Obrigatório, 10 a 3000 caracteres. Como a pessoa quer a ata, em linguagem comum. |
+| `name`, `tone` | Opcionais. Vão para o modelo como estão (`tone` até 300 caracteres). Sem `name`, a IA sugere um. |
+
+**Resposta `200`** (síncrona: uma chamada ao LLM, em geral poucos segundos)
+
+```json
+{
+  "custom": {
+    "name": "Ata de kickoff",
+    "tone": "Direto e informal.",
+    "sections": [
+      {"key": "objetivo_do_projeto", "title": "Objetivo do Projeto", "type": "paragraph", "instructions": "..."},
+      {"key": "numeros_combinados", "title": "Números Combinados", "type": "table", "instructions": "...",
+       "columns": [{"key": "item", "label": "Item"}, {"key": "valor", "label": "Valor"}]},
+      {"key": "proximas_tarefas", "title": "Próximas Tarefas", "type": "table", "instructions": "...",
+       "columns": [{"key": "tarefa", "label": "Tarefa"}, {"key": "responsavel", "label": "Responsável"}, {"key": "prazo", "label": "Prazo"}]}
+    ]
+  },
+  "llm_model": "openai/gpt-oss-120b"
+}
+```
+
+- As `key` são geradas pela API a partir dos títulos (`snake_case`, sem acento, únicas); a IA só propõe título, tipo, instruções e nomes de coluna. Tipos propostos: `paragraph`, `bullets`, `topics` e `table`.
+- O rascunho é uma **proposta**: o cliente mostra para a pessoa editar (renomear, mudar tipo, tirar ou acrescentar seção) antes de salvar.
+- Erros: `422` (descrição curta demais ou longa demais), `503` (`llm_unreachable`: LLM fora do ar, chave errada ou limite de uso que não passou após duas tentativas curtas), `502` (`llm_invalid_response`: a IA não devolveu seções aproveitáveis, mesmo tentando duas vezes). O `detail` traz o código e o motivo.
+- Como a pessoa está esperando na tela, as novas tentativas por limite de uso são curtas (5 s e 15 s); o cliente deve usar um tempo limite de pelo menos 60 s nesta chamada.
+
 ---
 
 ## 4. Acompanhar jobs
@@ -343,7 +389,7 @@ Códigos de `error.code`:
 
 | `code` | Significado | O que o cliente faz |
 |---|---|---|
-| `llm_unreachable` | O LLM não respondeu ou recusou a chamada: provedor online fora do ar, chave ausente ou inválida, sem saldo (402), limite de uso (429) mesmo após as novas tentativas, tempo esgotado; ou servidor Ollama fora do ar / modelo não baixado. `message` traz o motivo. | Avisar o operador; tentar de novo mais tarde. |
+| `llm_unreachable` | O LLM não respondeu ou recusou a chamada: provedor online fora do ar, chave ausente ou inválida, sem saldo (402), limite de uso (429) mesmo depois de esperar e tentar de novo (pausas de 20, 40, 60, 90 e 120 s), tempo esgotado; ou servidor Ollama fora do ar / modelo não baixado. `message` traz o motivo. | Avisar o operador; tentar de novo mais tarde. |
 | `llm_invalid_response` | O modelo não devolveu JSON válido ou deixou seção obrigatória vazia, mesmo após as tentativas. | Tentar de novo; se persistir, revisar a transcrição (muito curta ou sem conteúdo). |
 | `empty_transcript` | Após a normalização não sobrou nenhuma fala. | Checar a gravação/transcrição. |
 | `transcription_failed` | Whisper falhou ou não respondeu. | Avisar o operador. |
@@ -486,7 +532,12 @@ curl -X POST http://localhost:8000/minutes/from-recording \
   -H "Content-Type: application/json" \
   -d '{"template":"daily","header":{"projeto":"GravAI","data":"01/10/2026 · 09:00 – 09:15"},"tracks_dir":"./tmp/5d3136ef-0d7f-4664-a8d8-28ecc6b4929e_tracks"}'
 
-# 7. Aba de reunião do SGL (3.6), com chave de acesso
+# 7. Modelo de ata a partir de uma descrição (3.7)
+curl -X POST http://localhost:8000/minutes/templates/draft -H "Content-Type: application/json" \
+  -d '{"description":"Quero o objetivo, as decisões e as tarefas com responsável e prazo."}'
+# → 200 {"custom": {"name": "...", "sections": [...]}, "llm_model": "..."}; mandar esse custom num POST com "template":"custom"
+
+# 8. Aba de reunião do SGL (3.6), com chave de acesso
 KEY="a chave do .env do servidor"
 curl -X POST http://localhost:8000/minutes/record-and-generate \
   -H "Content-Type: application/json" -H "X-API-Key: $KEY" \

@@ -23,6 +23,13 @@ def demo_page() -> str:
         return f.read()
 
 
+@router.get("/demo/sgl", response_class=HTMLResponse, include_in_schema=False)
+def sgl_page() -> str:
+    """The "Reuniões" tab as it would look inside the SGL (same daisyUI theme), driving the real API."""
+    with open(os.path.join(STATIC_DIR, "sgl.html"), encoding="utf-8") as f:
+        return f.read()
+
+
 @router.get("/demo/examples")
 def list_examples() -> dict:
     examples = [
