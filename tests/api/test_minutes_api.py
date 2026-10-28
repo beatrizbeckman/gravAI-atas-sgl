@@ -120,6 +120,34 @@ def test_from_transcript_full_cycle(client, runtime, dell_body, speakers):
     assert download.content[:2] == b"PK"  # a .docx is a zip
 
 
+def test_draft_turns_a_description_into_a_custom_that_generates_minutes(client, runtime, dell_body):
+    drafted = client.post(
+        "/minutes/templates/draft", json={"description": "Quero o objetivo, as decisões e as tarefas."}
+    )
+    assert drafted.status_code == 200, drafted.text
+    custom = drafted.json()["custom"]
+    assert custom["sections"] and drafted.json()["llm_model"] == "fake"
+
+    # The draft is sent back as it is, as the `custom` of a minutes request.
+    body = {**dell_body, "template": "custom", "custom": custom, "header": {"projeto": "X", "data": "01/10/2026"}}
+    created = client.post("/minutes/from-transcript", json=body)
+    assert created.status_code == 202, created.text
+    assert runtime.worker.run(created.json()["id"]).status == "done"
+
+
+def test_draft_validation_and_llm_errors(client, monkeypatch):
+    assert client.post("/minutes/templates/draft", json={"description": "curta"}).status_code == 422
+    monkeypatch.setattr(
+        "gravai.minutes.template_draft.llm.generate",
+        lambda system, user, **kw: (_ for _ in ()).throw(RuntimeError("provider down")),
+    )
+    down = client.post("/minutes/templates/draft", json={"description": "Quero o objetivo e as decisões."})
+    assert down.status_code == 503 and "llm_unreachable" in down.json()["detail"]
+    monkeypatch.setattr("gravai.minutes.template_draft.llm.generate", lambda system, user, **kw: "não sei")
+    bad = client.post("/minutes/templates/draft", json={"description": "Quero o objetivo e as decisões."})
+    assert bad.status_code == 502 and "llm_invalid_response" in bad.json()["detail"]
+
+
 def test_from_transcript_with_custom_template_and_participants(client, runtime, dell_body):
     body = {
         "template": "custom",

@@ -13,9 +13,11 @@ from pydantic import AnyHttpUrl, BaseModel, Field, model_validator
 
 from gravai.api.security import require_api_key
 from gravai.jobs.runtime import JobsRuntime
+from gravai.minutes import llm
 from gravai.minutes.custom_template import CustomSpec
-from gravai.minutes.generate import missing_header_fields, prepare_utterances, resolve_template
+from gravai.minutes.generate import MinutesError, missing_header_fields, prepare_utterances, resolve_template
 from gravai.minutes.meeting_time import fillable_fields
+from gravai.minutes.template_draft import draft_custom_template
 from gravai.minutes.templates import available_templates, load_template
 from gravai.minutes.transcript_normalizer import SESSION_TRANSCRIPTION_FILE
 from gravai.recording import pipeline as recording_pipeline
@@ -74,6 +76,14 @@ class MinutesRequest(BaseModel):
         if self.callback_url is not None:
             params["callback_url"] = str(self.callback_url)
         return params
+
+
+class TemplateDraftRequest(BaseModel):
+    """A plain-language description of the minutes the user wants (contract section 3.7)."""
+
+    description: str = Field(min_length=10, max_length=3000)
+    name: str | None = Field(default=None, max_length=100)
+    tone: str | None = Field(default=None, max_length=300)
 
 
 class FromTranscriptRequest(MinutesRequest):
@@ -142,6 +152,21 @@ def _recording_in_progress(runtime: JobsRuntime) -> bool:
 @router.get("/templates")
 def list_templates() -> dict:
     return {"templates": [load_template(t).summary() for t in available_templates()]}
+
+
+@router.post("/templates/draft")
+def draft_template(body: TemplateDraftRequest) -> dict:
+    """
+    "Describe how you want the minutes": the LLM proposes sections from the description and
+    the client shows them for review. The `custom` returned can be sent as is in any POST.
+    Synchronous: one LLM call, usually a few seconds (longer when the provider rate-limits).
+    """
+    try:
+        custom = draft_custom_template(body.description, body.name, body.tone)
+    except MinutesError as exc:
+        status = 503 if exc.code == "llm_unreachable" else 502
+        raise HTTPException(status_code=status, detail=f"{exc.code}: {exc.message}") from exc
+    return {"custom": custom, "llm_model": llm.model_name()}
 
 
 @router.post("/from-transcript", status_code=202)

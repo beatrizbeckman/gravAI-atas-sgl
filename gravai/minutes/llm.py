@@ -8,24 +8,30 @@ import requests
 from gravai.config import Settings
 
 
-def generate(system: str, user: str) -> str:
+def generate(system: str, user: str, rate_limit_waits: tuple[int, ...] | None = None) -> str:
     """
     Sends one system + user prompt to the configured provider and returns the
     reply text. Everything above this function is provider-agnostic: switching
     between an online API, the local Ollama and the fake provider is only
     LLM_PROVIDER in .env.
+
+    Online providers rate-limit (the Groq free tier answers 429 as soon as the
+    tokens of the last minute add up), so the call waits and tries again:
+    rate_limit_waits are the pauses in seconds, RATE_LIMIT_WAITS by default
+    (fine for background jobs); callers with a person waiting pass shorter ones.
     """
     settings = Settings()
     if settings.LLM_PROVIDER == "openai_compatible":
-        return openai_compatible_generate(
+        return openai_chat_retrying(
             system,
             user,
+            waits=RATE_LIMIT_WAITS if rate_limit_waits is None else rate_limit_waits,
             base_url=settings.LLM_BASE_URL,
             api_key=settings.LLM_API_KEY,
             model=settings.LLM_MODEL,
             timeout=settings.LLM_TIMEOUT_SECONDS,
             max_tokens=settings.LLM_MAX_TOKENS,
-        )
+        ).content
     if settings.LLM_PROVIDER == "ollama":
         return ollama_generate(
             system,
@@ -107,7 +113,7 @@ class ChatReply:
 def openai_compatible_generate(
     system: str, user: str, base_url: str, api_key: str, model: str, timeout: int, max_tokens: int | None = None
 ) -> str:
-    """Online provider for generate(): any API in the OpenAI chat format (DeepInfra, Groq, OpenAI, Together...)."""
+    """One call to an API in the OpenAI chat format, without waiting on rate limits (generate() does that)."""
     return openai_chat(
         system, user, base_url=base_url, api_key=api_key, model=model, timeout=timeout, max_tokens=max_tokens
     ).content

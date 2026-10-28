@@ -158,6 +158,26 @@ def test_openai_chat_refuses_to_run_without_a_key():
         llm.openai_chat("s", "u", **{**CFG, "api_key": ""})
 
 
+def test_generate_waits_and_retries_when_the_provider_rate_limits(monkeypatch):
+    # The minutes jobs go through generate(): a 429 from the Groq free tier must not fail the job.
+    monkeypatch.setenv("LLM_PROVIDER", "openai_compatible")
+    monkeypatch.setenv("LLM_API_KEY", "gsk-test")
+    answers = iter([FakeResponse(429, "Rate limit reached, try again in 1.4s"), FakeResponse(200, OPENAI_OK)])
+    monkeypatch.setattr(requests, "post", lambda url, json, headers, timeout: next(answers))
+    waited = []
+    monkeypatch.setattr(llm.time, "sleep", waited.append)
+
+    assert llm.generate("s", "u") == '{"resumo": "ok"}'
+    assert waited == [llm.RATE_LIMIT_WAITS[0]]
+
+    # Shorter pauses for callers with someone waiting on the screen; still fails after them.
+    answers = iter([FakeResponse(429, "slow down")] * 3)
+    waited.clear()
+    with pytest.raises(RuntimeError, match="rate limiting"):
+        llm.generate("s", "u", rate_limit_waits=(5, 15))
+    assert waited == [5, 15]
+
+
 def test_generate_routes_to_openai_compatible(monkeypatch):
     monkeypatch.setenv("LLM_PROVIDER", "openai_compatible")
     monkeypatch.setenv("LLM_BASE_URL", "https://api.groq.com/openai/v1")
