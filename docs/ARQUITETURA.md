@@ -332,6 +332,7 @@ Essa é a interface que o SGL, ou qualquer outro cliente, chama. O contrato comp
 | Endpoint | O que recebe | O que faz |
 |---|---|---|
 | `GET /minutes/templates` | nada | lista os templates com os campos de cabeçalho, para montar o formulário |
+| `POST /minutes/templates/draft` | description, name, tone | a IA transforma a descrição da ata em seções (`custom`) para revisar e salvar; síncrono (`minutes/template_draft.py`) |
 | `POST /minutes/from-transcript` | template, header, utterances, project_id (opcional) | cria job `from_transcript`, devolve 202 |
 | `POST /minutes/from-recording` | template, header, tracks_dir | confere que a pasta tem transcrição, cria job |
 | `POST /minutes/record-and-generate` | template, header, meeting_url | confere que é link do Teams e que não há gravação em curso, cria job |
@@ -346,6 +347,10 @@ A validação acontece **antes** de criar o job, com Pydantic: template desconhe
 Desde a versão 1.1 do contrato (23/10/2026), os três `POST` aceitam `project_id`, que o job guarda para o SGL listar as atas de cada projeto. O modelo personalizado de cada projeto fica no SGL e vai no `custom` de cada requisição.
 
 A versão 1.2 (24/10/2026) fecha o fluxo da aba de reunião do SGL (contrato, seção 3.6): `POST /minutes/jobs/{id}/stop` encerra a gravação (`recording/pipeline.request_stop`, que acende um evento lido pelo processo do Playwright a cada segundo); em `record-and-generate`, data e horário vazios são preenchidos com o tempo real da gravação (`minutes/meeting_time.py`, fuso `TIMEZONE`); `callback_url` faz a API avisar o SGL quando o job termina (`jobs/callback.py`, em uma thread separada, três tentativas); e `API_KEY` exige o cabeçalho `X-API-Key` nas rotas de atas e de gravação (`api/security.py`).
+
+### `gravai/api/static/sgl.html` (`/demo/sgl`) — o conteúdo da aba "Reuniões" do SGL
+
+Só o conteúdo da aba de reunião, no tema do SGL (DaisyUI `business`, fonte Figtree), para encaixar na página do projeto que o SGL já tem. Menu lateral, cartão do projeto e as outras abas são do SGL e não são repetidos, para não haver duas versões do que já existe lá. Chama a API real: gravar e encerrar, atas do projeto (ver e Word), editor de modelo personalizado com "Transformar em seções" (`POST /minutes/templates/draft`) e "Salvar como modelo do projeto". O que no SGL ficaria no banco (projetos, títulos das reuniões, modelo de cada projeto) fica no `localStorage` do navegador. Um botão gera a ata a partir de uma reunião do dataset, para demonstrar sem o Teams. Serve de referência visual para o dev do SGL e para a apresentação.
 
 ### `gravai/api/demo.py` e `gravai/api/static/demo.html` — o cliente de referência
 
