@@ -578,8 +578,10 @@
   // from its own meetings table; here, from the project's jobs listed below.
   const temNumero = () => (fixedTemplates().find((t) => t.id === escolha)?.header || []).some((f) => f.key === "numero");
   function proximoNumero() {
-    const usados = jobs.map((j) => parseInt(j.header?.numero, 10)).filter((n) => !Number.isNaN(n));
-    const n = usados.length ? Math.max(...usados) + 1 : jobs.filter((j) => j.status !== "failed").length + 1;
+    // Numbered per template: Dell minutes count only Dell meetings, and so on.
+    const doModelo = jobs.filter((j) => j.template === escolha && j.status !== "failed");
+    const usados = doModelo.map((j) => parseInt(j.header?.numero, 10)).filter((n) => !Number.isNaN(n));
+    const n = usados.length ? Math.max(...usados) + 1 : doModelo.length + 1;
     return String(n).padStart(3, "0");
   }
   function renderNumero() {
