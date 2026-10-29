@@ -89,11 +89,6 @@ def test_openai_chat_request_shape_and_reply(monkeypatch):
     assert sent["timeout"] == 30
 
 
-def test_openai_compatible_generate_returns_only_the_text(monkeypatch):
-    monkeypatch.setattr(requests, "post", lambda *a, **k: FakeResponse(200, OPENAI_OK))
-    assert llm.openai_compatible_generate("s", "u", **CFG) == '{"resumo": "ok"}'
-
-
 @pytest.mark.parametrize(
     "error_text",
     [
