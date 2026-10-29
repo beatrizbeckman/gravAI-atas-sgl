@@ -167,6 +167,40 @@ def full_participant_names(template: MinutesTemplate, minutes: dict, participant
     return minutes
 
 
+def _stems(text: str) -> set[str]:
+    """Content words cut to 5 letters, so "acompanhar" and "acompanhamento" match."""
+    return {w[:5] for w in _name_words(text) if len(w) >= 4}
+
+
+def drop_repeated_decisions(minutes: dict) -> dict:
+    """
+    Removes from "decisoes" a line that only repeats an action of "plano_acao" (almost all of the
+    action's words are in it) or the meeting already in "proxima_reuniao". Models put task
+    assignments and the follow-up meeting in both places even when told not to.
+    """
+    decisions = minutes.get("decisoes")
+    if not isinstance(decisions, list):
+        return minutes
+    actions = [_stems(r.get("acao", "")) for r in minutes.get("plano_acao") or [] if isinstance(r, dict)]
+    meeting = minutes.get("proxima_reuniao") if isinstance(minutes.get("proxima_reuniao"), dict) else {}
+    # The follow-up meeting: a decision that is about a meeting and shares a word with its agenda.
+    meeting_words = _stems(meeting.get("pauta", "")) if meeting.get("data") or meeting.get("horario") else set()
+
+    def repeated(row) -> bool:
+        words = _stems(row.get("decisao", "")) if isinstance(row, dict) else set()
+        if any(a and len(a & words) >= 0.8 * len(a) for a in actions):
+            return True
+        return "reuni" in words and bool(meeting_words & words)
+
+    kept = [row for row in decisions if not repeated(row)]
+    if len(kept) < len(decisions):
+        prefix = "".join(c for c in str(decisions[0].get("id", "")) if not c.isdigit()) if decisions else ""
+        for i, row in enumerate(kept, 1):
+            row["id"] = f"{prefix}{i}"  # D1, D2... without gaps
+    minutes["decisoes"] = kept
+    return minutes
+
+
 def generate_minutes(
     template_id: str,
     header: dict,
@@ -217,7 +251,7 @@ def generate_minutes(
         minutes = _ask(template, system, build_merge_prompt(template, partials, header, participants), calls, retries)
     else:
         minutes = partials[0]
-    minutes = full_participant_names(template, minutes, participants)
+    minutes = drop_repeated_decisions(full_participant_names(template, minutes, participants))
 
     report("rendering")
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)

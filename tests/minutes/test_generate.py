@@ -234,3 +234,28 @@ def test_a_first_name_in_a_table_becomes_the_participants_full_name():
         "Ana Beatriz Beckman",
     ]
     assert out["plano_acao"][0]["acao"] == "Corrigir o formulário"
+
+
+def test_decisions_that_repeat_an_action_or_the_next_meeting_are_dropped():
+    from gravai.minutes.generate import drop_repeated_decisions
+
+    minutes = {
+        "decisoes": [
+            {"decisao": "Priorizar a tela de cadastro e adiar as melhorias visuais.", "id": "D1"},
+            {
+                "decisao": "Lucas ficará responsável por testar o cadastro e registrar os problemas até quinta.",
+                "id": "D2",
+            },
+            {"decisao": "Usar o pyannote na diarização.", "id": "D3"},
+            {"decisao": "Realizar reunião rápida na quinta às 16h para acompanhamento do andamento.", "id": "D4"},
+        ],
+        "plano_acao": [
+            {"acao": "Testar o cadastro e registrar os problemas encontrados", "responsavel": "Lucas"},
+            {"acao": "Instalar o pyannote no servidor", "responsavel": "Ana"},
+        ],
+        "proxima_reuniao": {"data": "29/10/2026", "horario": "16:00", "pauta": "Acompanhar o andamento"},
+    }
+
+    out = drop_repeated_decisions(minutes)
+
+    assert [(d["id"], d["decisao"][:12]) for d in out["decisoes"]] == [("D1", "Priorizar a "), ("D2", "Usar o pyann")]

@@ -88,7 +88,7 @@
         {"key": "decisao", "label": "Decisão"},
         {"key": "aprovada_por", "label": "Aprovada por", "instructions": "Nome de quem aprovou ou 'Grupo' quando foi consenso."}
       ],
-      "instructions": "Escolhas fechadas NESTA reunião: o que o grupo aprovou ou aceitou, mesmo sem a palavra \"decidir\" (por exemplo \"então fica assim\", \"vamos usar X\" sem objeção). Uma linha por decisão, redigida como afirmação fechada. Não entram: decisões de reuniões anteriores que só foram relembradas, propostas sem acordo (vão para ideias) e tarefas (vão para o plano de ação). Marcar a próxima reunião não é decisão: vai em próxima reunião."
+      "instructions": "Escolhas fechadas NESTA reunião: o que o grupo aprovou ou aceitou, mesmo sem a palavra \"decidir\" (por exemplo \"então fica assim\", \"vamos usar X\" sem objeção). Uma linha por decisão, redigida como afirmação fechada. Não entram: decisões de reuniões anteriores que só foram relembradas, propostas sem acordo (vão para ideias) e tarefas (vão para o plano de ação). Quem faz o quê e até quando é ação (\"o Lucas vai testar até quinta\"), não decisão. Marcar a próxima reunião não é decisão: vai em próxima reunião."
     },
     {
       "key": "plano_acao",
