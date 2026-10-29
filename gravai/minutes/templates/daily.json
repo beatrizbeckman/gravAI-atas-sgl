@@ -73,7 +73,7 @@
       "columns": [
         {"key": "o_que", "label": "O que"},
         {"key": "quem", "label": "Quem", "instructions": "Quem ficou com a tarefa: o nome completo da lista de participantes, mesmo que a fala use só o primeiro nome; alguém citado que não está na lista, com o nome como foi dito. 'A definir' se ninguém assumiu."},
-        {"key": "ate_quando", "label": "Até quando", "format": "DD/MM", "instructions": "'Próxima daily' quando não foi dito prazo."},
+        {"key": "ate_quando", "label": "Até quando", "format": "DD/MM ou DD/MM HH:MM", "instructions": "Data pelo calendário dos dados da reunião, com o horário se foi dito (ex.: 30/10 12:00). 'Próxima daily' quando não foi dito prazo."},
         {"key": "status", "label": "Status", "values": ["Pendente", "Em andamento", "Concluído"], "default": "Pendente"}
       ],
       "instructions": "Somente o que foi combinado com nome de quem faz. Ação curta, começando com verbo no infinitivo."

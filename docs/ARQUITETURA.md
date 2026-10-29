@@ -140,14 +140,14 @@ Transformar cada wav por pessoa em texto com tempos.
 
 ### Como funciona
 
-- **`gravai/transcription/base.py`**, função `transcribe_meeting_tracks`, percorre as trilhas da `Session` e manda cada wav via HTTP para um **servidor whisper.cpp** (`POST /inference`, `response_format=verbose_json`, `temperature=0`). O servidor é externo: pode estar no Docker (`docker/docker-compose-whisper.yaml`) ou rodando na máquina (`make exec-whisper`). Endereço em `WHISPER_HOST` e `WHISPER_PORT`.
+- **`gravai/transcription/base.py`**, função `transcribe_meeting_tracks`, percorre as trilhas da `Session` e manda cada wav via HTTP para um **servidor whisper.cpp** (`POST /inference`, `response_format=verbose_json`, `temperature=0`). Três parâmetros importam para a qualidade: `max_context=0` (cada janela de 30 s é transcrita sem o texto da anterior; com contexto, o Whisper inventava uma legenda no silêncio e a repetia por cima da fala), `language` (vai em todo pedido, de `WHISPER_LANGUAGE`) e `beam_size` (busca em feixe, `WHISPER_BEAM_SIZE`, padrão 5, que troca menos palavras que a decodificação gulosa e é um pouco mais lenta). O servidor é externo: pode estar no Docker (`docker/docker-compose-whisper.yaml`) ou rodando na máquina (`make exec-whisper`). Endereço em `WHISPER_HOST` e `WHISPER_PORT`.
 - Para cada pessoa salva dois arquivos ao lado do wav: `track_<id>_transcription_text.txt` com o texto corrido e `track_<id>_transcription_segments.json` com a lista de segmentos, cada um com `start`, `end`, `text` e `no_speech_prob`.
 - Devolve um `TranscriptedSession`, que a API grava como `session_transcription.json`. Esse arquivo é o índice: diz, para cada participante, onde está o JSON de segmentos dele.
 - **`gravai/recording/pipeline.py`** (06/10/2026) concentra os três passos que tanto os endpoints antigos de `gravai/api/app.py` quanto os jobs de ata usam: gravar (com o lock de gravação única), fatiar e transcrever. Antes a mesma sequência existia duplicada nos dois lugares; `gravai/transcription/formatter.py`, um utilitário antigo sem uso, foi removido na mesma limpeza.
 
 ### Observação sobre custo
 
-Whisper `large-v3-turbo` em CPU leva na casa de dez vezes a duração do áudio e consome bastante RAM. Como cada pessoa vira um wav com a duração da reunião inteira, uma reunião de uma hora com quatro pessoas são quatro horas de áudio para transcrever, mesmo que três quartos de cada arquivo sejam silêncio. Isso é um ponto natural de otimização futura: cortar os trechos silenciosos antes de mandar para o Whisper.
+Whisper `large-v3` em CPU é lento e consome bastante RAM; o servidor usa `WHISPER_THREADS` núcleos (padrão 12 no compose; o whisper.cpp usa só 4 se não for dito). Como cada pessoa vira um wav com a duração da reunião inteira, uma reunião de uma hora com quatro pessoas são quatro horas de áudio para transcrever, mesmo que três quartos de cada arquivo sejam silêncio. Isso é um ponto natural de otimização futura: cortar os trechos silenciosos antes de mandar para o Whisper.
 
 ---
 
@@ -231,11 +231,11 @@ Este arquivo faz a tradução nos dois sentidos: template para texto de prompt, 
 
 1. Papel: "você redige atas a partir de transcrições automáticas, lidas por quem não estava na reunião".
 2. Nome do modelo de ata, idioma e tom, vindos do JSON.
-3. Oito regras fixas. As mais importantes: usar só o que está na transcrição e deixar vazio o que não foi dito; a transcrição vem de reconhecimento de fala e pode ter erros, então reescrever em texto de ata em vez de copiar; usar os nomes exatamente como na lista de participantes; converter "sexta que vem" em data só quando a data da reunião permitir calcular; não numerar tabelas; responder só JSON.
+3. Oito regras fixas. As mais importantes: usar só o que está na transcrição e deixar vazio o que não foi dito; a transcrição vem de reconhecimento de fala e pode ter erros, então reescrever em texto de ata em vez de copiar; corrigir uma palavra mal reconhecida pela de som parecido que faz sentido; quem está na lista de participantes aparece com o nome completo, mesmo citado só pelo primeiro nome, e quem foi citado mas não estava na chamada aparece com o nome como foi dito; converter dias da semana e "sexta que vem" em data pelo calendário do prompt; tarefa com dono e reunião marcada não são decisão; não numerar tabelas; responder só JSON.
 4. O **formato de saída**: um JSON de exemplo gerado a partir das seções, com uma dica de tipo no lugar de cada valor. Para uma coluna com `values`, a dica é "Pendente | Em andamento | Concluído".
 5. A descrição de cada seção, com as `instructions` do template, o mínimo de itens e as regras de cada coluna.
 
-**Prompt de usuário** (`build_user_prompt`), um por requisição, com os dados do cabeçalho, a lista de participantes e a transcrição formatada como `[mm:ss] Nome: texto`. Os tempos ajudam o modelo a ordenar e calcular, mas ele é instruído a não colocá-los na ata.
+**Prompt de usuário** (`build_user_prompt`), um por requisição, com os dados do cabeçalho, a lista de participantes e a transcrição formatada como `[mm:ss] Nome: texto`. Quando o cabeçalho tem a data, entram também o **dia da semana** da reunião e um **calendário dos 14 dias seguintes** ("quinta-feira 29/10; sexta-feira 30/10; ..."): sem isso, o modelo errava o dia da semana e todos os prazos saíam um dia depois. Os tempos ajudam o modelo a ordenar e calcular, mas ele é instruído a não colocá-los na ata.
 
 **Transcrição longa.** `split_transcript` divide a lista de falas em partes de até 24 mil caracteres, mais ou menos 7 mil tokens em português. Quando há mais de uma parte, cada prompt diz "esta é a parte i de n, preencha só com o que aparece aqui", e depois um **prompt de consolidação** (`build_merge_prompt`) recebe os JSONs parciais e pede um JSON final: ordem cronológica, juntar repetidos, versão mais recente vence quando um status muda. Essa é a estratégia "sumariza e depois gera" do desenho do co-orientador, já implementada numa forma simples.
 
@@ -264,7 +264,8 @@ Um arquivo pequeno de propósito. A função `generate(system, user) -> str` é 
 5. **Divide em partes** e, para cada uma, chama `_ask`.
 6. **`_ask` é o laço de tentativas.** Chama o LLM, tenta `parse_response`. Se falhar, manda o mesmo prompt de novo com "a resposta anterior foi rejeitada porque X, responda novamente com JSON válido". Isso importa porque com `temperature 0` um modelo repetiria o mesmo erro se o prompt fosse idêntico. Até duas tentativas extras. Depois disso, `MinutesError("llm_invalid_response")`.
 7. **Consolida** quando houve mais de uma parte.
-8. **Renderiza o docx** e devolve métricas: quantas falas, quantas partes, quantas chamadas ao LLM, quantas repetições, segundos gastos, nome do modelo.
+8. **Corrige o que o modelo ainda erra, no código:** uma célula de tabela que é só parte do nome de um participante ("Beatriz") vira o nome completo ("Ana Beatriz Beckman"), se não houver ambiguidade (`full_participant_names`); e uma linha de "decisões" que só repete uma ação do plano ou a próxima reunião sai, com a numeração refeita (`drop_repeated_decisions`).
+9. **Renderiza o docx** e devolve métricas: quantas falas, quantas partes, quantas chamadas ao LLM, quantas repetições, segundos gastos, nome do modelo.
 
 Erros são sempre `MinutesError` com um `code` estável, os mesmos códigos que a API devolve: `llm_unreachable`, `llm_invalid_response`, `empty_transcript`, `transcription_failed`, `recording_failed`, `internal`.
 
@@ -422,14 +423,17 @@ Com `from-transcript`, só as três últimas linhas de trabalho acontecem.
 - Primeiras atas geradas com LLM real (Groq, `gpt-oss-20b` e `qwen3.8-27b`) em 06/10/2026.
 - Dataset de 5 reuniões reais do AMI Meeting Corpus traduzidas para pt-BR, com gabarito humano (`datasets/`).
 - Runner de experimentos que registra prompt, saída bruta, ata, docx, tempo, tokens e custo por (transcrição, modelo) (`experiments/`).
-- 115 testes automatizados que rodam sem LLM, Whisper ou Teams.
+- Mais de 160 testes automatizados que rodam sem LLM, Whisper ou Teams.
+- Chave de acesso (`API_KEY` / `X-API-Key`), `project_id`, encerrar gravação (`/stop`), aviso de conclusão (`callback_url`) e modelo de ata a partir de uma descrição (`/minutes/templates/draft`), para o SGL.
+- Simulação da aba "Reuniões" do SGL em `/demo/sgl` e guia de integração para o desenvolvedor do SGL.
+- Notas de 1 a 5 das atas dos experimentos contra o gabarito (seis modelos).
 - CLIs para cada etapa, para depurar isoladamente.
 
 ### Ainda não feito
 
 | O que | Por que importa | Onde encaixa |
 |---|---|---|
-| **Avaliação manual das atas** (nota 1–5 contra o gabarito) e tabela final | Vira a tabela de resultados do artigo. Pedido do co-orientador. | coluna `nota` em `experiments/results/<rodada>/resumo.csv` |
+| **Segunda leitura das notas** numa amostra das atas | As notas de 1 a 5 foram dadas por uma pessoa só; uma segunda leitura dá mais confiança à tabela do artigo. | coluna `nota` em `experiments/results/<rodada>/resumo.csv` |
 | **Modelos de 7–8B de verdade** (Llama 3.1 8B, Qwen 2.5 7B, Mistral 7B) | O Groq gratuito só oferece gpt-oss-20b/120b e qwen3.8-27b, com limites apertados por minuto e por dia. Precisa de crédito no DeepInfra (conta criada, sem saldo em 06/10) ou da GPU do laboratório. | `experiments/run_experiments.py --models deepinfra:<modelo>` já funciona |
 | **Front para comparar experimentos** ao lado da `/demo` | O co-orientador pediu para ver prompt, entrada e saída de cada teste. Hoje isso está em arquivos (`prompts/NN_*.txt`) por rodada. | `gravai/api/` lendo `experiments/results/` |
 | **Reunião real gravada pelo GravAI** no dataset | O dataset atual é traduzido do inglês; não tem erros de ASR em português nem fala sobreposta. Uma reunião real valida isso. | gravar com o bot, normalizar, colocar em `datasets/reunioes/` |
@@ -438,7 +442,8 @@ Com `from-transcript`, só as três últimas linhas de trabalho acontecem.
 | **Lista de pessoas vinda do cliente casada com as vozes** | Parte 2. A API já aceita `participants` opcional. | `POST /speakers` |
 | Logos em `gravai/minutes/assets/` | Estético. Sem o arquivo a ata sai sem logo. | colocar `dell.png`, `ufcg.png` |
 | Cortar silêncio antes do Whisper | Reduz muito o tempo de transcrição em CPU. | `gravai/slicing/` ou `gravai/transcription/` |
-| Autenticação na API | Hoje não há. Deve ficar em rede interna. | `gravai/api/` |
+| Usuários na API | Hoje há uma chave única (`API_KEY`) para o SGL; quem vê o quê é decidido no SGL. | `gravai/api/security.py` |
+| **Pessoas e termos do projeto vindos do SGL** (`known_people`, `vocabulary`) | Nomes que o Whisper erra ("Mariana" → "Mariano", "SGL" → "Shell") só se corrigem com a lista do projeto. | `gravai/api/minutes.py` e o prompt |
 
 ---
 
