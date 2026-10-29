@@ -8,6 +8,17 @@ __pycache__
 .vscode
 .devcontainer
 *.png
+# ...except the logos the Word minutes use
+!gravai/minutes/assets/*.png
 *.docx
 *.pdf
 *.wav
+
+# Not needed inside the image (the app reads only datasets/reunioes/)
+experiments/results
+datasets/raw
+.ruff_cache
+*.mp3
+*.mp4
+*.log
+*.sqlite3
