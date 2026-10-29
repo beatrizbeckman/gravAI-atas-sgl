@@ -49,6 +49,7 @@ def transcribe_meeting_tracks(
 
 
 def transcribe(audio_file: str, whisper_server_host: str, whisper_server_port: int) -> dict:
+    settings = Settings()
     with open(audio_file, "rb") as audio:
         response = requests.post(
             f"http://{whisper_server_host}:{whisper_server_port}/inference",
@@ -60,6 +61,11 @@ def transcribe(audio_file: str, whisper_server_host: str, whisper_server_port: i
                 # context, whisper invents a subtitle credit on the silence at the start of a track
                 # and then repeats it in every window, wiping out the real speech that follows.
                 "max_context": "0",
+                # The server's own --language comes from the compose file and is blank when the
+                # container was created without --env-file; sending it here makes it not matter.
+                "language": settings.WHISPER_LANGUAGE,
+                # Beam search instead of greedy: fewer swapped words ("texto" for "testes").
+                "beam_size": str(settings.WHISPER_BEAM_SIZE),
             },
             # Long meetings on CPU can take a while; fail instead of hanging forever.
             timeout=3_600,
