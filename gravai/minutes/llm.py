@@ -110,15 +110,6 @@ class ChatReply:
     finish_reason: str | None = None
 
 
-def openai_compatible_generate(
-    system: str, user: str, base_url: str, api_key: str, model: str, timeout: int, max_tokens: int | None = None
-) -> str:
-    """One call to an API in the OpenAI chat format, without waiting on rate limits (generate() does that)."""
-    return openai_chat(
-        system, user, base_url=base_url, api_key=api_key, model=model, timeout=timeout, max_tokens=max_tokens
-    ).content
-
-
 def openai_chat(
     system: str,
     user: str,
@@ -132,8 +123,8 @@ def openai_chat(
 ) -> ChatReply:
     """
     POST {base_url}/chat/completions in the OpenAI format and return the reply
-    with usage and elapsed time. Kept separate from openai_compatible_generate so
-    the experiment runner can call any model directly and log tokens and time.
+    with usage and elapsed time. The experiment runner calls it directly, so it
+    can use any model and log tokens and time.
 
     json_mode asks for response_format=json_object (temperature 0 as everywhere
     else). Some small models reject that field with 400; the call is then
