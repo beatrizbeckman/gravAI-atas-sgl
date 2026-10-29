@@ -44,7 +44,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 
 from gravai.minutes import llm
-from gravai.minutes.dataset import list_meetings, read_json, transcript_path, write_json, write_text
+from gravai.minutes.dataset import ANSWER_KEY_FILE, list_meetings, read_json, transcript_path, write_json, write_text
 from gravai.minutes.generate import DEFAULT_MAX_CHARS, MinutesError, generate_minutes
 
 load_dotenv()
@@ -248,7 +248,7 @@ def run_one(
 
 
 def _gabarito_for(transcript_path: str) -> str | None:
-    candidate = os.path.join(os.path.dirname(transcript_path), "gabarito.md")
+    candidate = os.path.join(os.path.dirname(transcript_path), ANSWER_KEY_FILE)
     return os.path.relpath(candidate, ROOT) if os.path.exists(candidate) else None
 
 
