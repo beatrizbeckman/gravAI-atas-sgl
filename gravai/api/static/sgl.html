@@ -49,19 +49,6 @@
   project card and the other tabs are the SGL's and are not repeated here.
 -->
 <main class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-  <!-- Test-only controls: everything below this bar is what goes into the SGL. -->
-  <div role="alert" class="alert alert-info alert-soft flex flex-wrap items-center gap-3 text-sm">
-    <span class="flex-1"><b>Só para teste</b> (não vai para o SGL): o projeto vem da página do SGL, e a reunião de exemplo serve para gerar uma ata sem o Teams. As chamadas vão para a API real.</span>
-    <label class="flex items-center gap-2">
-      <span class="text-xs">Projeto</span>
-      <select id="projeto" class="select select-bordered select-sm w-56"></select>
-    </label>
-    <div class="join" title="Gera a ata com o modelo e o título escolhidos abaixo">
-      <select id="exemplo" class="select select-bordered select-sm join-item"></select>
-      <button type="button" id="usar-exemplo" class="btn btn-sm btn-info join-item">Gerar ata de exemplo</button>
-    </div>
-  </div>
-
   <div class="card bg-base-100 shadow-xl">
     <div class="card-body gap-0 p-8">
 
@@ -275,6 +262,7 @@
   const postJson = (path, body) => api(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
   // ------------------------------------------- simulated SGL data (test only)
+  // In the SGL the tab lives inside one project's page; here it is always the first project.
   const PROJETOS = [
     { id: "sgl-demo-dell", nome: "Controle Remoto Universal", cliente: "Dell Technologies" },
     { id: "sgl-demo-tcc", nome: "TCC GravAI · Atas automáticas", cliente: "UFCG / LaCInA" },
@@ -578,8 +566,10 @@
   // from its own meetings table; here, from the project's jobs listed below.
   const temNumero = () => (fixedTemplates().find((t) => t.id === escolha)?.header || []).some((f) => f.key === "numero");
   function proximoNumero() {
-    const usados = jobs.map((j) => parseInt(j.header?.numero, 10)).filter((n) => !Number.isNaN(n));
-    const n = usados.length ? Math.max(...usados) + 1 : jobs.filter((j) => j.status !== "failed").length + 1;
+    // Numbered per template: Dell minutes count only Dell meetings, and so on.
+    const doModelo = jobs.filter((j) => j.template === escolha && j.status !== "failed");
+    const usados = doModelo.map((j) => parseInt(j.header?.numero, 10)).filter((n) => !Number.isNaN(n));
+    const n = usados.length ? Math.max(...usados) + 1 : doModelo.length + 1;
     return String(n).padStart(3, "0");
   }
   function renderNumero() {
@@ -648,24 +638,6 @@
       const links = ultimosLinks(); links[projeto.id] = { link, quando: new Date().toISOString() }; store.set("sgl-ultimo-link", links);
       $("link").value = ""; renderUltimoLink();
       toast('O bot está entrando. Admita o "GravAI Bot" na sala de espera do Teams.', "success");
-    } catch (err) {
-      toast(err.message, "error");
-    } finally {
-      btn.disabled = false;
-    }
-  });
-
-  // Test only: same request the SGL would make for a ready transcript.
-  $("usar-exemplo").addEventListener("click", async () => {
-    const id = $("exemplo").value;
-    const block = modelBlock();
-    const btn = $("usar-exemplo");
-    btn.disabled = true;
-    try {
-      const ex = await api(`/demo/examples/${encodeURIComponent(id)}`);
-      const head = { ...header(), data: ex.header.data, horario: ex.header.horario };
-      await enviar("/minutes/from-transcript", { project_id: projeto.id, header: head, utterances: ex.utterances, ...block }, $("titulo").value.trim() || `Reunião de exemplo ${id}`, block);
-      toast("Gerando a ata da reunião de exemplo.", "success");
     } catch (err) {
       toast(err.message, "error");
     } finally {
@@ -836,17 +808,6 @@
     } catch (err) { toast(err.message, "error"); }
   }
 
-  // ---------------------------------------------------------- project
-  $("projeto").innerHTML = PROJETOS.map((p) => `<option value="${p.id}">${esc(p.nome)}</option>`).join("");
-  $("projeto").addEventListener("change", () => {
-    projeto = PROJETOS.find((p) => p.id === $("projeto").value);
-    modelo = null; editorAberto = false; tituloEditado = false;
-    escolha = modeloDoProjeto() ? DO_PROJETO : "dell";
-    onModelChange();
-    renderUltimoLink();
-    loadAtas();
-  });
-
   // ------------------------------------------------------------- start
   (async () => {
     try {
@@ -859,10 +820,6 @@
       toast(err.message, "error");
     }
     renderUltimoLink();
-    try {
-      const { examples } = await api("/demo/examples");
-      $("exemplo").innerHTML = examples.map((x) => `<option value="${esc(x.id)}">${esc(x.id)}</option>`).join("");
-    } catch { $("usar-exemplo").disabled = true; }
     loadAtas();
   })();
 })();

@@ -132,7 +132,7 @@ curl -OJ http://localhost:8000/minutes/jobs/<id>/download
 
 A demonstration page that drives the same endpoints is served at [http://localhost:8000/demo](http://localhost:8000/demo): pick a template, fill the header, paste a transcript (or point to a recording, or give a Teams link), follow the job and download the `.docx`.
 
-[http://localhost:8000/demo/sgl](http://localhost:8000/demo/sgl) is only the content of the SGL "Reuniões" tab (the SGL's sidebar, project card and other tabs are not repeated), in the SGL's daisyUI `business` theme (loaded from a CDN, so it needs internet), driving the real API: record a meeting and stop it, the project's minutes (view and Word), and the custom model editor with "describe in text → sections" and "save as the project's model". The project picker, meeting titles and project models live in the browser's localStorage, standing in for what the SGL already has; a button generates minutes from a dataset meeting to demo without Teams.
+[http://localhost:8000/demo/sgl](http://localhost:8000/demo/sgl) is only the content of the SGL "Reuniões" tab (the SGL's sidebar, project card and other tabs are not repeated), in the SGL's daisyUI `business` theme (loaded from a CDN, so it needs internet), driving the real API: record a meeting and stop it, the project's minutes (view and Word), and the custom model editor with "describe in text → sections" and "save as the project's model". The project is fixed (in the SGL the tab sits inside one project's page); meeting titles and project models live in the browser's localStorage, standing in for what the SGL already has. To generate minutes without Teams, use `/demo` with a dataset meeting.
 
 ### Testing on a server, the way the SGL calls the API
 
