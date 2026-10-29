@@ -72,7 +72,7 @@ Duas coisas para guardar desse desenho:
 | `docker/Dockerfile`, `docker-compose*.yaml`, `Makefile` | Empacotamento e comandos | GravAI original, ajustado |
 | `tmp/` | Gravações, docx gerados e o SQLite dos jobs. Não vai para o git | runtime |
 
-Teste automatizado: 115 testes em `tests/` (`tests/minutes`, `tests/jobs`, `tests/api`, dados em `tests/conftest.py` vindos do dataset), todos passando sem precisar de LLM, Whisper ou Teams. Reorganização de 07/10/2026: todo o código ficou dentro do pacote `gravai/`, os testes em `tests/`, os arquivos Docker em `docker/`.
+Teste automatizado: 159 testes em `tests/` (`tests/minutes`, `tests/jobs`, `tests/api`, dados em `tests/conftest.py` vindos do dataset), todos passando sem precisar de LLM, Whisper ou Teams. Reorganização de 07/10/2026: todo o código ficou dentro do pacote `gravai/`, os testes em `tests/`, os arquivos Docker em `docker/`.
 
 ---
 
@@ -418,12 +418,12 @@ Com `from-transcript`, só as três últimas linhas de trabalho acontecem.
 - Orquestrador com tentativas e códigos de erro estáveis.
 - Renderização em `.docx` fiel aos modelos.
 - Jobs assíncronos em SQLite com recuperação após reinício.
-- Oito endpoints `/minutes/*` com contrato documentado.
+- Dez endpoints `/minutes/*` com contrato documentado.
 - Página de demonstração funcional.
 - Primeiras atas geradas com LLM real (Groq, `gpt-oss-20b` e `qwen3.8-27b`) em 06/10/2026.
 - Dataset de 5 reuniões reais do AMI Meeting Corpus traduzidas para pt-BR, com gabarito humano (`datasets/`).
 - Runner de experimentos que registra prompt, saída bruta, ata, docx, tempo, tokens e custo por (transcrição, modelo) (`experiments/`).
-- Mais de 160 testes automatizados que rodam sem LLM, Whisper ou Teams.
+- 159 testes automatizados que rodam sem LLM, Whisper ou Teams.
 - Chave de acesso (`API_KEY` / `X-API-Key`), `project_id`, encerrar gravação (`/stop`), aviso de conclusão (`callback_url`) e modelo de ata a partir de uma descrição (`/minutes/templates/draft`), para o SGL.
 - Simulação da aba "Reuniões" do SGL em `/demo/sgl` e guia de integração para o desenvolvedor do SGL.
 - Notas de 1 a 5 das atas dos experimentos contra o gabarito (seis modelos).
