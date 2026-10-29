@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 import pytest
 
@@ -7,7 +8,9 @@ from gravai.minutes.prompt_builder import (
     build_merge_prompt,
     build_system_prompt,
     build_user_prompt,
+    calendar_lines,
     format_timestamp,
+    meeting_date,
     output_schema,
     parse_response,
     split_transcript,
@@ -105,3 +108,22 @@ def test_parse_response_rejects_bad_json_and_empty_required_sections():
 
     with pytest.raises(ResponseValidationError, match="feedback_professores"):
         parse_response(template, json.dumps({"topicos": [{"titulo": "x", "resumo": "y"}], "resumo": "z"}))
+
+
+def test_meeting_date_comes_from_the_header_in_any_date_format():
+    assert meeting_date({"projeto": "X", "data": "28/10/2026"}) == date(2026, 10, 28)
+    assert meeting_date({"data": "24/10/2026 · 10:05 – 11:10"}) == date(2026, 10, 24)  # daily
+    assert meeting_date({"projeto": "X"}) is None
+    assert meeting_date({"data": "31/02/2026"}) is None
+
+
+def test_prompt_spells_out_the_weekdays_so_deadlines_are_not_shifted(dell, speakers):
+    template, header, utterances = dell
+    lines = calendar_lines(date(2026, 10, 28))
+    assert lines[0] == "- Dia da semana da reunião: quarta-feira, 28/10/2026"
+    assert "quinta-feira 29/10; sexta-feira 30/10; sábado 31/10" in lines[1]
+    assert "quarta-feira 11/11" in lines[1]  # two weeks ahead
+
+    user = build_user_prompt(template, utterances, {**header, "data": "28/10/2026"}, speakers)
+    assert "quarta-feira, 28/10/2026" in user and "sexta-feira 30/10" in user
+    assert "Calendário" not in build_user_prompt(template, utterances, {"projeto": "X"}, speakers)
