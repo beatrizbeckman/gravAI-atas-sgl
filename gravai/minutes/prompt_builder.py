@@ -8,8 +8,9 @@ from gravai.minutes.templates import MinutesTemplate, Section, load_template
 from gravai.models import Utterance
 
 # Rough size of transcript text sent in one request. Portuguese runs at about 3.5
-# characters per token, so 24k characters is close to 7k tokens of transcript,
-# which leaves room for the instructions on a 8k-token free-tier budget.
+# characters per token, so 24k characters is close to 7k tokens of transcript.
+# With the instructions that is too much for the Groq free tier (8k tokens per
+# minute, HTTP 413), so the experiments run with --max-chars 12000 (experiments/README.md).
 DEFAULT_MAX_CHARS = 24_000
 
 # How many days after the meeting the calendar in the prompt lists. Two weeks covers
