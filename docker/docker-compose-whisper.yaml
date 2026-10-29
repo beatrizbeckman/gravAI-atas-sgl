@@ -25,5 +25,5 @@ services:
     volumes:
       - ../.env:/app/.env
     restart: unless-stopped
-    entrypoint: ["./build/bin/whisper-server", "-m", "models/ggml-large-v3.bin", "--host", "0.0.0.0", "--language", $WHISPER_LANGUAGE, "--port", "8080"]
+    entrypoint: ["./build/bin/whisper-server", "-m", "models/ggml-large-v3.bin", "--host", "0.0.0.0", "--language", "${WHISPER_LANGUAGE:-pt}", "--threads", "${WHISPER_THREADS:-12}", "--port", "8080"]
     
