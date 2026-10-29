@@ -153,7 +153,8 @@ def calendar_lines(day: date) -> list[str]:
     following = (day + timedelta(days=n) for n in range(1, CALENDAR_DAYS + 1))
     return [
         f"- Dia da semana da reunião: {WEEKDAYS[day.weekday()]}, {day:%d/%m/%Y}",
-        "- Calendário dos próximos dias: " + "; ".join(f"{WEEKDAYS[d.weekday()]} {d:%d/%m}" for d in following),
+        f"- Calendário a partir da reunião: {WEEKDAYS[day.weekday()]} {day:%d/%m} (dia da reunião); "
+        + "; ".join(f"{WEEKDAYS[d.weekday()]} {d:%d/%m}" for d in following),
     ]
 
 

@@ -121,7 +121,7 @@ def test_prompt_spells_out_the_weekdays_so_deadlines_are_not_shifted(dell, speak
     template, header, utterances = dell
     lines = calendar_lines(date(2026, 10, 28))
     assert lines[0] == "- Dia da semana da reunião: quarta-feira, 28/10/2026"
-    assert "quinta-feira 29/10; sexta-feira 30/10; sábado 31/10" in lines[1]
+    assert "quarta-feira 28/10 (dia da reunião); quinta-feira 29/10; sexta-feira 30/10; sábado 31/10" in lines[1]
     assert "quarta-feira 11/11" in lines[1]  # two weeks ahead
 
     user = build_user_prompt(template, utterances, {**header, "data": "28/10/2026"}, speakers)
