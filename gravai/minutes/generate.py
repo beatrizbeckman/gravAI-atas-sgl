@@ -139,6 +139,34 @@ def prepare_utterances(utterances: list[Utterance | dict]) -> list[Utterance]:
     return clean
 
 
+def _name_words(name: str) -> list[str]:
+    plain = unicodedata.normalize("NFD", name).encode("ascii", "ignore").decode().lower()
+    return re.findall(r"[a-z]+", plain)
+
+
+def full_participant_names(template: MinutesTemplate, minutes: dict, participants: list[str]) -> dict:
+    """
+    A table cell that is only part of one participant's name ("Beatriz") becomes the full name
+    ("Ana Beatriz Beckman"). Models often keep the name as it was spoken, which splits one person
+    in two in the minutes. Cells with other text, or matching more than one participant, stay as they are.
+    """
+    known = [(p, set(_name_words(p))) for p in participants]
+
+    def full(value):
+        words = _name_words(value) if isinstance(value, str) else []
+        if not words or len(words) > 3 or len(" ".join(words)) < len(value.strip()) - 2:
+            return value
+        matches = [p for p, parts in known if set(words) <= parts]
+        return matches[0] if len(matches) == 1 else value
+
+    for section in template.sections:
+        if section.type == "table":
+            for row in minutes.get(section.key) or []:
+                for key, value in row.items():
+                    row[key] = full(value)
+    return minutes
+
+
 def generate_minutes(
     template_id: str,
     header: dict,
@@ -189,6 +217,7 @@ def generate_minutes(
         minutes = _ask(template, system, build_merge_prompt(template, partials, header, participants), calls, retries)
     else:
         minutes = partials[0]
+    minutes = full_participant_names(template, minutes, participants)
 
     report("rendering")
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)

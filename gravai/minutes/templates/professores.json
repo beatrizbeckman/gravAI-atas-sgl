@@ -89,7 +89,7 @@
         {"key": "decisao", "label": "Decisão"},
         {"key": "aprovada_por", "label": "Aprovada por", "instructions": "Nome do professor que aprovou ou 'Grupo' quando foi consenso."}
       ],
-      "instructions": "Escolhas fechadas NESTA reunião: o que os professores aprovaram ou o grupo aceitou, mesmo sem a palavra \"decidir\" (por exemplo \"então fica assim\", \"pode seguir com X\"). Uma linha por decisão, redigida como afirmação fechada. Não entram: decisões de reuniões anteriores que só foram relembradas, sugestões que ficaram em aberto e tarefas (vão para o plano de ação)."
+      "instructions": "Escolhas fechadas NESTA reunião: o que os professores aprovaram ou o grupo aceitou, mesmo sem a palavra \"decidir\" (por exemplo \"então fica assim\", \"pode seguir com X\"). Uma linha por decisão, redigida como afirmação fechada. Não entram: decisões de reuniões anteriores que só foram relembradas, sugestões que ficaram em aberto e tarefas (vão para o plano de ação). Marcar a próxima reunião não é decisão: vai em próxima reunião."
     },
     {
       "key": "plano_acao",
@@ -100,8 +100,8 @@
       "id_prefix": "A",
       "columns": [
         {"key": "acao", "label": "Ação / Entregável"},
-        {"key": "responsavel", "label": "Responsável", "instructions": "Nome de um participante. 'A definir' se ninguém assumiu."},
-        {"key": "prazo", "label": "Prazo", "format": "DD/MM", "instructions": "'A definir' se não foi combinado."},
+        {"key": "responsavel", "label": "Responsável", "instructions": "Quem ficou com a tarefa: o nome completo da lista de participantes, mesmo que a fala use só o primeiro nome; alguém citado que não está na lista, com o nome como foi dito. 'A definir' se ninguém assumiu."},
+        {"key": "prazo", "label": "Prazo", "format": "DD/MM", "instructions": "Data pelo calendário dos dados da reunião. 'A definir' se não foi combinado."},
         {"key": "status", "label": "Status", "values": ["Pendente", "Em andamento", "Concluído"], "default": "Pendente"}
       ],
       "instructions": "Tarefas com dono, normalmente pedidas pelos professores. Começar cada ação com verbo no infinitivo."
@@ -116,7 +116,7 @@
         {"key": "horario", "label": "Horário", "format": "HH:MM"},
         {"key": "pauta", "label": "Pauta prevista"}
       ],
-      "instructions": "Preencher apenas se a próxima reunião foi marcada ou a pauta dela foi combinada. Caso contrário, deixar os campos vazios."
+      "instructions": "Preencher quando uma próxima reunião foi marcada, inclusive uma reunião rápida ou de acompanhamento: data pelo calendário dos dados da reunião, horário e o assunto previsto (ex.: acompanhar o andamento). Caso contrário, deixar os campos vazios."
     }
   ]
 }

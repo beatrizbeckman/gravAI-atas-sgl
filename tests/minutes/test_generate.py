@@ -208,3 +208,29 @@ def test_suggest_filename_slugifies_the_project():
         == "ata_dell_2026-10-01_portal-de-suporte-fase-2-acao.docx"
     )
     assert suggest_filename("daily", {}, when) == "ata_daily_2026-10-01.docx"
+
+
+def test_a_first_name_in_a_table_becomes_the_participants_full_name():
+    from gravai.minutes.generate import full_participant_names
+    from gravai.minutes.templates import load_template
+
+    minutes = {
+        "plano_acao": [
+            {"acao": "Corrigir o formulário", "responsavel": "Beatriz", "prazo": "04/11"},
+            {"acao": "Testar o cadastro", "responsavel": "Lucas", "prazo": "29/10"},  # not in the call: kept
+            {"acao": "Revisar", "responsavel": "Ana", "prazo": "A definir"},  # two Anas: ambiguous, kept
+            {"acao": "Atualizar", "responsavel": "beckman", "prazo": "A definir"},
+        ],
+        "decisoes": [{"decisao": "Beatriz", "aprovada_por": "Grupo"}],
+    }
+    people = ["Ana Beatriz Beckman", "Ana Souza"]
+
+    out = full_participant_names(load_template("dell"), minutes, people)
+
+    assert [r["responsavel"] for r in out["plano_acao"]] == [
+        "Ana Beatriz Beckman",
+        "Lucas",
+        "Ana",
+        "Ana Beatriz Beckman",
+    ]
+    assert out["plano_acao"][0]["acao"] == "Corrigir o formulário"

@@ -39,6 +39,7 @@ Thumbs.db
 # TCC context and the integration guide sent straight to the SGL developer.
 # Every other .md (README.md, docs/ARQUITETURA.md, docs/API_MINUTES.md...) is versioned.
 DIARIO_PARTE1.md
+ROTEIRO_ORIENTADOR.md
 LLMS.md
 CONTEXTO_TCC.md
 docs/INTEGRACAO_SGL.md

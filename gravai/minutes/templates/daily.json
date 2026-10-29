@@ -72,7 +72,7 @@
       "id_prefix": "A",
       "columns": [
         {"key": "o_que", "label": "O que"},
-        {"key": "quem", "label": "Quem", "instructions": "Nome de um participante. 'A definir' se ninguém assumiu."},
+        {"key": "quem", "label": "Quem", "instructions": "Quem ficou com a tarefa: o nome completo da lista de participantes, mesmo que a fala use só o primeiro nome; alguém citado que não está na lista, com o nome como foi dito. 'A definir' se ninguém assumiu."},
         {"key": "ate_quando", "label": "Até quando", "format": "DD/MM", "instructions": "'Próxima daily' quando não foi dito prazo."},
         {"key": "status", "label": "Status", "values": ["Pendente", "Em andamento", "Concluído"], "default": "Pendente"}
       ],

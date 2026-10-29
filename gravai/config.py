@@ -44,6 +44,16 @@ class Settings(BaseSettings):
 
     WHISPER_HOST: str = Field(..., description="Host URL for the Whisper transcription service", alias="WHISPER_HOST")
     WHISPER_PORT: str = Field(..., description="Port for the Whisper transcription service", alias="WHISPER_PORT")
+    WHISPER_LANGUAGE: str = Field(
+        "pt",
+        description="Spoken language sent with every request, so a whisper server started without it does not guess",
+        alias="WHISPER_LANGUAGE",
+    )
+    WHISPER_BEAM_SIZE: int = Field(
+        5,
+        description="Beam search width; 5 makes fewer word mistakes than greedy decoding (1) and is slower on CPU",
+        alias="WHISPER_BEAM_SIZE",
+    )
 
     RECORDING_DEBUG: bool = Field(
         False,

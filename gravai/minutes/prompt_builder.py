@@ -1,5 +1,7 @@
 import json
 import math
+import re
+from datetime import date, timedelta
 
 from gravai.legacy.llm_analyser.utils import chunk_transcript, extract_json_from_response
 from gravai.minutes.templates import MinutesTemplate, Section, load_template
@@ -9,6 +11,12 @@ from gravai.models import Utterance
 # characters per token, so 24k characters is close to 7k tokens of transcript,
 # which leaves room for the instructions on a 8k-token free-tier budget.
 DEFAULT_MAX_CHARS = 24_000
+
+# How many days after the meeting the calendar in the prompt lists. Two weeks covers
+# "sexta", "semana que vem" and "daqui a duas semanas".
+CALENDAR_DAYS = 14
+WEEKDAYS = ["segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado", "domingo"]
+_DATE = re.compile(r"\b(\d{2})/(\d{2})/(\d{4})\b")
 
 
 class ResponseValidationError(ValueError):
@@ -108,10 +116,10 @@ Tom: {template.tone}
 
 Regras
 1. Use somente o que está na transcrição. Não invente fatos, nomes, números, datas, prazos ou decisões. O que não foi dito fica vazio ("" ou []).
-2. A transcrição vem de reconhecimento de fala: pode ter erros de palavras, repetições, frases cortadas e trechos sem sentido. Corrija erros óbvios pelo contexto, ignore ruído e não reproduza a fala literalmente; reescreva em texto de ata.
-3. Pessoas: use os nomes exatamente como aparecem na lista de participantes. Não use "eu", "você" nem "o falante".
-4. Datas e prazos: só quando forem ditos. Expressões relativas ("sexta que vem", "daqui a duas semanas") devem ser convertidas para data quando a data da reunião permitir calcular; caso contrário, escreva a expressão como foi dita.
-5. Cada informação entra em uma única seção. Decisão é uma escolha fechada nesta reunião, por acordo explícito ou por concordância sem objeção; uma proposta aceita é decisão, não ideia; o que foi decidido em reunião anterior e só foi relembrado não é decisão desta ata (pode aparecer no resumo). Ação é uma tarefa com dono; pendência é algo que depende de alguém e não virou ação; dúvida é uma pergunta que ficou sem resposta.
+2. A transcrição vem de reconhecimento de fala: pode ter erros de palavras, repetições, frases cortadas e trechos sem sentido. Quando uma palavra não faz sentido na frase e outra de som parecido faz, use a que faz sentido. Corrija erros óbvios pelo contexto, ignore ruído e não reproduza a fala literalmente; reescreva em texto de ata.
+3. Pessoas: quem está na lista de participantes aparece sempre com o nome completo da lista, mesmo quando a fala usa só o primeiro nome ou um sobrenome (ex.: "a Beatriz" é "Ana Beatriz Beckman" se ela estiver na lista). Uma pessoa citada que não está na lista aparece com o nome como foi dito. Nunca invente nomes. Não use "eu", "você" nem "o falante".
+4. Datas e prazos: só quando forem ditos. Converta dias da semana e expressões relativas ("sexta", "quinta que vem", "daqui a duas semanas") para a data usando o calendário dos dados da reunião, sem calcular por conta própria. Um dia da semana dito sem mais detalhes é o próximo depois da reunião; se for o mesmo dia da semana da reunião, é o da semana seguinte. Sem a data da reunião, escreva a expressão como foi dita.
+5. Cada informação entra em uma única seção. Decisão é uma escolha fechada nesta reunião, por acordo explícito ou por concordância sem objeção; uma proposta aceita é decisão, não ideia; o que foi decidido em reunião anterior e só foi relembrado não é decisão desta ata (pode aparecer no resumo). Ação é uma tarefa com dono e vai só no plano de ação, nunca em decisões; marcar a próxima reunião também não é decisão. Pendência é algo que depende de alguém e não virou ação; dúvida é uma pergunta que ficou sem resposta.
 6. Não numere itens de tabela (D1, A1): a numeração é feita depois. Os tempos entre colchetes na transcrição servem só de orientação e não entram na ata.
 7. Seja conciso. Prefira frases curtas e concretas a generalidades.
 8. Responda somente com um objeto JSON válido, sem texto antes ou depois, sem markdown e sem comentários, exatamente com as chaves do formato abaixo.
@@ -123,12 +131,40 @@ Conteúdo de cada chave
 {sections}"""
 
 
+def meeting_date(header: dict) -> date | None:
+    """The first DD/MM/AAAA found in the header values (data, or the daily's "data · horário")."""
+    for value in header.values():
+        match = _DATE.search(str(value or ""))
+        if match:
+            day, month, year = map(int, match.groups())
+            try:
+                return date(year, month, day)
+            except ValueError:
+                return None
+    return None
+
+
+def calendar_lines(day: date) -> list[str]:
+    """
+    The weekday of the meeting and the dates of the following days. Models get the weekday
+    of a date wrong often enough to shift every deadline by a day, so the prompt spells it out.
+    """
+    following = (day + timedelta(days=n) for n in range(1, CALENDAR_DAYS + 1))
+    return [
+        f"- Dia da semana da reunião: {WEEKDAYS[day.weekday()]}, {day:%d/%m/%Y}",
+        "- Calendário dos próximos dias: " + "; ".join(f"{WEEKDAYS[d.weekday()]} {d:%d/%m}" for d in following),
+    ]
+
+
 def _header_block(template: MinutesTemplate, header: dict, participants: list[str]) -> str:
     lines = ["Dados da reunião"]
     for field in template.header:
         value = header.get(field.key)
         if value:
             lines.append(f"- {field.label}: {value}")
+    day = meeting_date(header)
+    if day:
+        lines += calendar_lines(day)
     lines.append("- Participantes: " + ", ".join(participants))
     return "\n".join(lines)
 
