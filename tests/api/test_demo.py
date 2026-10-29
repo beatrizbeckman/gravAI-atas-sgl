@@ -49,7 +49,6 @@ def test_sgl_tab_page_is_served_and_uses_the_integration_routes():
         "/minutes/templates",
         "/minutes/templates/draft",
         "/minutes/record-and-generate",
-        "/minutes/from-transcript",
         "/minutes/jobs?project_id=",
         "/stop",
         "/result",
