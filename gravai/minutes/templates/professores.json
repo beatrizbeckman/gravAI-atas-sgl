@@ -101,7 +101,7 @@
       "columns": [
         {"key": "acao", "label": "Ação / Entregável"},
         {"key": "responsavel", "label": "Responsável", "instructions": "Quem ficou com a tarefa: o nome completo da lista de participantes, mesmo que a fala use só o primeiro nome; alguém citado que não está na lista, com o nome como foi dito. 'A definir' se ninguém assumiu."},
-        {"key": "prazo", "label": "Prazo", "format": "DD/MM", "instructions": "Data pelo calendário dos dados da reunião. 'A definir' se não foi combinado."},
+        {"key": "prazo", "label": "Prazo", "format": "DD/MM ou DD/MM HH:MM", "instructions": "Data pelo calendário dos dados da reunião; se um horário foi dito, acrescente depois da data (ex.: 30/10 12:00). 'A definir' se não foi combinado."},
         {"key": "status", "label": "Status", "values": ["Pendente", "Em andamento", "Concluído"], "default": "Pendente"}
       ],
       "instructions": "Tarefas com dono, normalmente pedidas pelos professores. Começar cada ação com verbo no infinitivo."
