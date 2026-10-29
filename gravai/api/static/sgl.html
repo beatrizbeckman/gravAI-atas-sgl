@@ -10,6 +10,9 @@
 <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.35/daisyui.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/daisyui@5.0.35/themes.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.5"></script>
+<!-- "Ver ata" shows the Word file itself: JSZip opens the .docx and docx-preview draws its pages. -->
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.7/dist/docx-preview.min.js"></script>
 <style>
   /* Comfortable reading size on large screens (everything in rem grows with it). */
   html { font-size: 17px; }
@@ -40,6 +43,10 @@
   .etapas span { height: 4px; flex: 1; border-radius: 2px; background: color-mix(in oklab, var(--color-base-content) 15%, transparent); }
   .etapas .ok { background: var(--color-info); }
   .etapas .rec { background: var(--color-error); }
+  /* The Word pages inside "Ver ata": white sheets on the dialog background, scrolling sideways on small screens. */
+  #ata-folha { overflow-x: auto; }
+  #ata-folha .docx-wrapper { background: transparent; padding: 16px 0; }
+  #ata-folha .docx-wrapper > section.docx { margin-bottom: 16px; box-shadow: 0 2px 10px rgb(0 0 0 / .35); }
 </style>
 </head>
 <body class="bg-base-200 min-h-screen">
@@ -196,12 +203,15 @@
 
 <!-- Minutes viewer -->
 <dialog id="modal-ata" class="modal">
-  <div class="modal-box max-w-4xl">
-    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button></form>
+  <div class="modal-box max-w-5xl">
+    <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" aria-label="Fechar">✕</button></form>
     <h3 class="text-lg font-bold" id="ata-titulo">Ata</h3>
-    <div role="alert" class="alert alert-warning alert-soft my-3 text-sm"><span>Rascunho gerado por IA: revise antes de enviar.</span></div>
-    <div id="ata-corpo" class="space-y-5"></div>
-    <div class="modal-action"><button id="ata-word" class="btn btn-primary">Baixar Word</button></div>
+    <div role="alert" class="alert alert-warning alert-soft my-3 flex flex-wrap text-sm">
+      <span class="flex-1">Rascunho gerado por IA. Baixe o Word para revisar e editar antes de enviar.</span>
+      <button id="ata-word" class="btn btn-sm btn-primary">Baixar Word</button>
+    </div>
+    <!-- The .docx itself, drawn by docx-preview: what is shown here is exactly what is downloaded. -->
+    <div id="ata-folha" class="bg-base-200 rounded-md"></div>
   </div>
   <form method="dialog" class="modal-backdrop"><button>fechar</button></form>
 </dialog>
@@ -340,7 +350,7 @@
           const cols = (s.columns || []).map((c) => c.label.toLowerCase()).join(", ");
           return `<span class="bg-base-300 rounded px-2 py-1 text-xs">${esc(legivel(s.title))}${s.type === "table" && cols ? ` · tabela: ${esc(cols)}` : ""}</span>`;
         }).join("")
-      : `<span class="text-base-content/60 text-xs">${escolha === PERSONALIZAR ? "descreva a ata abaixo e clique em \"Transformar em seções\"" : "—"}</span>`;
+      : `<span class="text-base-content/60 text-xs">${escolha === PERSONALIZAR ? (editorAberto ? "descreva a ata abaixo e clique em \"Transformar em seções\"" : "clique em \"Editar modelo\" para descrever a ata") : "—"}</span>`;
     $("ver-previa").classList.toggle("hidden", !secoes.length);
     if (previaAberta && secoes.length) mostrarPrevia(); else fecharPrevia();
     $("editar-modelo").textContent = editorAberto ? "Fechar editor" : "Editar modelo";
@@ -363,7 +373,8 @@
 
   // "Editar modelo": opens the editor with a copy of the chosen model (a fixed one becomes a custom copy).
   $("editar-modelo").addEventListener("click", () => {
-    if (editorAberto && escolha !== PERSONALIZAR) { editorAberto = false; return onModelChange(); }
+    // "Fechar editor" closes it for any card, Personalizar included (the custom model being built is kept).
+    if (editorAberto) { editorAberto = false; return onModelChange(); }
     const o = opcaoAtual();
     if (escolha !== PERSONALIZAR) {
       const base = escolha === DO_PROJETO ? modeloDoProjeto()
@@ -750,62 +761,42 @@
     }
   });
 
+  // The .docx of a job, fetched once: "Ver ata" and "Word" use the same file.
+  const words = {};
+  async function wordDoJob(id) {
+    if (!words[id]) {
+      const res = await authFetch(`/minutes/jobs/${id}/download`);
+      if (!res.ok) throw new Error(`download: HTTP ${res.status}`);
+      words[id] = await res.blob();
+    }
+    return words[id];
+  }
+
   async function baixarWord(id) {
     try {
       const job = jobs.find((j) => j.id === id);
-      const res = await authFetch(`/minutes/jobs/${id}/download`);
-      if (!res.ok) throw new Error(`download: HTTP ${res.status}`);
-      const href = URL.createObjectURL(await res.blob());
+      const href = URL.createObjectURL(await wordDoJob(id));
       const a = Object.assign(document.createElement("a"), { href, download: job?.result?.filename || "ata.docx" });
       document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(href);
     } catch (err) { toast(err.message, "error"); }
   }
 
   // --------------------------------------------------- minutes viewer
-  const titulo = (k) => k.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
-  function secoesDoJob(job) {
-    if (job.template === "custom") {
-      const custom = reunioesSalvas()[job.id]?.custom;
-      if (custom?.sections) return custom.sections;
-      if (custom?.instructions) return [{ key: "conteudo", title: "Conteúdo" }];
-      return null;
-    }
-    return templates.find((t) => t.id === job.template)?.sections || null;
-  }
-  function renderValor(v) {
-    const vazio = '<p class="text-base-content/50 text-sm">Nada registrado.</p>';
-    if (v == null || v === "" || (Array.isArray(v) && !v.length)) return vazio;
-    if (typeof v === "string") return `<p>${esc(v)}</p>`;
-    if (Array.isArray(v)) {
-      if (v.every((x) => typeof x === "string")) return `<ul class="list-disc space-y-1 pl-5">${v.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
-      if (v.every((x) => x && typeof x === "object" && "titulo" in x && "resumo" in x)) {
-        return v.map((x) => `<div class="mb-2"><div class="font-semibold">${esc(x.titulo)}</div><p class="text-base-content/80">${esc(x.resumo)}</p></div>`).join("");
-      }
-      const cols = [...new Set(v.flatMap((x) => Object.keys(x || {})))];
-      return `<div class="overflow-x-auto"><table class="table table-sm"><thead><tr>${cols.map((c) => `<th>${esc(titulo(c))}</th>`).join("")}</tr></thead><tbody>${v.map((x) => `<tr>${cols.map((c) => `<td>${esc(x?.[c])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
-    }
-    if (typeof v === "object") {
-      const linhas = Object.entries(v).filter(([, x]) => x);
-      return linhas.length ? `<dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">${linhas.map(([k, x]) => `<dt class="font-medium">${esc(titulo(k))}</dt><dd>${esc(x)}</dd>`).join("")}</dl>` : vazio;
-    }
-    return `<p>${esc(v)}</p>`;
-  }
+  // "Ver ata" draws the Word file in the page instead of a second layout of the same minutes, so the person
+  // reads exactly what they download. Editing happens in Word.
   async function verAta(id) {
+    $("ata-titulo").textContent = reunioesSalvas()[id]?.titulo || "Ata";
+    $("ata-word").onclick = () => baixarWord(id);
+    const folha = $("ata-folha");
+    folha.innerHTML = '<div class="flex justify-center py-16"><span class="loading loading-spinner loading-md"></span></div>';
+    $("modal-ata").showModal();
     try {
-      const job = jobs.find((j) => j.id === id);
-      const r = await api(`/minutes/jobs/${id}/result`);
-      $("ata-titulo").textContent = reunioesSalvas()[id]?.titulo || "Ata";
-      const secoes = (job && secoesDoJob(job)) || Object.keys(r.minutes).map((key) => ({ key, title: titulo(key) }));
-      const campos = templates.find((t) => t.id === (job?.template || r.template))?.header || [];
-      const rotulo = (k) => campos.find((f) => f.key === k)?.label || titulo(k);
-      const cab = Object.entries(r.header || {}).filter(([, v]) => v).map(([k, v]) => `<span class="badge badge-ghost">${esc(rotulo(k))}: ${esc(v)}</span>`).join(" ");
-      $("ata-corpo").innerHTML =
-        `<div class="flex flex-wrap gap-2">${cab}</div>` +
-        `<div><h4 class="text-base-content/60 mb-1 text-xs font-semibold uppercase">Participantes</h4><p>${esc((r.participants || []).join(", "))}</p></div>` +
-        secoes.map((s) => `<div><h4 class="text-info mb-2 font-semibold uppercase">${esc(s.title)}</h4>${renderValor(r.minutes[s.key])}</div>`).join("");
-      $("ata-word").onclick = () => baixarWord(id);
-      $("modal-ata").showModal();
-    } catch (err) { toast(err.message, "error"); }
+      const blob = await wordDoJob(id);
+      folha.innerHTML = "";
+      await docx.renderAsync(blob, folha, undefined, { className: "docx", inWrapper: true, breakPages: true });
+    } catch (err) {
+      folha.innerHTML = `<p class="text-error p-6 text-sm">Não foi possível mostrar a ata aqui (${esc(err.message)}). Use "Baixar Word".</p>`;
+    }
   }
 
   // ------------------------------------------------------------- start

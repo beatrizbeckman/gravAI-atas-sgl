@@ -51,8 +51,7 @@ def test_sgl_tab_page_is_served_and_uses_the_integration_routes():
         "/minutes/record-and-generate",
         "/minutes/jobs?project_id=",
         "/stop",
-        "/result",
-        "/download",
+        "/download",  # "Ver ata" and "Word" both use the .docx; the page no longer reads /result
         "X-API-Key",
     ):
         assert path in html
