@@ -1,6 +1,6 @@
 # Experimentos de geração de atas
 
-Comparação de modelos de LLM gerando, tendo como base as mesmas reuniões
+Comparação de modelos de LLM, tendo como base as mesmas reuniões
 
 ## Rodar as reunioes nas llm
 
@@ -126,7 +126,7 @@ Consequências práticas:
 
 ## Gemini 3 Flash Preview x gpt-oss-120b
 
-Rodada em `results/gemini/` (02/11/2026), com partes de 12 mil caracteres e template `dell`. O Gemini fica fora do formulário de avaliação.
+Rodada em `results/gemini/` (02/11/2026), com partes de 12 mil caracteres e template `dell`. O Gemini também entra no [formulário de avaliação](avaliacao_forms/README.md), com uma ata nova da ES2004a.
 
 O `gpt-oss-120b` é o modelo padrão do serviço. A comparação usa as duas reuniões em que ele rodou com quase o mesmo prompt do Gemini (`results/groq/2026-10-29_prompt_novo/`): a única diferença é o horário opcional no prazo. A qualidade vem de uma leitura contra o gabarito e a transcrição, não do formulário.
 
