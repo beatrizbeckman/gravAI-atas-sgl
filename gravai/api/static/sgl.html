@@ -207,7 +207,7 @@
     <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" aria-label="Fechar">✕</button></form>
     <h3 class="text-lg font-bold" id="ata-titulo">Ata</h3>
     <div role="alert" class="alert alert-warning alert-soft my-3 flex flex-wrap text-sm">
-      <span class="flex-1">Rascunho gerado por IA. Baixe o Word para revisar e editar antes de enviar.</span>
+      <span class="flex-1">Rascunho gerado por IA. Baixe o Word para revisar e editar antes de compartilhar.</span>
       <button id="ata-word" class="btn btn-sm btn-primary">Baixar Word</button>
     </div>
     <!-- The .docx itself, drawn by docx-preview: what is shown here is exactly what is downloaded. -->
@@ -699,7 +699,7 @@
     const e = etapa(j);
     let ata = "", acao = "", fundo = "";
     if (j.status === "done") {
-      ata = `<div class="flex flex-wrap items-center gap-2"><span class="badge badge-success badge-sm gap-1">${ICON.check} Pronta</span><span class="text-warning text-sm">Rascunho da IA: revise antes de enviar</span></div>`;
+      ata = `<div class="flex flex-wrap items-center gap-2"><span class="badge badge-success badge-sm gap-1">${ICON.check} Pronta</span><span class="text-warning text-sm">Rascunho da IA: revise antes de compartilhar</span></div>`;
       acao = `<div class="flex justify-end gap-2"><button class="btn btn-sm btn-primary" data-ver="${esc(j.id)}">${ICON.olho} Ver ata</button><button class="btn btn-sm btn-outline" data-word="${esc(j.id)}">${ICON.baixar} Word</button></div>`;
     } else if (j.status === "failed") {
       ata = `<div class="flex flex-wrap items-center gap-2"><span class="badge badge-error badge-soft badge-sm gap-1">${ICON.alerta} Não gerada</span><span class="text-sm">${esc(ERRO[j.error?.code] || j.error?.message || "")}</span></div>`;
