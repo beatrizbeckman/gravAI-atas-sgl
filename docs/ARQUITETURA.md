@@ -264,7 +264,7 @@ Um arquivo pequeno de propósito. A função `generate(system, user) -> str` é 
 5. **Divide em partes** e, para cada uma, chama `_ask`.
 6. **`_ask` é o laço de tentativas.** Chama o LLM, tenta `parse_response`. Se falhar, manda o mesmo prompt de novo com "a resposta anterior foi rejeitada porque X, responda novamente com JSON válido". Isso importa porque com `temperature 0` um modelo repetiria o mesmo erro se o prompt fosse idêntico. Até duas tentativas extras. Depois disso, `MinutesError("llm_invalid_response")`.
 7. **Consolida** quando houve mais de uma parte.
-8. **Corrige o que o modelo ainda erra, no código:** uma célula de tabela que é só parte do nome de um participante ("Beatriz") vira o nome completo ("Ana Beatriz Beckman"), se não houver ambiguidade (`full_participant_names`); e uma linha de "decisões" que só repete uma ação do plano ou a próxima reunião sai, com a numeração refeita (`drop_repeated_decisions`).
+8. **Corrige o que o modelo ainda erra, no código:** uma célula de tabela que é só parte do nome de um participante ("Clara") vira o nome completo ("Ana Clara Lima"), se não houver ambiguidade (`full_participant_names`); e uma linha de "decisões" que só repete uma ação do plano ou a próxima reunião sai, com a numeração refeita (`drop_repeated_decisions`).
 9. **Renderiza o docx** e devolve métricas: quantas falas, quantas partes, quantas chamadas ao LLM, quantas repetições, segundos gastos, nome do modelo.
 
 Erros são sempre `MinutesError` com um `code` estável, os mesmos códigos que a API devolve: `llm_unreachable`, `llm_invalid_response`, `empty_transcript`, `transcription_failed`, `recording_failed`, `internal`.
@@ -426,14 +426,13 @@ Com `from-transcript`, só as três últimas linhas de trabalho acontecem.
 - 159 testes automatizados que rodam sem LLM, Whisper ou Teams.
 - Chave de acesso (`API_KEY` / `X-API-Key`), `project_id`, encerrar gravação (`/stop`), aviso de conclusão (`callback_url`) e modelo de ata a partir de uma descrição (`/minutes/templates/draft`), para o SGL.
 - Simulação da aba "Reuniões" do SGL em `/demo/sgl` e guia de integração para o desenvolvedor do SGL.
-- Notas de 1 a 5 das atas dos experimentos contra o gabarito (seis modelos).
 - CLIs para cada etapa, para depurar isoladamente.
 
 ### Ainda não feito
 
 | O que | Por que importa | Onde encaixa |
 |---|---|---|
-| **Segunda leitura das notas** numa amostra das atas | As notas de 1 a 5 foram dadas por uma pessoa só; uma segunda leitura dá mais confiança à tabela do artigo. | coluna `nota` em `experiments/results/<rodada>/resumo.csv` |
+| **Avaliação das atas por formulário** | Pessoas comparam trechos da reunião com as atas de cada modelo e dizem qual agiu melhor. O resultado entra no artigo. | `experiments/avaliacao_forms/README.md` |
 | **Modelos de 7–8B de verdade** (Llama 3.1 8B, Qwen 2.5 7B, Mistral 7B) | O Groq gratuito só oferece gpt-oss-20b/120b e qwen3.8-27b, com limites apertados por minuto e por dia. Precisa de crédito no DeepInfra (conta criada, sem saldo em 06/10) ou da GPU do laboratório. | `experiments/run_experiments.py --models deepinfra:<modelo>` já funciona |
 | **Front para comparar experimentos** ao lado da `/demo` | O co-orientador pediu para ver prompt, entrada e saída de cada teste. Hoje isso está em arquivos (`prompts/NN_*.txt`) por rodada. | `gravai/api/` lendo `experiments/results/` |
 | **Reunião real gravada pelo GravAI** no dataset | O dataset atual é traduzido do inglês; não tem erros de ASR em português nem fala sobreposta. Uma reunião real valida isso. | gravar com o bot, normalizar, colocar em `datasets/reunioes/` |

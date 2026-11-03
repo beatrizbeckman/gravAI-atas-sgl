@@ -19,13 +19,11 @@ Output: <out>/<transcript>__<provider>__<model>/ with
     minutes.json                                     parsed minutes (when it worked)
     ata.docx                                         rendered minutes (when it worked)
     meta.json                                        model, times, tokens, cost, error
-and <out>/resumo.csv + <out>/resumo.md with one line per (transcript, model),
-with an empty "nota" column to be filled by hand after reading the minutes.
+and <out>/resumo.csv + <out>/resumo.md with one line per (transcript, model).
 
 Pointing --out at an existing run resumes it: pairs whose meta.json says "ok"
 are skipped, the others are rerun, and the summary covers every pair found in
 the folder (so a batch can be extended with new models or transcripts later).
-Notes and observations already typed into meta.json are kept.
 """
 
 from __future__ import annotations
@@ -58,6 +56,7 @@ PROVIDERS = {
     "openrouter": ("https://openrouter.ai/api/v1", "OPEN_ROUTER"),
     "deepinfra": ("https://api.deepinfra.com/v1/openai", "DEEP_INFRA"),
     "openai": ("https://api.openai.com/v1", "OPENAI_API_KEY"),
+    "gemini": ("https://generativelanguage.googleapis.com/v1beta/openai", "GEMINI_API_KEY"),
 }
 
 DEFAULT_MODELS = [
@@ -205,8 +204,6 @@ def run_one(
         "status": None,
         "error_code": None,
         "error": None,
-        "nota": previous.get("nota") if previous else None,
-        "observacoes": previous.get("observacoes", "") if previous else "",
     }
     print(f"  {label} x {provider}:{model}", flush=True)
     started = time.monotonic()
@@ -278,8 +275,6 @@ COLUMNS = [
     "cost_usd",
     "filled_sections",
     "total_sections",
-    "nota",
-    "observacoes",
 ]
 
 
@@ -303,8 +298,8 @@ def write_summary(out_dir: str, rows: list[dict]):
         "",
         f"Gerado em {datetime.now():%d/%m/%Y %H:%M}. Pasta: `{os.path.relpath(out_dir, ROOT)}`.",
         "",
-        "| Transcrição | Falas | Modelo | Status | Partes | Chamadas | Tempo (s) | Tokens in+out | Custo (US$) | Seções preenchidas | Nota |",
-        "|---|---|---|---|---|---|---|---|---|---|---|",
+        "| Transcrição | Falas | Modelo | Status | Partes | Chamadas | Tempo (s) | Tokens in+out | Custo (US$) | Seções preenchidas |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in rows:
         status = r["status"] + (f" `{r['error_code']}`" if r["error_code"] else "")
@@ -313,13 +308,8 @@ def write_summary(out_dir: str, rows: list[dict]):
         filled = f"{r.get('filled_sections')}/{r.get('total_sections')}" if r.get("total_sections") else ""
         lines.append(
             f"| {r['transcript']} | {r['utterances']} | {r['provider']}:{r['model']} | {status} | {r['parts'] or ''} | "
-            f"{r['llm_calls']} | {r['total_seconds']} | {tokens} | {cost} | {filled} | {r['nota'] or ''} |"
+            f"{r['llm_calls']} | {r['total_seconds']} | {tokens} | {cost} | {filled} |"
         )
-    lines += [
-        "",
-        "Nota: 1 a 5, preenchida à mão comparando `minutes.json` com o `gabarito.md` da transcrição.",
-        "Critérios: decisões capturadas, pendências com responsável, nada inventado, JSON válido de primeira.",
-    ]
     write_text(os.path.join(out_dir, "resumo.md"), "\n".join(lines) + "\n")
 
 
