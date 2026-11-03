@@ -18,29 +18,31 @@
   html { font-size: 17px; }
   body { font-family: Figtree, ui-sans-serif, system-ui, sans-serif; }
   /* Miniature of a minutes page drawn from the template's sections: abstract bars, like the Google Docs gallery. */
-  .paper { background: #ecebe7; aspect-ratio: 1 / 1.3; overflow: hidden; padding: 11% 10%; border-radius: 3px; }
-  .paper .t { height: .26rem; width: 50%; margin: 0 auto .6rem; background: #52525b; border-radius: 1px; }
-  .paper .h { height: .26rem; background: #2563b0; border-radius: 1px; margin-top: .55rem; }
-  .paper .l { height: .2rem; background: #c9c8c4; border-radius: 1px; margin-top: .26rem; }
-  .paper .b { display: flex; align-items: center; gap: .26rem; margin-top: .26rem; }
-  .paper .b::before { content: ""; width: .26rem; height: .26rem; border-radius: 50%; background: #8a8984; flex: none; }
+  .paper { background: #ecebe7; aspect-ratio: 1 / 1.25; overflow: hidden; padding: 11% 10%; border-radius: 3px; }
+  .paper .t { height: .22rem; width: 50%; margin: 0 auto .5rem; background: #52525b; border-radius: 1px; }
+  .paper .h { height: .22rem; background: #2563b0; border-radius: 1px; margin-top: .45rem; }
+  .paper .l { height: .17rem; background: #c9c8c4; border-radius: 1px; margin-top: .22rem; }
+  .paper .b { display: flex; align-items: center; gap: .22rem; margin-top: .22rem; }
+  .paper .b::before { content: ""; width: .22rem; height: .22rem; border-radius: 50%; background: #8a8984; flex: none; }
   .paper .b .l { margin-top: 0; flex: 1; }
-  .paper .g { display: grid; gap: .13rem; margin-top: .26rem; }
-  .paper .g .c { height: .26rem; background: #2563b0; }
-  .paper .g .r { height: .2rem; background: #c9c8c4; }
+  .paper .g { display: grid; gap: .11rem; margin-top: .22rem; }
+  .paper .g .c { height: .22rem; background: #2563b0; }
+  .paper .g .r { height: .17rem; background: #c9c8c4; }
   .sel .paper { background: #f6f5f1; }
   /* Readable preview of a template */
   .pagina { background: #fff; color: #18181b; border-radius: 4px; padding: 28px 30px; font-size: 13px; }
-  /* Dialogs never taller than the screen: the whole box scrolls, at any browser zoom. */
-  .modal-box { max-height: 85vh !important; overflow-y: auto !important; }
   .pagina .h { color: #1e4f8a; font-weight: 700; text-transform: uppercase; margin-top: 14px; font-size: 12px; }
   .pagina .l { height: 7px; background: #e4e4e7; border-radius: 2px; margin-top: 6px; }
   .pagina table { width: 100%; margin-top: 6px; border-collapse: collapse; font-size: 11px; }
   .pagina th { background: #1e4f8a; color: #fff; text-align: left; padding: 3px 6px; font-weight: 600; }
   .pagina td { border: 1px solid #e4e4e7; height: 16px; }
+  /* Dialogs never taller than the screen: header and footer stay, the middle scrolls. */
+  .modal-box.janela { max-height: 90vh; padding: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .janela .corpo { overflow-y: auto; flex: 1; }
+  #modal-ata .modal-box { max-height: 85vh; overflow-y: auto; }
   /* 7-step progress of a minutes */
-  .etapas { display: flex; gap: 4px; margin-top: 6px; max-width: 280px; }
-  .etapas span { height: 4px; flex: 1; border-radius: 2px; background: color-mix(in oklab, var(--color-base-content) 15%, transparent); }
+  .etapas { display: flex; gap: 4px; margin-top: 6px; width: 110px; }
+  .etapas span { height: 3px; flex: 1; border-radius: 2px; background: color-mix(in oklab, var(--color-base-content) 15%, transparent); }
   .etapas .ok { background: var(--color-info); }
   .etapas .rec { background: var(--color-error); }
   /* The Word pages inside "Ver ata": white sheets on the dialog background, scrolling sideways on small screens. */
@@ -52,154 +54,218 @@
 <body class="bg-base-200 min-h-screen">
 <!--
   Only the content of the "Reuniões" tab. In the SGL it goes inside the project page
-  (Projetos/Show.tsx), next to the tabs that already exist there; the sidebar, the
+  (Projetos/Show.tsx), under the tab bar that already exists there; the sidebar, the
   project card and the other tabs are the SGL's and are not repeated here.
 -->
-<main class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+<main class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
   <div class="card bg-base-100 shadow-xl">
-    <div class="card-body gap-0 p-8">
+    <div class="card-body p-8">
 
-      <!-- ===================================================== Registrar reunião -->
-      <h3 class="text-xl font-semibold">Registrar reunião</h3>
-      <p class="text-base-content/70 mt-1 text-sm">O GravAI entra na reunião do Teams, grava e entrega a ata pronta para você revisar.</p>
+      <!-- ===================================================== Atas do projeto -->
+      <div class="border-base-300 flex flex-wrap items-center justify-between gap-3 border-b pb-6">
+        <h3 class="text-2xl font-semibold">Atas do Projeto</h3>
+        <button type="button" id="abrir-registrar" class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+          Registrar reunião
+        </button>
+      </div>
 
-      <div id="gravai-off" role="alert" class="alert alert-warning mt-6 hidden">
+      <div id="gravai-off" role="alert" class="alert alert-warning mt-4 hidden">
         <span>O GravAI está indisponível no momento. Tente mais tarde.</span>
       </div>
 
-      <form id="form" class="mt-6">
-        <!-- 1 · Modelo de ata -->
-        <div class="mb-3 flex items-center gap-3">
-          <span class="bg-base-300 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold">1</span>
-          <span class="font-semibold">Modelo de ata</span><span class="text-error">*</span>
-        </div>
-        <div id="galeria" class="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5"></div>
-
-        <!-- "A IA vai preencher": the sections of the chosen model -->
-        <div class="bg-base-200 mt-4 flex flex-wrap items-center gap-2 rounded-md px-3 py-2 text-sm">
-          <span class="text-base-content/70 mr-1">A IA vai preencher:</span>
-          <div id="chips" class="flex flex-1 flex-wrap gap-2"></div>
-          <button type="button" id="ver-previa" class="link link-info text-sm">Ver prévia</button>
-          <button type="button" id="editar-modelo" class="link link-info text-sm">Editar modelo</button>
-        </div>
-
-        <!-- Preview of the chosen model, inline (no dialog: scrolls with the page at any zoom) -->
-        <div id="previa" class="bg-base-200 mt-3 hidden rounded-md">
-          <!-- Header stays visible while scrolling through the page, with the close button. -->
-          <div class="bg-base-200 border-base-300 sticky top-0 z-10 flex items-start gap-3 rounded-t-md border-b px-4 py-3">
-            <div class="flex-1">
-              <div class="font-semibold">Prévia: <span id="previa-nome"></span></div>
-              <p id="previa-desc" class="text-base-content/70 text-sm"></p>
-            </div>
-            <button type="button" id="fechar-previa" class="btn btn-sm btn-circle btn-ghost" title="Fechar prévia" aria-label="Fechar prévia">✕</button>
-          </div>
-          <div class="p-4">
-            <div id="previa-pagina" class="mx-auto max-w-2xl"></div>
-            <div class="mt-4 flex justify-center">
-              <button type="button" id="fechar-previa-2" class="btn btn-sm">Fechar prévia</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Custom model editor (EditorModeloAta) -->
-        <div id="editor" class="bg-base-200 mt-4 hidden space-y-4 rounded-lg p-4">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <span class="font-medium">Como a ata deve ser?</span>
-            <div class="join">
-              <button type="button" class="btn btn-sm join-item" data-modo="texto">Descrever em texto</button>
-              <button type="button" class="btn btn-sm join-item" data-modo="secoes">Montar seções</button>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <label class="form-control">
-              <span class="label-text mb-1 font-medium">Nome do modelo</span>
-              <input id="m-nome" type="text" class="input input-bordered w-full" placeholder="Ex.: Ata semanal Dell">
-            </label>
-            <label class="form-control">
-              <span class="label-text mb-1 font-medium">Tom (opcional)</span>
-              <input id="m-tom" type="text" class="input input-bordered w-full" placeholder="Ex.: formal, em terceira pessoa">
-            </label>
-          </div>
-          <div id="modo-texto">
-            <span class="label-text mb-1 block font-medium">Como você quer a ata?</span>
-            <textarea id="m-texto" class="textarea textarea-bordered w-full" rows="4"
-              placeholder="Ex.: Quero o objetivo, as decisões, as dúvidas que ficaram e as tarefas com quem faz e até quando."></textarea>
-            <div class="mt-3 flex flex-wrap items-center gap-3">
-              <button type="button" id="transformar" class="btn btn-sm btn-primary">Transformar em seções</button>
-              <span class="text-base-content/60 text-xs">A IA propõe as seções; você revisa antes de usar.</span>
-            </div>
-          </div>
-          <div id="modo-secoes" class="space-y-3">
-            <div id="secoes" class="space-y-3"></div>
-            <button type="button" id="add-secao" class="btn btn-outline btn-sm">+ Adicionar seção</button>
-          </div>
-          <label class="flex cursor-pointer items-center gap-3">
-            <input id="salvar-projeto" type="checkbox" class="checkbox checkbox-sm">
-            <span class="label-text">Salvar como modelo do projeto (vira o padrão das próximas reuniões)</span>
-          </label>
-          <div id="editor-erro" class="text-error text-sm"></div>
-        </div>
-
-        <!-- 2 · Reunião -->
-        <div class="mb-3 mt-8 flex items-center gap-3">
-          <span class="bg-base-300 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold">2</span>
-          <span class="font-semibold">Reunião</span>
-        </div>
-        <div class="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_3fr]">
-          <div class="form-control">
-            <span class="label-text mb-2 text-sm">Título da ata <span class="text-error">*</span></span>
-            <!-- Suggested title in light grey with an "editável" tag until the person types their own. -->
-            <label class="input input-bordered flex w-full items-center gap-2">
-              <input id="titulo" type="text" class="grow" placeholder="Ex.: Ata semanal Dell – 28/10/2026">
-              <span id="titulo-tag" class="text-base-content/50 flex items-center gap-1 text-xs" title="Você pode mudar o título">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13L2 21l.35-2.935a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Z"/></svg>
-                editável
-              </span>
-            </label>
-            <span class="text-base-content/60 mt-2 text-xs">Nome que aparece na lista de atas, sugerido pelo modelo e pela data.</span>
-            <div id="numero-ata" class="mt-5 hidden"></div>
-          </div>
-          <label class="form-control">
-            <span class="label-text mb-2 text-sm">Link da reunião no Microsoft Teams <span class="text-error">*</span></span>
-            <input id="link" type="url" class="input input-bordered w-full" placeholder="https://teams.microsoft.com/l/meetup-join/...">
-            <span class="mt-2 flex flex-wrap items-center gap-2 text-xs">
-              <span class="text-base-content/60">Reunião semanal costuma ter o mesmo link.</span>
-              <button type="button" id="usar-ultimo-link" class="btn btn-xs btn-info btn-soft hidden"></button>
-            </span>
-          </label>
-        </div>
-        <div id="campos-extras" class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2"></div>
-
-        <!-- 3 · Envio -->
-        <div class="border-info/30 bg-info/5 mt-6 flex flex-wrap items-center gap-4 rounded-lg border p-4">
-          <span class="bg-base-300 inline-flex h-6 w-6 flex-none items-center justify-center rounded-full text-xs font-semibold">3</span>
-          <p class="min-w-64 flex-1 text-sm">
-            Ao enviar, o GravAI pede para entrar: <b>admita-o no Teams</b> e avise que a reunião será gravada.
-            Ele sai quando a reunião for encerrada para todos ou quando você clicar em <b>Encerrar</b> na lista abaixo.
-          </p>
-          <button type="submit" id="enviar" class="btn btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M15.75 3v1.5M4.5 8.25h15M5.25 6h13.5A1.5 1.5 0 0 1 20.25 7.5v10.5a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V7.5A1.5 1.5 0 0 1 5.25 6Zm4.5 7.5h.008v.008H9.75V13.5Zm4.5 0h.008v.008h-.008V13.5Z"/></svg>
-            Enviar bot para a reunião
-          </button>
-        </div>
-      </form>
-
-      <div class="divider my-8"></div>
-
-      <!-- ===================================================== Atas do projeto -->
-      <div class="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-        <h3 class="text-xl font-semibold">Atas do projeto</h3>
-        <span class="text-base-content/60 text-xs">Atualiza sozinho enquanto houver reunião em andamento</span>
+      <!-- Empty state -->
+      <div id="vazio" class="hidden flex-col items-center py-12 text-center">
+        <span class="bg-base-200 mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" class="text-base-content/70 h-6 w-6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>
+        </span>
+        <div class="font-semibold">Nenhuma ata neste projeto ainda</div>
+        <p class="text-base-content/70 mt-2 max-w-md text-sm">Clique em <b class="text-base-content">Registrar reunião</b>, cole o link do Teams e marque quem vai participar. O GravAI grava e entrega a ata aqui.</p>
       </div>
-      <div class="overflow-x-auto">
-        <table class="table w-full">
-          <thead><tr><th>Reunião</th><th>Data</th><th>Ata</th><th></th></tr></thead>
-          <tbody id="atas"></tbody>
-        </table>
+
+      <div id="lista" class="hidden">
+        <div class="overflow-x-auto">
+          <table class="table w-full">
+            <thead><tr class="text-base-content/70"><th>Reunião</th><th>Data</th><th>Participantes</th><th>Ata</th><th class="text-right">Ações</th></tr></thead>
+            <tbody id="atas"></tbody>
+          </table>
+        </div>
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+          <span id="mostrando" class="text-base-content/60 text-sm"></span>
+          <div id="paginas" class="join"></div>
+        </div>
       </div>
     </div>
   </div>
 </main>
+
+<!-- ===================================================== Registrar reunião (modal with two views) -->
+<dialog id="modal-registrar" class="modal">
+  <div class="modal-box janela max-w-4xl">
+
+    <!-- View 1: Registrar reunião -->
+    <form id="form" class="flex min-h-0 flex-1 flex-col">
+      <div class="border-base-300 flex items-start gap-3 border-b px-6 py-5">
+        <div class="flex-1">
+          <h3 class="text-xl font-semibold">Registrar reunião</h3>
+          <p class="text-base-content/70 mt-1 text-sm">O GravAI entra na reunião do Teams, grava e entrega a ata para você revisar.</p>
+        </div>
+        <button type="button" class="btn btn-sm btn-circle btn-ghost" data-fechar aria-label="Fechar">✕</button>
+      </div>
+
+      <div class="corpo space-y-8 px-6 py-6">
+        <!-- 1 · Modelo de ata -->
+        <section>
+          <div class="mb-3 flex items-center gap-3">
+            <span class="bg-base-300 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold">1</span>
+            <span class="font-semibold">Modelo de ata</span><span class="text-error">*</span>
+          </div>
+          <div id="galeria" class="flex flex-wrap gap-4"></div>
+
+          <!-- "A IA vai preencher": the sections of the chosen model -->
+          <div class="bg-base-200 mt-4 flex flex-wrap items-center gap-2 rounded-md px-3 py-2 text-sm">
+            <span class="text-base-content/70 mr-1">A IA vai preencher:</span>
+            <div id="chips" class="flex flex-1 flex-wrap gap-2"></div>
+            <button type="button" id="ver-previa" class="link link-info text-sm">Ver prévia</button>
+          </div>
+
+          <!-- Preview of the chosen model -->
+          <div id="previa" class="bg-base-200 mt-3 hidden rounded-md">
+            <div class="border-base-300 flex items-start gap-3 border-b px-4 py-3">
+              <div class="flex-1">
+                <div class="font-semibold">Prévia: <span id="previa-nome"></span></div>
+                <p id="previa-desc" class="text-base-content/70 text-sm"></p>
+              </div>
+              <button type="button" id="fechar-previa" class="btn btn-sm btn-circle btn-ghost" title="Fechar prévia" aria-label="Fechar prévia">✕</button>
+            </div>
+            <div class="p-4"><div id="previa-pagina" class="mx-auto max-w-2xl"></div></div>
+          </div>
+        </section>
+
+        <!-- 2 · Reunião -->
+        <section>
+          <div class="mb-3 flex items-center gap-3">
+            <span class="bg-base-300 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold">2</span>
+            <span class="font-semibold">Reunião</span>
+          </div>
+          <div class="grid grid-cols-1 gap-4 lg:grid-cols-[2fr_3fr]">
+            <div class="form-control">
+              <span class="label-text mb-2 text-sm">Título da ata <span class="text-error">*</span></span>
+              <input id="titulo" type="text" class="input input-bordered w-full" placeholder="Ex.: Ata semanal Dell – 28/10/2026">
+              <div id="numero-ata" class="mt-3 hidden"></div>
+            </div>
+            <div class="form-control">
+              <span class="label-text mb-2 text-sm">Link da reunião no Microsoft Teams <span class="text-error">*</span></span>
+              <input id="link" type="url" class="input input-bordered w-full" placeholder="https://teams.microsoft.com/l/meetup-join/...">
+              <div class="mt-2"><button type="button" id="usar-ultimo-link" class="btn btn-xs btn-info btn-soft hidden"></button></div>
+            </div>
+          </div>
+          <div id="campos-extras" class="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2"></div>
+        </section>
+
+        <!-- 3 · Quem está na reunião -->
+        <section>
+          <div class="mb-3 flex items-center gap-3">
+            <span class="bg-base-300 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold">3</span>
+            <span class="font-semibold">Quem está na reunião</span>
+          </div>
+          <div class="mb-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+            <span class="text-base-content/70">Membros do projeto · <span id="marcados"></span></span>
+            <span class="flex gap-4">
+              <button type="button" id="marcar-todos" class="link link-info link-hover">Marcar todos</button>
+              <button type="button" id="desmarcar" class="link link-info link-hover">Desmarcar</button>
+            </span>
+          </div>
+          <div id="membros" class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3"></div>
+          <label class="form-control mt-5 block">
+            <span class="label-text mb-2 block text-sm">Outros participantes <span class="text-base-content/50">(opcional)</span></span>
+            <input id="outros" type="text" class="input input-bordered w-full" placeholder="Ex.: equipe da Dell. Separe os nomes por vírgula.">
+            <span class="text-base-content/60 mt-2 block text-xs">Quem estiver marcado aqui entra na lista de participantes da ata.</span>
+          </label>
+        </section>
+      </div>
+
+      <div class="border-base-300 flex flex-wrap items-center gap-4 border-t px-6 py-4">
+        <p class="text-base-content/80 flex min-w-64 flex-1 gap-2 text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="text-info mt-0.5 h-4 w-4 flex-none"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
+          <span>Depois de enviar, <b class="text-base-content">admita o GravAI no Teams</b>. Ele sai quando a reunião for encerrada para todos ou quando você clicar em Encerrar na lista.</span>
+        </p>
+        <button type="button" class="btn" data-fechar>Cancelar</button>
+        <button type="submit" id="enviar" class="btn btn-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M15.75 3v1.5M4.5 8.25h15M5.25 6h13.5A1.5 1.5 0 0 1 20.25 7.5v10.5a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V7.5A1.5 1.5 0 0 1 5.25 6Zm4.5 7.5h.008v.008H9.75V13.5Zm4.5 0h.008v.008h-.008V13.5Z"/></svg>
+          Enviar bot para a reunião
+        </button>
+      </div>
+    </form>
+
+    <!-- View 2: Personalizar modelo (EditorModeloAta) -->
+    <div id="personalizar" class="hidden min-h-0 flex-1 flex-col">
+      <div class="border-base-300 flex items-center gap-4 border-b px-6 py-5">
+        <button type="button" class="btn btn-sm btn-square btn-outline" data-voltar aria-label="Voltar">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+        </button>
+        <div class="flex-1">
+          <div class="text-base-content/60 text-xs">Registrar reunião ›</div>
+          <h3 class="text-xl font-semibold">Personalizar modelo</h3>
+        </div>
+        <button type="button" class="btn btn-sm btn-circle btn-ghost" data-fechar aria-label="Fechar">✕</button>
+      </div>
+
+      <div class="corpo space-y-6 px-6 py-6">
+        <div>
+          <span class="mb-2 block text-sm">Como você quer a ata? <span class="text-error">*</span></span>
+          <textarea id="m-texto" class="textarea textarea-bordered w-full" rows="3"
+            placeholder="Ex.: Quero o objetivo do projeto, as decisões, as dúvidas que ficaram e as tarefas com quem faz e até quando."></textarea>
+          <div class="mt-2 flex flex-wrap items-center gap-2 text-sm">
+            <span class="text-base-content/60">Adicionar ao texto:</span>
+            <button type="button" class="btn btn-xs btn-outline" data-frase="Quero um resumo da reunião.">+ Resumo</button>
+            <button type="button" class="btn btn-xs btn-outline" data-frase="Quero os riscos levantados.">+ Riscos</button>
+            <button type="button" class="btn btn-xs btn-outline" data-frase="Quero a data e a pauta da próxima reunião.">+ Próxima reunião</button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-end gap-3">
+          <label class="min-w-64 flex-1">
+            <span class="mb-2 block text-sm">Tom <span class="text-base-content/50">(opcional)</span></span>
+            <input id="m-tom" type="text" class="input input-bordered w-full" placeholder="Ex.: formal, em terceira pessoa">
+          </label>
+          <button type="button" id="transformar" class="btn btn-outline">✦ Transformar em seções</button>
+        </div>
+
+        <div class="border-base-300 border-t pt-6">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <span class="font-semibold">Seções que a IA vai preencher <span id="n-secoes" class="text-base-content/50 font-normal"></span></span>
+            <button type="button" id="add-secao" class="btn btn-sm btn-ghost text-info border-info/40 border-dashed">+ Seção</button>
+          </div>
+          <div class="text-base-content/60 mb-1 hidden gap-2 pl-8 text-xs lg:grid lg:grid-cols-[1.6fr_1fr_3fr_auto]">
+            <span>Título</span><span>Tipo</span><span>Instruções (opcional)</span><span class="w-28"></span>
+          </div>
+          <div id="secoes" class="space-y-2"></div>
+          <p id="secoes-vazio" class="text-base-content/60 hidden py-4 text-sm">Descreva a ata acima e clique em "Transformar em seções", ou monte as seções com "+ Seção".</p>
+        </div>
+
+        <div class="border-base-300 flex flex-wrap items-center gap-x-5 gap-y-3 border-t pt-5">
+          <label class="flex cursor-pointer items-center gap-3">
+            <input id="salvar-projeto" type="checkbox" class="checkbox checkbox-sm checkbox-info">
+            <span class="text-sm">Salvar como modelo do projeto</span>
+          </label>
+          <label class="flex items-center gap-2 text-sm">
+            <span>Nome <span class="text-error">*</span></span>
+            <input id="m-nome" type="text" class="input input-bordered input-sm w-56" placeholder="Ex.: Ata semanal Dell">
+          </label>
+          <span class="text-base-content/60 text-xs">Vira o padrão das próximas reuniões.</span>
+        </div>
+        <div id="editor-erro" class="text-error text-sm"></div>
+      </div>
+
+      <div class="border-base-300 flex justify-end gap-3 border-t px-6 py-4">
+        <button type="button" class="btn" data-voltar>Voltar</button>
+        <button type="button" id="usar-modelo" class="btn btn-primary">Usar este modelo</button>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>fechar</button></form>
+</dialog>
 
 <!-- Minutes viewer -->
 <dialog id="modal-ata" class="modal">
@@ -231,12 +297,18 @@
     const el = document.createElement("div");
     el.className = `alert alert-${kind === "error" ? "error" : kind === "success" ? "success" : "info"}`;
     el.innerHTML = `<span>${esc(msg)}</span>`;
-    $("toasts").appendChild(el);
+    // An open dialog sits on the top layer and would hide the page's toasts: show them inside it.
+    const caixa = $("toasts");
+    const aberto = document.querySelector("dialog[open]");
+    if (aberto && caixa.parentElement !== aberto) aberto.appendChild(caixa);
+    if (!aberto && caixa.parentElement !== document.body) document.body.appendChild(caixa);
+    caixa.appendChild(el);
     setTimeout(() => el.remove(), 5000);
   };
   const hoje = () => new Date().toLocaleDateString("pt-BR");
   const ddmm = (d) => new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
   const hhmm = (d) => new Date(d).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  const clone = (o) => JSON.parse(JSON.stringify(o));
   const ICON = {
     olho: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>',
     baixar: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>',
@@ -271,40 +343,52 @@
   };
   const postJson = (path, body) => api(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
 
-  // ------------------------------------------- simulated SGL data (test only)
-  // In the SGL the tab lives inside one project's page; here it is always the first project.
-  const PROJETOS = [
-    { id: "sgl-demo-dell", nome: "Controle Remoto Universal", cliente: "Dell Technologies" },
-    { id: "sgl-demo-tcc", nome: "TCC GravAI · Atas automáticas", cliente: "UFCG / LaCInA" },
-    { id: "sgl-demo-daily", nome: "Daily do laboratório", cliente: "LaCInA" },
-  ];
-  const USUARIO = "Você";
+  // ------------------------------------------- data that comes from the SGL (simulated here)
+  // In the SGL these are Inertia props of the project page (ProjetosController@show):
+  //   projeto           -> the Projeto being shown
+  //   membrosProjeto    -> $projeto->usuarios() with an approved link, the people registered in the project,
+  //                        same shape as participantesProjeto ({id, name, foto_url, funcao}) but not paginated
+  //   auth.user         -> who is logged in (author of the minutes)
+  // Only this block is fake; the rest of the page uses it exactly as the SGL component will.
+  const SGL = {
+    projeto: { id: "sgl-demo-dell", nome: "Controle Remoto Universal", cliente: "Dell Technologies" },
+    membrosProjeto: [
+      { id: 1, name: "Cláudio Campelo", foto_url: null, funcao: "Coordenador" },
+      { id: 2, name: "Marina Souza", foto_url: null, funcao: "Desenvolvedora" },
+      { id: 3, name: "Rafael Lima", foto_url: null, funcao: "Desenvolvedor" },
+      { id: 4, name: "João Pereira", foto_url: null, funcao: "Pesquisador" },
+      { id: 5, name: "Ana Lima", foto_url: null, funcao: "Desenvolvedora" },
+      { id: 6, name: "Pedro Alves", foto_url: null, funcao: "Estagiário" },
+    ],
+    usuario: { id: 1, name: "Cláudio Campelo" },
+  };
+  const projeto = { ...SGL.projeto, membros: SGL.membrosProjeto.map((m) => m.name) };
+  const USUARIO = SGL.usuario.name;
   const modelosDosProjetos = () => store.get("sgl-modelos-projeto", {});   // projeto_id -> custom
-  const reunioesSalvas = () => store.get("sgl-reunioes", {});               // job id -> {titulo, custom, autor, pedido}
+  const reunioesSalvas = () => store.get("sgl-reunioes", {});               // job id -> {titulo, autor, participantes, pedido…}
   const ultimosLinks = () => store.get("sgl-ultimo-link", {});              // projeto_id -> {link, quando}
-  let projeto = PROJETOS[0];
+  const presencas = () => store.get("sgl-presenca", {});                    // projeto_id -> members ticked last time
 
   // ----------------------------------------------------- models (gallery)
   const DO_PROJETO = "modelo-do-projeto", PERSONALIZAR = "personalizar";
   const AUTO_FORMATS = ["DD/MM/AAAA", "HH:MM – HH:MM", "DD/MM/AAAA · HH:MM – HH:MM"];
   let templates = [];
-  let modelo = null;      // the custom being edited
-  let modoEditor = "texto";
+  let modelo = null;      // the custom model applied with "Usar este modelo" (card Personalizar)
+  let rascunho = null;    // the copy being edited in the "Personalizar modelo" view
   let escolha = null;     // gallery card: a template id, DO_PROJETO or PERSONALIZAR
-  let editorAberto = false;
 
   const modeloDoProjeto = () => modelosDosProjetos()[projeto.id] || null;
   const fixedTemplates = () => templates.filter((t) => t.id !== "custom");
   const NOMES = { dell: "Ata Dell", professores: "Ata com professores", daily: "Daily" };
   const nomeTemplate = (t) => NOMES[t.id] || t.name;
+  const secoesDe = (m) => (m?.sections?.length ? m.sections : m?.instructions ? [{ title: "Conteúdo", type: "paragraph" }] : null);
 
   function opcoes() {
     const proj = modeloDoProjeto();
     const lista = [];
-    if (proj) lista.push({ id: DO_PROJETO, nome: proj.name || "Modelo do projeto", selo: "Deste projeto · padrão", secoes: proj.sections || [{ title: "Conteúdo", type: "paragraph" }] });
+    if (proj) lista.push({ id: DO_PROJETO, nome: proj.name || "Modelo do projeto", selo: "Deste projeto", secoes: secoesDe(proj) });
     fixedTemplates().forEach((t) => lista.push({ id: t.id, nome: nomeTemplate(t), desc: t.description, secoes: t.sections || [] }));
-    const montado = escolha === PERSONALIZAR && modelo?.sections ? modelo.sections : null;
-    lista.push({ id: PERSONALIZAR, nome: "Personalizar", secoes: montado });
+    lista.push({ id: PERSONALIZAR, nome: modelo ? (modelo.name || "Ata personalizada") : "Personalizar", secoes: modelo ? secoesDe(modelo) : null });
     return lista;
   }
   const opcaoAtual = () => opcoes().find((o) => o.id === escolha);
@@ -327,13 +411,13 @@
       const ativo = o.id === escolha;
       const pagina = o.secoes
         ? miniatura(o.secoes)
-        : `<div class="border-base-content/25 text-base-content/60 flex aspect-[1/1.3] flex-col items-center justify-center rounded border border-dashed px-3 text-center text-xs"><span class="mb-2 text-2xl font-light">+</span>Descreva como você quer a ata</div>`;
-      return `<div data-escolha="${esc(o.id)}" role="button" tabindex="0" class="cursor-pointer ${ativo ? "sel" : ""}">
+        : `<div class="border-base-content/25 text-base-content/60 flex aspect-[1/1.25] flex-col items-center justify-center rounded border border-dashed px-2 text-center text-xs"><span class="mb-2 text-2xl font-light">+</span>Descreva como quer a ata</div>`;
+      return `<div data-escolha="${esc(o.id)}" role="button" tabindex="0" class="w-28 cursor-pointer ${ativo ? "sel" : ""}">
         <div class="relative rounded-md border-2 p-0.5 transition ${ativo ? "border-info" : "hover:border-base-content/30 border-transparent"}">
           ${pagina}
           ${ativo ? `<span class="bg-info text-info-content absolute -right-2.5 -top-2.5 inline-flex h-6 w-6 items-center justify-center rounded-full shadow">${ICON.check}</span>` : ""}
         </div>
-        <div class="mt-2 text-sm ${ativo ? "font-semibold" : "font-medium"}">${esc(o.nome)}</div>
+        <div class="mt-2 text-sm leading-tight ${ativo ? "font-semibold" : "font-medium"}">${esc(o.nome)}</div>
         ${o.selo ? `<div class="text-info text-xs">${esc(o.selo)}</div>` : ""}
       </div>`;
     }).join("");
@@ -343,17 +427,12 @@
   const legivel = (t) => (t === t.toUpperCase() ? t.charAt(0) + t.slice(1).toLowerCase() : t);
 
   function renderChips() {
-    const o = opcaoAtual();
-    const secoes = o?.secoes || [];
+    const secoes = opcaoAtual()?.secoes || [];
     $("chips").innerHTML = secoes.length
-      ? secoes.map((s) => {
-          const cols = (s.columns || []).map((c) => c.label.toLowerCase()).join(", ");
-          return `<span class="bg-base-300 rounded px-2 py-1 text-xs">${esc(legivel(s.title))}${s.type === "table" && cols ? ` · tabela: ${esc(cols)}` : ""}</span>`;
-        }).join("")
-      : `<span class="text-base-content/60 text-xs">${escolha === PERSONALIZAR ? (editorAberto ? "descreva a ata abaixo e clique em \"Transformar em seções\"" : "clique em \"Editar modelo\" para descrever a ata") : "—"}</span>`;
+      ? secoes.map((s) => `<span class="bg-base-300 rounded px-2 py-1 text-xs">${esc(legivel(s.title))}${s.type === "table" ? " (tabela)" : ""}</span>`).join("")
+      : '<span class="text-base-content/60 text-xs">—</span>';
     $("ver-previa").classList.toggle("hidden", !secoes.length);
     if (previaAberta && secoes.length) mostrarPrevia(); else fecharPrevia();
-    $("editar-modelo").textContent = editorAberto ? "Fechar editor" : "Editar modelo";
   }
 
   $("galeria").addEventListener("click", (e) => {
@@ -365,26 +444,12 @@
     if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); escolher(card.dataset.escolha); }
   });
 
+  // The "Personalizar" card opens the editor; the choice only changes when the person clicks "Usar este modelo".
   function escolher(id) {
-    if (id !== escolha) { modelo = null; editorAberto = id === PERSONALIZAR; }
+    if (id === PERSONALIZAR) return abrirPersonalizar();
     escolha = id;
     onModelChange();
   }
-
-  // "Editar modelo": opens the editor with a copy of the chosen model (a fixed one becomes a custom copy).
-  $("editar-modelo").addEventListener("click", () => {
-    // "Fechar editor" closes it for any card, Personalizar included (the custom model being built is kept).
-    if (editorAberto) { editorAberto = false; return onModelChange(); }
-    const o = opcaoAtual();
-    if (escolha !== PERSONALIZAR) {
-      const base = escolha === DO_PROJETO ? modeloDoProjeto()
-        : { name: `${o.nome} (cópia)`, sections: (o.secoes || []).map((s) => ({ key: s.key, title: s.title, type: ["paragraph", "bullets", "topics", "table"].includes(s.type) ? s.type : "bullets", instructions: s.instructions || `O que foi dito sobre ${s.title.toLowerCase()}.`, ...(s.type === "table" ? { columns: s.columns } : {}) })) };
-      modelo = JSON.parse(JSON.stringify(base));
-      escolha = PERSONALIZAR;
-    }
-    editorAberto = true;
-    onModelChange();
-  });
 
   function onModelChange() {
     const fixed = fixedTemplates().find((t) => t.id === escolha);
@@ -396,18 +461,12 @@
           : `<input type="text" class="input input-bordered w-full" data-campo="${esc(f.key)}" ${f.required ? "required" : ""}>`
       }</label>`).join("");
     renderNumero();
-    if (escolha === PERSONALIZAR && !modelo) {
-      modelo = JSON.parse(JSON.stringify(modeloDoProjeto() || { name: "Ata personalizada", instructions: "" }));
-      if (modelo.sections) modelo.name = modelo.name || "Ata personalizada";
-    }
-    $("editor").classList.toggle("hidden", !(editorAberto && escolha === PERSONALIZAR));
-    if (escolha === PERSONALIZAR) { modoEditor = modelo.sections ? "secoes" : "texto"; renderEditor(); }
     renderGaleria();
     renderChips();
     sugerirTitulo();
   }
 
-  // ------------------------------------------------------ preview modal
+  // ------------------------------------------------------ preview
   function paginaGrande(secoes) {
     return `<div class="pagina"><div style="text-align:center;font-weight:700;letter-spacing:.05em">ATA DE REUNIÃO</div>${
       secoes.map((s) => `<div class="h">${esc(s.title)}</div>${
@@ -432,28 +491,16 @@
     $("previa").classList.add("hidden");
     $("ver-previa").textContent = "Ver prévia";
   }
-  // Closing takes the page back to the chips bar, where the preview was opened.
-  const fecharEVoltar = () => {
-    previaAberta = false;
-    fecharPrevia();
-    $("chips").scrollIntoView({ behavior: "smooth", block: "center" });
-  };
-  $("fechar-previa").addEventListener("click", fecharEVoltar);
-  $("fechar-previa-2").addEventListener("click", fecharEVoltar);
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && previaAberta) fecharEVoltar(); });
+  $("fechar-previa").addEventListener("click", () => { previaAberta = false; fecharPrevia(); });
   $("ver-previa").addEventListener("click", () => {
-    if (!$("previa").classList.contains("hidden")) { previaAberta = false; return fecharPrevia(); }
+    if (previaAberta) { previaAberta = false; return fecharPrevia(); }
     mostrarPrevia();
     $("previa").scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 
-  // ------------------------------------------------------ custom editor
-  const TIPOS = [
-    ["paragraph", "Parágrafo", "Um texto corrido, como um resumo."],
-    ["bullets", "Lista", "Itens curtos, como decisões, dúvidas ou pendências."],
-    ["topics", "Tópicos", "Cada assunto discutido com um título e um resumo."],
-    ["table", "Tabela", "Linhas com colunas, como tarefas com responsável e prazo."],
-  ];
+  // ------------------------------------------------------ "Personalizar modelo" view
+  const TIPOS = [["paragraph", "Parágrafo"], ["bullets", "Lista"], ["topics", "Tópicos"], ["table", "Tabela"]];
+  const EXEMPLOS = { paragraph: "Ex.: em até 3 frases", bullets: "Ex.: uma decisão por item", topics: "Ex.: um tópico por assunto", table: "Ex.: sem prazo dito, escreva \"a definir\"" };
   const chaveDe = (texto, usadas = []) => {
     let base = texto.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
     if (!/^[a-z]/.test(base)) base = base ? `secao_${base}` : "secao";
@@ -462,119 +509,170 @@
     return k;
   };
 
-  function renderEditor() {
-    $("m-nome").value = modelo.name || "";
-    $("m-tom").value = modelo.tone || "";
-    document.querySelectorAll("[data-modo]").forEach((b) => b.classList.toggle("btn-active", b.dataset.modo === modoEditor));
-    $("modo-texto").classList.toggle("hidden", modoEditor !== "texto");
-    $("modo-secoes").classList.toggle("hidden", modoEditor !== "secoes");
-    $("m-texto").value = modelo.instructions || "";
-    const secoes = modelo.sections || [];
+  function mostrarTela(qual) {
+    $("form").classList.toggle("hidden", qual !== "registrar");
+    $("personalizar").classList.toggle("hidden", qual !== "personalizar");
+    $("personalizar").classList.toggle("flex", qual === "personalizar");
+  }
+
+  function abrirPersonalizar() {
+    // Starts from the custom model in use (applied or the project's), or blank.
+    const base = modelo || (escolha === DO_PROJETO ? modeloDoProjeto() : null);
+    rascunho = clone(base || { name: "", tone: "", descricao: "", sections: [] });
+    rascunho.sections = rascunho.sections || [];
+    rascunho.descricao = rascunho.descricao || rascunho.instructions || "";
+    $("m-texto").value = rascunho.descricao;
+    $("m-tom").value = rascunho.tone || "";
+    $("m-nome").value = rascunho.name || "";
+    $("salvar-projeto").checked = !modelo && escolha === DO_PROJETO;
+    $("editor-erro").textContent = "";
+    renderSecoes();
+    mostrarTela("personalizar");
+  }
+
+  function renderSecoes() {
+    const secoes = rascunho.sections;
+    $("n-secoes").textContent = `(${secoes.length})`;
+    $("secoes-vazio").classList.toggle("hidden", secoes.length > 0);
     $("secoes").innerHTML = secoes.map((s, i) => `
-      <div class="card card-bordered bg-base-100"><div class="card-body gap-3 p-4">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="badge badge-ghost">${i + 1}</span>
-          <input type="text" class="input input-bordered input-sm min-w-48 flex-1" data-i="${i}" data-f="title" value="${esc(s.title)}" placeholder="Título da seção (ex.: Decisões)">
-          <select class="select select-bordered select-sm w-36" data-i="${i}" data-f="type">${TIPOS.map(([v, r]) => `<option value="${v}" ${v === s.type ? "selected" : ""}>${r}</option>`).join("")}</select>
-          <div class="join">
-            <button type="button" class="btn btn-sm btn-ghost join-item" data-mover="${i}" data-passo="-1" ${i === 0 ? "disabled" : ""}>↑</button>
-            <button type="button" class="btn btn-sm btn-ghost join-item" data-mover="${i}" data-passo="1" ${i === secoes.length - 1 ? "disabled" : ""}>↓</button>
-            <button type="button" class="btn btn-sm btn-ghost join-item text-error" data-remover="${i}" ${secoes.length === 1 ? "disabled" : ""}>✕</button>
+      <div>
+        <div class="grid grid-cols-[1.5rem_1fr] items-center gap-2 lg:grid-cols-[1.5rem_1.6fr_1fr_3fr_auto]">
+          <span class="text-base-content/60 text-center text-sm">${i + 1}</span>
+          <input type="text" class="input input-bordered input-sm w-full" data-i="${i}" data-f="title" value="${esc(s.title)}" placeholder="Ex.: Decisões">
+          <select class="select select-bordered select-sm col-start-2 w-full lg:col-start-auto" data-i="${i}" data-f="type">${TIPOS.map(([v, r]) => `<option value="${v}" ${v === s.type ? "selected" : ""}>${r}</option>`).join("")}</select>
+          <input type="text" class="input input-bordered input-sm col-start-2 w-full lg:col-start-auto" data-i="${i}" data-f="instructions" value="${esc(s.instructions)}" placeholder="${esc(EXEMPLOS[s.type] || "")}">
+          <div class="join col-start-2 lg:col-start-auto">
+            <button type="button" class="btn btn-sm btn-outline join-item" data-mover="${i}" data-passo="-1" ${i === 0 ? "disabled" : ""} aria-label="Subir">↑</button>
+            <button type="button" class="btn btn-sm btn-outline join-item" data-mover="${i}" data-passo="1" ${i === secoes.length - 1 ? "disabled" : ""} aria-label="Descer">↓</button>
+            <button type="button" class="btn btn-sm btn-outline join-item" data-remover="${i}" aria-label="Remover">✕</button>
           </div>
         </div>
-        <textarea class="textarea textarea-bordered w-full" rows="2" data-i="${i}" data-f="instructions" placeholder="O que a IA deve colocar nesta seção">${esc(s.instructions)}</textarea>
-        ${s.type === "table" ? `<input type="text" class="input input-bordered input-sm w-full" data-i="${i}" data-f="columns" value="${esc((s.columns || []).map((c) => c.label).join(", "))}" placeholder="Colunas, separadas por vírgula (ex.: Tarefa, Responsável, Prazo)">` : ""}
-        <span class="text-base-content/60 text-xs">${TIPOS.find(([v]) => v === s.type)?.[2] || ""}</span>
-      </div></div>`).join("");
+        ${s.type === "table" ? `<div class="mt-2 flex flex-wrap items-center gap-2 pl-8 text-sm">
+          <span class="text-base-content/60 mr-1">Colunas:</span>
+          ${(s.columns || []).map((c, ci) => `<span class="bg-base-300 inline-flex items-center gap-2 rounded px-2 py-1 text-xs">${esc(c.label)}<button type="button" class="opacity-60 hover:opacity-100" data-tirar-coluna="${i}" data-c="${ci}" aria-label="Remover coluna">✕</button></span>`).join("")}
+          <input type="text" class="input input-xs border-info/50 text-info w-28 border-dashed" data-nova-coluna="${i}" placeholder="+ Coluna">
+        </div>` : ""}
+      </div>`).join("");
   }
-  const atualizarModelo = () => { renderGaleria(); renderChips(); sugerirTitulo(); };
 
   function setSection(i, field, value) {
-    const secoes = modelo.sections;
+    const s = rascunho.sections[i];
     if (field === "title") {
-      secoes[i].title = value;
-      secoes[i].key = chaveDe(value || `secao ${i + 1}`, secoes.filter((_, j) => j !== i).map((s) => s.key));
+      s.title = value;
+      s.key = chaveDe(value || `secao ${i + 1}`, rascunho.sections.filter((_, j) => j !== i).map((x) => x.key));
     } else if (field === "type") {
-      secoes[i].type = value;
-      if (value === "table" && !secoes[i].columns) secoes[i].columns = [{ key: "item", label: "Item" }, { key: "detalhe", label: "Detalhe" }];
-      if (value !== "table") delete secoes[i].columns;
-      renderEditor();
-    } else if (field === "columns") {
-      const usadas = [];
-      secoes[i].columns = value.split(",").map((t) => t.trim()).filter(Boolean).map((label) => { const key = chaveDe(label, usadas); usadas.push(key); return { key, label }; });
+      s.type = value;
+      if (value === "table" && !s.columns) s.columns = [{ key: "item", label: "Item" }, { key: "detalhe", label: "Detalhe" }];
+      if (value !== "table") delete s.columns;
+      renderSecoes();
     } else {
-      secoes[i][field] = value;
+      s[field] = value;
     }
   }
-  $("secoes").addEventListener("input", (e) => { const t = e.target; if (t.dataset.f && t.dataset.f !== "columns" && t.dataset.f !== "type") { setSection(+t.dataset.i, t.dataset.f, t.value); if (t.dataset.f === "title") atualizarModelo(); } });
-  $("secoes").addEventListener("change", (e) => { const t = e.target; if (t.dataset.f === "type" || t.dataset.f === "columns") { setSection(+t.dataset.i, t.dataset.f, t.value); atualizarModelo(); } });
+  function adicionarColuna(i, label) {
+    const s = rascunho.sections[i];
+    label = label.trim();
+    if (!label) return;
+    s.columns = s.columns || [];
+    s.columns.push({ key: chaveDe(label, s.columns.map((c) => c.key)), label });
+    renderSecoes();
+    document.querySelector(`[data-nova-coluna="${i}"]`)?.focus();
+  }
+  $("secoes").addEventListener("input", (e) => { const t = e.target; if (t.dataset.f && t.dataset.f !== "type") setSection(+t.dataset.i, t.dataset.f, t.value); });
+  $("secoes").addEventListener("change", (e) => {
+    const t = e.target;
+    if (t.dataset.f === "type") setSection(+t.dataset.i, "type", t.value);
+    if (t.dataset.novaColuna !== undefined) adicionarColuna(+t.dataset.novaColuna, t.value);
+  });
+  $("secoes").addEventListener("keydown", (e) => {
+    const t = e.target;
+    if (t.dataset.novaColuna !== undefined && (e.key === "Enter" || e.key === ",")) { e.preventDefault(); adicionarColuna(+t.dataset.novaColuna, t.value); }
+  });
   $("secoes").addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
-    const s = modelo.sections;
-    if (b.dataset.mover !== undefined) { const i = +b.dataset.mover, j = i + +b.dataset.passo; [s[i], s[j]] = [s[j], s[i]]; renderEditor(); atualizarModelo(); }
-    if (b.dataset.remover !== undefined) { s.splice(+b.dataset.remover, 1); renderEditor(); atualizarModelo(); }
+    const s = rascunho.sections;
+    if (b.dataset.mover !== undefined) { const i = +b.dataset.mover, j = i + +b.dataset.passo; [s[i], s[j]] = [s[j], s[i]]; renderSecoes(); }
+    if (b.dataset.remover !== undefined) { s.splice(+b.dataset.remover, 1); renderSecoes(); }
+    if (b.dataset.tirarColuna !== undefined) {
+      const cols = s[+b.dataset.tirarColuna].columns;
+      if (cols.length > 1) { cols.splice(+b.dataset.c, 1); renderSecoes(); } else $("editor-erro").textContent = "Uma tabela precisa de pelo menos uma coluna.";
+    }
   });
   $("add-secao").addEventListener("click", () => {
-    const s = modelo.sections || (modelo.sections = []);
+    const s = rascunho.sections;
     if (s.length >= 15) return;
     const title = `Seção ${s.length + 1}`;
     s.push({ key: chaveDe(title, s.map((x) => x.key)), title, type: "bullets", instructions: "" });
-    renderEditor(); atualizarModelo();
+    renderSecoes();
+    document.querySelector(`[data-i="${s.length - 1}"][data-f="title"]`)?.select();
   });
-  document.querySelectorAll("[data-modo]").forEach((b) => b.addEventListener("click", () => {
-    if (b.dataset.modo === modoEditor) return;
-    modoEditor = b.dataset.modo;
-    if (modoEditor === "texto") modelo = { name: modelo.name, tone: modelo.tone, instructions: modelo.instructions || "" };
-    else if (!modelo.sections) {
-      modelo = { name: modelo.name, tone: modelo.tone, sections: [
-        { key: "resumo", title: "Resumo", type: "paragraph", instructions: "Resumo da reunião em um parágrafo." },
-        { key: "decisoes", title: "Decisões", type: "bullets", instructions: "Decisões tomadas nesta reunião." },
-        { key: "tarefas", title: "Tarefas", type: "table", instructions: "Tarefas combinadas, com responsável e prazo.",
-          columns: [{ key: "tarefa", label: "Tarefa" }, { key: "responsavel", label: "Responsável" }, { key: "prazo", label: "Prazo" }] },
-      ] };
-    }
-    renderEditor(); atualizarModelo();
+  document.querySelectorAll("[data-frase]").forEach((b) => b.addEventListener("click", () => {
+    const t = $("m-texto");
+    t.value = `${t.value.trim()} ${b.dataset.frase}`.trim();
+    rascunho.descricao = t.value;
   }));
-  $("m-nome").addEventListener("input", (e) => { modelo.name = e.target.value; atualizarModelo(); });
-  $("m-tom").addEventListener("input", (e) => { modelo.tone = e.target.value; });
-  $("m-texto").addEventListener("input", (e) => { modelo.instructions = e.target.value; });
+  $("m-texto").addEventListener("input", (e) => { rascunho.descricao = e.target.value; });
+  $("m-tom").addEventListener("input", (e) => { rascunho.tone = e.target.value; });
+  $("m-nome").addEventListener("input", (e) => { rascunho.name = e.target.value; });
 
   // "Transformar em seções": POST /minutes/templates/draft (contract 3.7)
   $("transformar").addEventListener("click", async () => {
-    const descricao = ($("m-texto").value || "").trim();
+    const descricao = (rascunho.descricao || "").trim();
     if (descricao.length < 10) { $("editor-erro").textContent = "Descreva a ata com pelo menos uma frase."; return; }
     const btn = $("transformar");
     btn.disabled = true; btn.innerHTML = '<span class="loading loading-spinner loading-xs"></span> Transformando…';
     $("editor-erro").textContent = "";
     try {
-      const { custom } = await postJson("/minutes/templates/draft", { description: descricao, name: modelo.name || undefined, tone: modelo.tone || undefined });
-      modelo = custom;
-      modoEditor = "secoes";
-      renderEditor(); atualizarModelo();
+      const { custom } = await postJson("/minutes/templates/draft", { description: descricao, name: rascunho.name || undefined, tone: rascunho.tone || undefined });
+      rascunho.sections = custom.sections || [];
+      if (!rascunho.name && custom.name) { rascunho.name = custom.name; $("m-nome").value = custom.name; }
+      renderSecoes();
       toast("Seções propostas pela IA. Revise antes de usar.", "success");
     } catch (err) {
       $("editor-erro").textContent = err.message;
     } finally {
-      btn.disabled = false; btn.textContent = "Transformar em seções";
+      btn.disabled = false; btn.textContent = "✦ Transformar em seções";
     }
   });
 
+  // The API needs non-empty instructions in each section: an empty one gets a neutral default.
+  const secoesParaApi = (secoes) => secoes.map((s) => ({
+    key: s.key, title: s.title, type: s.type,
+    instructions: (s.instructions || "").trim() || `O que foi dito sobre ${s.title.toLowerCase()}.`,
+    ...(s.type === "table" ? { columns: s.columns } : {}),
+  }));
+
+  $("usar-modelo").addEventListener("click", () => {
+    const r = rascunho;
+    const secoes = r.sections.filter((s) => s.title.trim());
+    const descricao = (r.descricao || "").trim();
+    const salvar = $("salvar-projeto").checked;
+    if (!secoes.length && descricao.length < 10) { $("editor-erro").textContent = "Descreva a ata ou monte pelo menos uma seção."; return; }
+    if (salvar && !(r.name || "").trim()) { $("editor-erro").textContent = "Dê um nome ao modelo para salvar no projeto."; $("m-nome").focus(); return; }
+    // With sections, they are the model and the text stays only as the description; without, the text is the model.
+    const novo = { name: (r.name || "").trim() || undefined, tone: (r.tone || "").trim() || undefined, descricao };
+    if (secoes.length) novo.sections = secoesParaApi(secoes); else novo.instructions = descricao;
+    if (salvar) {
+      const modelos = modelosDosProjetos(); modelos[projeto.id] = novo; store.set("sgl-modelos-projeto", modelos);
+      modelo = null; escolha = DO_PROJETO;
+    } else {
+      modelo = novo; escolha = PERSONALIZAR;
+    }
+    mostrarTela("registrar");
+    onModelChange();
+  });
+  document.querySelectorAll("[data-voltar]").forEach((b) => b.addEventListener("click", () => mostrarTela("registrar")));
+
   // ------------------------------------------------- title and last link
   let tituloEditado = false;
-  function estiloTitulo() {
-    $("titulo").classList.toggle("text-base-content/50", !tituloEditado);
-    $("titulo-tag").classList.toggle("hidden", tituloEditado);
-  }
   function sugerirTitulo() {
-    if (tituloEditado) return estiloTitulo();
-    const nome = escolha === PERSONALIZAR ? (modelo?.name || "Ata personalizada") : (opcaoAtual()?.nome || "Ata");
-    $("titulo").value = `${nome} – ${hoje()}`;
-    estiloTitulo();
+    if (tituloEditado) return;
+    $("titulo").value = `${opcaoAtual()?.nome || "Ata"} – ${hoje()}`;
   }
-  $("titulo").addEventListener("input", (e) => { tituloEditado = e.target.value.trim() !== ""; estiloTitulo(); });
+  $("titulo").addEventListener("input", (e) => { tituloEditado = e.target.value.trim() !== ""; });
 
   // Minutes number: given by the system (the next one in the project), never typed. In the SGL it comes
-  // from its own meetings table; here, from the project's jobs listed below.
+  // from its own meetings table; here, from the project's jobs listed on the page.
   const temNumero = () => (fixedTemplates().find((t) => t.id === escolha)?.header || []).some((f) => f.key === "numero");
   function proximoNumero() {
     // Numbered per template: Dell minutes count only Dell meetings, and so on.
@@ -586,25 +684,60 @@
   function renderNumero() {
     const el = $("numero-ata");
     el.classList.toggle("hidden", !temNumero());
-    el.innerHTML = `<div class="flex flex-wrap items-center gap-3"><span class="badge badge-primary badge-lg font-semibold">Ata nº ${proximoNumero()}</span><span class="text-base-content/60 text-xs">numerada automaticamente pelo sistema</span></div>`;
+    el.innerHTML = `<div class="flex flex-wrap items-center gap-3"><span class="badge badge-primary font-semibold">Ata nº ${proximoNumero()}</span><span class="text-base-content/60 text-xs">numerada automaticamente</span></div>`;
   }
 
   function renderUltimoLink() {
     const ultimo = ultimosLinks()[projeto.id];
     const btn = $("usar-ultimo-link");
     btn.classList.toggle("hidden", !ultimo);
-    if (ultimo) { btn.textContent = `Usar o link de ${ddmm(ultimo.quando)}`; btn.onclick = () => { $("link").value = ultimo.link; }; }
+    if (ultimo) { btn.textContent = `Usar o link da reunião de ${ddmm(ultimo.quando)}`; btn.onclick = () => { $("link").value = ultimo.link; }; }
   }
 
+  // ------------------------------------------------- who is in the meeting
+  // The names are the ones registered in the SGL project (full names), sent as `participants`: the minutes
+  // list them instead of the Teams display names, and the AI uses them to complete names said in the meeting.
+  let marcados = new Set();
+  function renderMembros() {
+    $("membros").innerHTML = SGL.membrosProjeto.map(({ name: nome, funcao }) => {
+      const on = marcados.has(nome);
+      return `<label title="${esc(funcao || "")}" class="flex cursor-pointer items-center gap-3 rounded-md border px-4 py-3 text-sm transition ${on ? "border-info/50 bg-info/10" : "border-base-300 hover:border-base-content/30"}">
+        <input type="checkbox" class="checkbox checkbox-sm checkbox-info" data-membro="${esc(nome)}" ${on ? "checked" : ""}>${esc(nome)}</label>`;
+    }).join("");
+    $("marcados").textContent = `${marcados.size} de ${projeto.membros.length} marcados`;
+  }
+  $("membros").addEventListener("change", (e) => {
+    const nome = e.target.dataset.membro; if (!nome) return;
+    if (e.target.checked) marcados.add(nome); else marcados.delete(nome);
+    renderMembros();
+  });
+  $("marcar-todos").addEventListener("click", () => { marcados = new Set(projeto.membros); renderMembros(); });
+  $("desmarcar").addEventListener("click", () => { marcados = new Set(); renderMembros(); });
+  const participantes = () => [
+    ...projeto.membros.filter((n) => marcados.has(n)),
+    ...$("outros").value.split(",").map((n) => n.trim()).filter(Boolean),
+  ];
+
+  // --------------------------------------------------- opening the dialog
+  function abrirRegistrar() {
+    tituloEditado = false;
+    $("link").value = ""; $("outros").value = "";
+    marcados = new Set(presencas()[projeto.id] || projeto.membros);
+    previaAberta = false;
+    mostrarTela("registrar");
+    renderMembros();
+    renderUltimoLink();
+    onModelChange();
+    $("modal-registrar").showModal();
+  }
+  $("abrir-registrar").addEventListener("click", abrirRegistrar);
+  document.querySelectorAll("[data-fechar]").forEach((b) => b.addEventListener("click", () => $("modal-registrar").close()));
+
   // --------------------------------------------------- building a request
+  const limpo = ({ descricao, ...custom }) => custom;
   function modelBlock() {
-    if (escolha === DO_PROJETO) return { template: "custom", custom: modeloDoProjeto() };
-    if (escolha === PERSONALIZAR) {
-      const custom = modelo.sections
-        ? { name: modelo.name || undefined, tone: modelo.tone || undefined, sections: modelo.sections }
-        : { name: modelo.name || undefined, tone: modelo.tone || undefined, instructions: modelo.instructions || "" };
-      return { template: "custom", custom };
-    }
+    if (escolha === DO_PROJETO) return { template: "custom", custom: limpo(modeloDoProjeto()) };
+    if (escolha === PERSONALIZAR) return { template: "custom", custom: limpo(modelo) };
     return { template: escolha };
   }
   function header() {
@@ -612,27 +745,6 @@
     if (temNumero()) h.numero = proximoNumero();
     document.querySelectorAll("[data-campo]").forEach((el) => { if (el.value.trim()) h[el.dataset.campo] = el.value.trim(); });
     return h;
-  }
-  function lembrar(job, titulo, block, pedido) {
-    const salvas = reunioesSalvas();
-    salvas[job.id] = { titulo, custom: block.custom || null, autor: USUARIO, nomeModelo: escolha === PERSONALIZAR || escolha === DO_PROJETO ? (block.custom?.name || "Modelo personalizado") : opcaoAtual()?.nome, pedido };
-    store.set("sgl-reunioes", salvas);
-    if ($("salvar-projeto").checked && block.custom) {
-      const modelos = modelosDosProjetos();
-      modelos[projeto.id] = block.custom;
-      store.set("sgl-modelos-projeto", modelos);
-      $("salvar-projeto").checked = false;
-      modelo = null; editorAberto = false; escolha = DO_PROJETO;
-    }
-    tituloEditado = false;
-    onModelChange();
-  }
-
-  async function enviar(path, body, titulo, block) {
-    const job = await postJson(path, body);
-    lembrar(job, titulo, block, { path, body });
-    loadAtas();
-    return job;
   }
 
   $("form").addEventListener("submit", async (e) => {
@@ -642,12 +754,20 @@
     if (!titulo) return toast("Dê um título para a ata.", "error");
     if (!/teams\.(live|microsoft)\.com/i.test(link)) return toast("Use o link de uma reunião do Microsoft Teams.", "error");
     const block = modelBlock();
+    const pessoas = participantes();
+    const body = { project_id: projeto.id, header: header(), meeting_url: link, ...block, ...(pessoas.length ? { participants: pessoas } : {}) };
     const btn = $("enviar");
     btn.disabled = true;
     try {
-      await enviar("/minutes/record-and-generate", { project_id: projeto.id, header: header(), meeting_url: link, ...block }, titulo, block);
+      const job = await postJson("/minutes/record-and-generate", body);
+      const salvas = reunioesSalvas();
+      salvas[job.id] = { titulo, autor: USUARIO, participantes: pessoas, nomeModelo: opcaoAtual()?.nome, pedido: { path: "/minutes/record-and-generate", body } };
+      store.set("sgl-reunioes", salvas);
       const links = ultimosLinks(); links[projeto.id] = { link, quando: new Date().toISOString() }; store.set("sgl-ultimo-link", links);
-      $("link").value = ""; renderUltimoLink();
+      const p = presencas(); p[projeto.id] = [...marcados]; store.set("sgl-presenca", p);
+      $("modal-registrar").close();
+      pagina = 1;
+      loadAtas();
       toast('O bot está entrando. Admita o "GravAI Bot" na sala de espera do Teams.', "success");
     } catch (err) {
       toast(err.message, "error");
@@ -660,18 +780,19 @@
   // The 7 steps shown in the list. The API does not say when the bot was admitted, so the first
   // minute of "recording" is shown as "Bot entrando…".
   const ENTRANDO_SEGUNDOS = 60;
+  const POR_PAGINA = 5;
   const ERRO = {
-    recording_failed: "O bot não foi admitido ou foi removido da reunião.",
+    recording_failed: "O bot não foi admitido na reunião.",
     transcription_failed: "A transcrição falhou.", empty_transcript: "Nenhuma fala foi reconhecida na gravação.",
     llm_unreachable: "O serviço de IA não respondeu.", llm_invalid_response: "A IA não conseguiu montar a ata.", internal: "Erro interno no GravAI.",
   };
   let jobs = [];
+  let pagina = 1;
   let timer = null;
-  let relogio = null;
 
   function etapa(j) {
     if (j.status === "done") return { n: 7, rotulo: "Pronta" };
-    if (j.status === "queued") return { n: 1, rotulo: "Bot entrando…" };
+    if (j.status === "queued" || j.status === "failed") return { n: 1, rotulo: "Bot entrando…" };
     const desde = (Date.now() - new Date(j.updated_at).getTime()) / 1000;
     switch (j.stage) {
       case "recording": return desde < ENTRANDO_SEGUNDOS ? { n: 1, rotulo: "Bot entrando…" } : { n: 2, rotulo: "Gravando", gravando: true };
@@ -687,57 +808,83 @@
     const s = Math.max(0, Math.floor((Date.now() - new Date(inicio).getTime()) / 1000));
     return [Math.floor(s / 3600), Math.floor((s % 3600) / 60), s % 60].map((x) => String(x).padStart(2, "0")).join(":");
   };
+  const iniciais = (nome) => nome.split(/\s+/).filter(Boolean).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+  function avatares(pessoas) {
+    if (!pessoas?.length) return '<span class="text-base-content/40">—</span>';
+    const bolas = pessoas.slice(0, 3).map((p) => `<span title="${esc(p)}" class="bg-base-300 border-base-100 inline-flex h-7 w-7 items-center justify-center rounded-full border-2 text-[0.6rem] font-semibold">${esc(iniciais(p))}</span>`).join("");
+    return `<div class="flex items-center gap-2"><div class="flex -space-x-2">${bolas}</div><span class="text-base-content/60 text-sm">${pessoas.length}</span></div>`;
+  }
 
   function linha(j) {
     const salvo = reunioesSalvas()[j.id] || {};
     const titulo = salvo.titulo || "Reunião";
-    const sub = [salvo.nomeModelo || (j.template === "custom" ? "Modelo personalizado" : NOMES[j.template] || j.template), salvo.autor].filter(Boolean).join(" · ");
     const { data, horario } = j.header || {};
-    const ativo = j.status === "queued" || j.status === "running";
-    const dataLinha1 = data ? data.split(" · ")[0] : new Date(j.created_at).toLocaleDateString("pt-BR");
-    const dataLinha2 = horario || (data && data.includes(" · ") ? data.split(" · ")[1] : ativo ? (j.status === "running" && j.stage === "recording" && etapa(j).n === 2 ? `${hhmm(j.updated_at)} – agora` : "agora") : hhmm(j.created_at));
     const e = etapa(j);
-    let ata = "", acao = "", fundo = "";
+    const dataLinha1 = data ? data.split(" · ")[0] : new Date(j.created_at).toLocaleDateString("pt-BR");
+    const dataLinha2 = horario || (data && data.includes(" · ") ? data.split(" · ")[1] : e.gravando ? `${hhmm(j.updated_at)} – agora` : hhmm(j.created_at));
+    let ata = "", acao = "";
     if (j.status === "done") {
-      ata = `<div class="flex flex-wrap items-center gap-2"><span class="badge badge-success badge-sm gap-1">${ICON.check} Pronta</span><span class="text-warning text-sm">Rascunho da IA: revise antes de compartilhar</span></div>`;
+      ata = `<span class="badge badge-success badge-sm gap-1">${ICON.check} Pronta</span><div class="text-warning mt-1 text-xs">Rascunho da IA: revise antes de enviar</div>`;
       acao = `<div class="flex justify-end gap-2"><button class="btn btn-sm btn-primary" data-ver="${esc(j.id)}">${ICON.olho} Ver ata</button><button class="btn btn-sm btn-outline" data-word="${esc(j.id)}">${ICON.baixar} Word</button></div>`;
     } else if (j.status === "failed") {
-      ata = `<div class="flex flex-wrap items-center gap-2"><span class="badge badge-error badge-soft badge-sm gap-1">${ICON.alerta} Não gerada</span><span class="text-sm">${esc(ERRO[j.error?.code] || j.error?.message || "")}</span></div>`;
+      ata = `<span class="badge badge-error badge-soft badge-sm gap-1">${ICON.alerta} Não gerada</span><div class="mt-1 text-xs">${esc(ERRO[j.error?.code] || j.error?.message || "")}</div>`;
       acao = salvo.pedido ? `<div class="flex justify-end"><button class="btn btn-sm btn-outline" data-repetir="${esc(j.id)}">${ICON.repetir} Tentar de novo</button></div>` : "";
     } else if (e.gravando) {
-      fundo = "bg-error/10";
-      ata = `<div class="flex items-center gap-2 text-sm"><span class="bg-error inline-block h-2 w-2 animate-pulse rounded-full"></span><span class="text-error font-semibold">Gravando</span><span class="font-mono" data-relogio="${esc(j.updated_at)}">${cronometro(j.updated_at)}</span><span class="text-base-content/60 text-xs">etapa 2 de 7</span></div>${barra(2, true)}`;
+      ata = `<div class="flex items-center gap-2"><span class="bg-error inline-block h-2 w-2 animate-pulse rounded-full"></span><span class="text-error font-semibold">Gravando</span><span class="font-mono text-sm" data-relogio="${esc(j.updated_at)}">${cronometro(j.updated_at)}</span></div><div class="flex items-center gap-2">${barra(2, true)}<span class="text-base-content/60 mt-1.5 text-xs">etapa 2 de 7</span></div>`;
       acao = `<div class="flex justify-end"><button class="btn btn-sm btn-error btn-outline" data-encerrar="${esc(j.id)}">■ Encerrar</button></div>`;
+    } else if (e.n === 1) {
+      ata = `<div class="flex items-center gap-2"><span class="loading loading-spinner loading-xs text-info"></span><span class="text-info font-semibold">${esc(e.rotulo)}</span></div><div class="text-info mt-1 text-xs">Admita o GravAI no Teams</div>`;
+      acao = j.status === "running" ? `<div class="flex justify-end"><button class="btn btn-sm btn-outline" data-encerrar="${esc(j.id)}">Cancelar</button></div>` : "";
     } else {
-      const podeSair = e.n >= 3 ? " · pode sair da página" : "";
-      if (e.n === 1) fundo = "bg-info/5";
-      ata = `<div class="flex items-center gap-2 text-sm"><span class="loading loading-spinner loading-xs text-info"></span><span class="text-info font-semibold">${esc(e.rotulo)}</span><span class="text-base-content/60 text-xs">etapa ${e.n} de 7${podeSair}</span></div>${barra(e.n)}${
-        e.n === 1 ? '<div class="mt-2 text-sm">No Teams, clique em <b>Admitir</b> ao lado de “GravAI Bot”.</div>' : ""}`;
-      acao = e.n === 1 && j.status === "running" ? `<div class="flex justify-end"><button class="btn btn-sm btn-outline" data-encerrar="${esc(j.id)}">Cancelar</button></div>` : "";
+      ata = `<div class="flex items-center gap-2"><span class="loading loading-spinner loading-xs text-info"></span><span class="text-info font-semibold">${esc(e.rotulo)}</span></div><div class="flex items-center gap-2">${barra(e.n)}<span class="text-base-content/60 mt-1.5 text-xs">etapa ${e.n} de 7</span></div>`;
+      acao = '<div class="text-base-content/40 text-right">—</div>';
     }
-    return `<tr class="${fundo}">
-      <td class="align-top"><div class="font-semibold">${esc(titulo)}</div><div class="text-base-content/60 text-xs">${esc(sub)}</div></td>
-      <td class="align-top whitespace-nowrap"><div>${esc(dataLinha1)}</div><div class="text-base-content/60 text-xs">${esc(dataLinha2)}</div></td>
-      <td class="align-top">${ata}</td>
-      <td class="align-top">${acao}</td></tr>`;
+    return `<tr>
+      <td><div class="font-semibold">${esc(titulo)}</div><div class="text-base-content/60 text-xs">por ${esc(salvo.autor || USUARIO)}</div></td>
+      <td class="whitespace-nowrap"><div>${esc(dataLinha1)}</div><div class="text-base-content/60 text-xs">${esc(dataLinha2)}</div></td>
+      <td>${avatares(salvo.participantes || j.participants)}</td>
+      <td>${ata}</td>
+      <td>${acao}</td></tr>`;
   }
+
+  function renderLista() {
+    const total = jobs.length;
+    $("vazio").classList.toggle("hidden", total > 0);
+    $("vazio").classList.toggle("flex", total === 0);
+    $("lista").classList.toggle("hidden", total === 0);
+    if (!total) return;
+    const paginas = Math.ceil(total / POR_PAGINA);
+    pagina = Math.min(Math.max(pagina, 1), paginas);
+    const daPagina = jobs.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA);
+    $("atas").innerHTML = daPagina.map(linha).join("");
+    $("mostrando").textContent = `Mostrando ${daPagina.length} de ${total} ${total === 1 ? "ata" : "atas"}`;
+    const botao = (rotulo, alvo, { ativo = false, off = false } = {}) => `<button class="btn btn-sm join-item ${ativo ? "btn-primary" : ""}" data-pagina="${alvo}" ${off ? "disabled" : ""}>${rotulo}</button>`;
+    $("paginas").innerHTML = paginas < 2 ? "" : [
+      botao("‹", pagina - 1, { off: pagina === 1 }),
+      ...Array.from({ length: paginas }, (_, i) => botao(i + 1, i + 1, { ativo: i + 1 === pagina })),
+      botao("›", pagina + 1, { off: pagina === paginas }),
+    ].join("");
+  }
+  $("paginas").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-pagina]"); if (!b) return;
+    pagina = +b.dataset.pagina; renderLista();
+  });
 
   async function loadAtas() {
     try {
       jobs = (await api(`/minutes/jobs?project_id=${encodeURIComponent(projeto.id)}&limit=50`)).jobs;
     } catch (err) {
-      $("atas").innerHTML = `<tr><td colspan="4" class="text-error">${esc(err.message)}</td></tr>`;
+      $("gravai-off").classList.remove("hidden");
+      $("gravai-off").querySelector("span").textContent = err.message;
       return;
     }
-    $("atas").innerHTML = jobs.length
-      ? jobs.map(linha).join("")
-      : `<tr><td colspan="4" class="text-base-content/60 py-10 text-center">Nenhuma ata ainda neste projeto. Registre a primeira reunião acima.</td></tr>`;
+    renderLista();
     renderNumero();
     clearTimeout(timer);
     if (jobs.some((j) => j.status === "queued" || j.status === "running")) timer = setTimeout(loadAtas, 5000);
   }
   // Recording timers tick every second without reloading the list.
-  relogio = setInterval(() => document.querySelectorAll("[data-relogio]").forEach((el) => { el.textContent = cronometro(el.dataset.relogio); }), 1000);
+  setInterval(() => document.querySelectorAll("[data-relogio]").forEach((el) => { el.textContent = cronometro(el.dataset.relogio); }), 1000);
 
   $("atas").addEventListener("click", async (e) => {
     const b = e.target.closest("button"); if (!b) return;
@@ -756,6 +903,7 @@
         const job = await postJson(salvo.pedido.path, salvo.pedido.body);
         const salvas = reunioesSalvas(); salvas[job.id] = { ...salvo }; store.set("sgl-reunioes", salvas);
         toast("Tentando de novo.", "success");
+        pagina = 1;
         loadAtas();
       } catch (err) { toast(err.message, "error"); b.disabled = false; }
     }
@@ -804,13 +952,11 @@
     try {
       templates = (await api("/minutes/templates")).templates;
       escolha = modeloDoProjeto() ? DO_PROJETO : (fixedTemplates().find((t) => t.id === "dell") ? "dell" : fixedTemplates()[0]?.id);
-      onModelChange();
     } catch (err) {
       $("gravai-off").classList.remove("hidden");
-      $("form").classList.add("hidden");
+      $("abrir-registrar").disabled = true;
       toast(err.message, "error");
     }
-    renderUltimoLink();
     loadAtas();
   })();
 })();
