@@ -216,22 +216,22 @@ def test_a_first_name_in_a_table_becomes_the_participants_full_name():
 
     minutes = {
         "plano_acao": [
-            {"acao": "Corrigir o formulário", "responsavel": "Beatriz", "prazo": "04/11"},
+            {"acao": "Corrigir o formulário", "responsavel": "Clara", "prazo": "04/11"},
             {"acao": "Testar o cadastro", "responsavel": "Lucas", "prazo": "29/10"},  # not in the call: kept
             {"acao": "Revisar", "responsavel": "Ana", "prazo": "A definir"},  # two Anas: ambiguous, kept
-            {"acao": "Atualizar", "responsavel": "beckman", "prazo": "A definir"},
+            {"acao": "Atualizar", "responsavel": "lima", "prazo": "A definir"},
         ],
-        "decisoes": [{"decisao": "Beatriz", "aprovada_por": "Grupo"}],
+        "decisoes": [{"decisao": "Clara", "aprovada_por": "Grupo"}],
     }
-    people = ["Ana Beatriz Beckman", "Ana Souza"]
+    people = ["Ana Clara Lima", "Ana Souza"]
 
     out = full_participant_names(load_template("dell"), minutes, people)
 
     assert [r["responsavel"] for r in out["plano_acao"]] == [
-        "Ana Beatriz Beckman",
+        "Ana Clara Lima",
         "Lucas",
         "Ana",
-        "Ana Beatriz Beckman",
+        "Ana Clara Lima",
     ]
     assert out["plano_acao"][0]["acao"] == "Corrigir o formulário"
 

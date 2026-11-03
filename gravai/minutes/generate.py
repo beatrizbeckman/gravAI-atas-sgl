@@ -146,8 +146,8 @@ def _name_words(name: str) -> list[str]:
 
 def full_participant_names(template: MinutesTemplate, minutes: dict, participants: list[str]) -> dict:
     """
-    A table cell that is only part of one participant's name ("Beatriz") becomes the full name
-    ("Ana Beatriz Beckman"). Models often keep the name as it was spoken, which splits one person
+    A table cell that is only part of one participant's name ("Clara") becomes the full name
+    ("Ana Clara Lima"). Models often keep the name as it was spoken, which splits one person
     in two in the minutes. Cells with other text, or matching more than one participant, stay as they are.
     """
     known = [(p, set(_name_words(p))) for p in participants]
