@@ -42,6 +42,7 @@ DIARIO_PARTE1.md
 ROTEIRO_ORIENTADOR.md
 LLMS.md
 CONTEXTO_TCC.md
+ADD_TCC.md
 docs/INTEGRACAO_SGL.md
 # dataset build caches (translation chunks, raw downloads)
 datasets/raw/
