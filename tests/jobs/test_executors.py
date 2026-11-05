@@ -6,6 +6,7 @@ import pytest
 from gravai.jobs import executors
 from gravai.jobs.store import JobStore
 from gravai.jobs.worker import JobWorker
+from gravai.recording import pipeline
 
 
 def seg(start, end, text):
@@ -154,7 +155,7 @@ def test_record_and_generate_runs_record_transcribe_normalize_generate(env, stor
 
     assert done.status == "done", done.error
     assert calls == [("record", "https://teams.live.com/meet/1", 900), ("transcribe", str(folder))]
-    assert not executors.RECORDING_LOCK.locked()
+    assert pipeline.active_recordings() == 0
 
 
 def test_record_and_generate_fills_date_and_time_from_the_recording(env, store, worker, monkeypatch):
@@ -195,19 +196,43 @@ def test_record_and_generate_failures_are_recording_failed(env, store, worker, m
     )
     failed = worker.run(job.id)
     assert failed.error.code == "recording_failed" and "Rejected" in failed.error.message
-    assert not executors.RECORDING_LOCK.locked()
+    assert pipeline.active_recordings() == 0
 
-    executors.RECORDING_LOCK.acquire()
-    try:
-        job = store.create(
-            "record_and_generate",
-            "daily",
-            {"projeto": "X", "data": "01/10/2026"},
-            {"meeting_url": "https://teams.live.com/meet/1"},
-        )
-        assert "another meeting" in worker.run(job.id).error.message
-    finally:
-        executors.RECORDING_LOCK.release()
+    # Every recorder slot taken (here: the only one, by another meeting).
+    monkeypatch.setenv("MAX_CONCURRENT_RECORDINGS", "1")
+    monkeypatch.setitem(pipeline._active, "other-meeting", object())
+    job = store.create(
+        "record_and_generate",
+        "daily",
+        {"projeto": "X", "data": "01/10/2026"},
+        {"meeting_url": "https://teams.live.com/meet/1"},
+    )
+    failed = worker.run(job.id)
+    assert failed.error.code == "recording_failed" and "no recorder available" in failed.error.message
+
+
+def test_recording_runs_in_the_preparing_lane_and_waits_for_processing(env, store, monkeypatch):
+    folder = env / "lane_tracks"
+
+    class FakeRecorder:
+        def record_meeting_with_ws_audio_server(self, url, max_seconds=None, stop_event=None):
+            _write_recording(folder, {"Ana": [seg(0.0, 2.0, "Fala da Ana.")]})
+            return str(folder)
+
+    monkeypatch.setattr("gravai.recording.teams.TeamsMeetingRecorder", FakeRecorder)
+    monkeypatch.setattr(executors, "_transcribe", lambda tracks_dir: None)
+    worker = JobWorker(store, executors.EXECUTORS, preparers=executors.PREPARERS)
+    job = store.create(
+        "record_and_generate", "dell", {"projeto": "X"}, {"meeting_url": "https://teams.live.com/meet/1"}
+    )
+
+    recorded = worker.prepare(job.id)
+    assert recorded.status == "running" and recorded.stage == "waiting"
+    assert recorded.params["tracks_dir"] == str(folder) and recorded.header["data"]  # date filled already
+
+    done = worker.run(job.id)
+    assert done.status == "done", done.error
+    assert (done.header["data"], done.header["horario"]) == (recorded.header["data"], recorded.header["horario"])
 
 
 def test_llm_failure_in_a_job_keeps_the_contract_code(env, store, worker, monkeypatch, short_meeting):

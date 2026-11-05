@@ -2,7 +2,7 @@
 
 Contrato HTTP para gerar atas de reunião (`.docx`) a partir de transcrições ou gravações feitas pelo GravAI. Este documento é a referência para qualquer cliente da API: a página de demonstração do próprio GravAI, o SGL ou um script.
 
-Versão do contrato: **1.3** (27/10/2026). Mudanças incompatíveis sobem a versão principal (2.0); acréscimos que não quebram clientes antigos sobem a secundária. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
+Versão do contrato: **1.4** (05/11/2026). Mudanças incompatíveis sobem a versão principal (2.0); acréscimos que não quebram clientes antigos sobem a secundária. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
 
 | Versão | O que mudou |
 |---|---|
@@ -10,6 +10,7 @@ Versão do contrato: **1.3** (27/10/2026). Mudanças incompatíveis sobem a vers
 | 1.1 (23/10/2026) | `project_id` opcional nos jobs e filtro `GET /minutes/jobs?project_id=` (3, 3.5, 4.1, 4.5); LLM online como padrão (Groq, `openai/gpt-oss-120b`). Nada que funcionava na 1.0 mudou. |
 | 1.2 (24/10/2026) | Fluxo da aba de reunião do SGL (3.6): encerrar a gravação (`POST /minutes/jobs/{id}/stop`, 4.6), data e horário preenchidos pela gravação (3.3), aviso de conclusão por webhook (`callback_url`, 4.7) e chave de acesso opcional (`X-API-Key`, 1.1). Com `API_KEY` vazio, nada que funcionava na 1.1 mudou. |
 | 1.3 (27/10/2026) | Modelo de ata a partir de uma descrição em texto (`POST /minutes/templates/draft`, 3.7). As chamadas ao LLM passam a esperar e tentar de novo quando o provedor limita o uso (429), em vez de falhar o job na hora (`llm_unreachable` só depois das novas tentativas). Nada que funcionava na 1.2 mudou. |
+| 1.4 (05/11/2026) | O bot sai sozinho quando fica só na chamada (`LEAVE_WHEN_ALONE_SECONDS`, 3.3). Várias reuniões gravadas ao mesmo tempo, até `MAX_CONCURRENT_RECORDINGS` (3.3, 7); etapa nova `waiting` (gravada, esperando a vez de transcrever; 4.1); jobs já gravados sobrevivem a um reinício da API (8). O `409` de `record-and-generate` passa a significar "todos os gravadores ocupados". |
 
 ---
 
@@ -185,11 +186,18 @@ Fluxo completo: o bot entra na reunião, grava até ela acabar, transcreve, norm
 | `meeting_url` | Link do Teams (`teams.live.com` ou `teams.microsoft.com`). Outro domínio → `400`. |
 | `max_recording_seconds` | Opcional, mínimo 60. Teto de segurança caso o fim da reunião não seja detectado. Padrão: `MAX_RECORDING_SECONDS` do servidor (7200). |
 
-**Fim da gravação.** O bot sai da reunião quando o Teams mostra que ela acabou ou que ele foi removido, quando o cliente pede (`POST /minutes/jobs/{id}/stop`, 4.6) ou quando `max_recording_seconds` estoura. O que foi gravado segue para transcrição e ata nos três casos.
+**Fim da gravação.** O bot sai da reunião quando:
+
+- o Teams mostra que ela acabou (organizador encerrou para todos) ou que ele foi removido;
+- ele fica **sozinho na chamada** por `LEAVE_WHEN_ALONE_SECONDS` (padrão 120 s), depois de alguém ter estado lá: todos saíram sem encerrar. Numa reunião ainda vazia, ele espera pelo menos 15 min pelas pessoas;
+- o cliente pede (`POST /minutes/jobs/{id}/stop`, 4.6);
+- `max_recording_seconds` estoura.
+
+O que foi gravado segue para transcrição e ata em todos os casos. Ficar sozinho é detectado pelo aviso que o Teams mostra ("Waiting for others to join"); se o Teams mudar esse texto, valem os outros três critérios.
 
 **Data e horário pela gravação.** Só nesta rota, os campos de cabeçalho cujo `format` é `DD/MM/AAAA`, `HH:MM – HH:MM` ou `DD/MM/AAAA · HH:MM – HH:MM` podem ser omitidos ou enviados vazios: a API preenche com o momento em que o bot entrou e saiu da reunião, no fuso `TIMEZONE` do servidor. Ex.: no `dell`, `{"projeto": "X"}` vira `{"projeto": "X", "data": "24/10/2026", "horario": "10:05 – 11:10"}`. Campo enviado pelo cliente nunca é sobrescrito. O cabeçalho final aparece no job (`header`) e na ata.
 
-Só **uma gravação por vez**: se já houver um job `record_and_generate` gravando **ou ainda na fila**, a resposta é `409` com `detail` explicando. Jobs dos outros tipos não têm essa restrição.
+**Várias reuniões ao mesmo tempo.** O servidor grava até `MAX_CONCURRENT_RECORDINGS` reuniões simultâneas (padrão 3), por exemplo de projetos diferentes no mesmo horário: cada uma tem o próprio bot e a própria pasta. Quando todos os gravadores estão em uso (contando as gravações em andamento e os jobs `record_and_generate` ainda na fila), a resposta é `409` com `detail` explicando. Depois de gravadas, transcrição e geração da ata seguem **uma reunião por vez** (etapa `waiting` enquanto esperam), porque o Whisper e o LLM atendem um pedido por vez.
 
 ### 3.4 Ata personalizada (`template = "custom"`)
 
@@ -280,7 +288,7 @@ o link do Teams,
                                                                    bot entra (admitir na sala de espera)
 mostra a etapa ◄──────── GET  /minutes/jobs/{id} a cada 30 s ────► running · recording
 "Encerrar reunião" ────► POST /minutes/jobs/{id}/stop ───────────► 202; o bot sai
-                                                                   running · transcribing → generating → rendering
+                                                                   running · (waiting →) transcribing → generating → rendering
                          POST callback_url ◄────────────────────── job done (ou failed)
 mostra a ata ◄────────── GET  /minutes/jobs/{id}/result ─────────► seções em JSON
 "Baixar Word" ─────────► GET  /minutes/jobs/{id}/download ───────► .docx
@@ -293,7 +301,7 @@ Pontos de atenção:
 3. **Cabeçalho mínimo:** `projeto` (e os obrigatórios do modelo que não são data/hora, como `professores` no template `professores`). Data e horário vêm da gravação (3.3).
 4. **Admissão do bot.** O bot entra como convidado e pode ficar na sala de espera do Teams; alguém precisa admiti-lo. O job fica em `running · recording` desde que o bot começa a entrar.
 5. **Acompanhar ou ser avisado.** Com `callback_url`, o SGL não precisa consultar até o fim: recebe o job pronto (4.7). Mesmo assim, consultar a cada 30 s enquanto a aba estiver aberta mostra a etapa ao usuário e serve de reserva se o aviso falhar.
-6. **Uma reunião por vez** no servidor (3.3): enquanto uma grava, outra tentativa recebe `409`; o SGL deve mostrar "o gravador está ocupado, tente mais tarde".
+6. **Várias reuniões ao mesmo tempo**, até o limite do servidor (3.3). Acima dele, a API responde `409`; o SGL deve mostrar "todos os gravadores estão ocupados, tente quando uma reunião terminar". Depois de encerrada, a reunião pode ficar em `waiting` alguns minutos se outra estiver sendo transcrita.
 7. **Revisão.** A ata é um rascunho gerado por IA: o SGL deve deixar claro que precisa de revisão antes de ser distribuída (seção 8).
 
 ### 3.7 `POST /minutes/templates/draft` — modelo de ata a partir de uma descrição
@@ -379,7 +387,7 @@ Todas as respostas que envolvem job têm este formato:
 | `id` | UUID do job. |
 | `kind` | `from_transcript`, `from_recording` ou `record_and_generate`. |
 | `status` | `queued` (na fila), `running` (executando), `done` (ata pronta), `failed` (erro; ver `error`). |
-| `stage` | Só quando `running`: `recording`, `transcribing`, `normalizing`, `generating` (LLM), `rendering` (docx). `null` nos outros status. |
+| `stage` | Só quando `running`: `recording`, `waiting` (gravada, esperando a vez de transcrever), `transcribing`, `normalizing`, `generating` (LLM), `rendering` (docx). `null` nos outros status. |
 | `template`, `header`, `project_id` | Ecos da requisição (`project_id` é `null` quando não foi enviado). |
 | `created_at`, `updated_at`, `finished_at` | ISO 8601 em UTC. `finished_at` é `null` até `done`/`failed`. |
 | `result` | `null` até `done`. `parts` é em quantas partes a transcrição foi dividida para o LLM (1 = coube de uma vez; partes de cerca de 24 mil caracteres). |
@@ -497,7 +505,7 @@ Em `422` o `detail` é a lista de erros de validação do FastAPI (campo, mensag
 | `400` | `meeting_url` não é do Teams. |
 | `401` | `API_KEY` configurada no servidor e cabeçalho `X-API-Key` ausente ou errado (1.1). |
 | `404` | Job inexistente; `tracks_dir` inexistente. |
-| `409` | Já há uma gravação em andamento; download/result de job não concluído; `stop` em job que não está gravando. |
+| `409` | Todos os gravadores ocupados (`MAX_CONCURRENT_RECORDINGS`); download/result de job não concluído; `stop` em job que não está gravando. |
 | `422` | Corpo ou query inválidos: template desconhecido, campo obrigatório do cabeçalho ausente, `utterances` vazia, `custom` mal formado, `project_id` vazio ou com mais de 100 caracteres, `callback_url` que não é `http`/`https`, pasta sem transcrição. |
 | `500` | Erro inesperado ao **criar** o job (erros durante a execução vão para `status: failed`, nunca para `500`). |
 
@@ -572,6 +580,8 @@ async function waitForJob(id) {
 | `OLLAMA_HOST`, `OLLAMA_MODEL`, `OLLAMA_NUM_CTX` | Servidor, modelo e contexto quando `LLM_PROVIDER=ollama`. |
 | `LLM_TIMEOUT_SECONDS` | Tempo máximo de uma chamada ao LLM; estourar vira `failed` com `llm_unreachable`. |
 | `MAX_RECORDING_SECONDS` | Teto padrão de `record-and-generate`. |
+| `LEAVE_WHEN_ALONE_SECONDS` | Segundos sozinho na chamada antes de o bot sair (padrão 120; `0` desliga). |
+| `MAX_CONCURRENT_RECORDINGS` | Quantas reuniões o servidor grava ao mesmo tempo (padrão 3). Cada uma abre um Chromium (~0,5 GB de RAM); ajustar à memória do servidor. |
 | `SAVE_DIR` | Onde as gravações e os `.docx` são salvos. |
 | `API_KEY` | Chave exigida no cabeçalho `X-API-Key` (1.1) e enviada nos avisos de `callback_url` (4.7). Vazia (padrão): API aberta. Gerar com `python -c "import secrets; print(secrets.token_urlsafe(32))"`. |
 | `TIMEZONE` | Fuso usado para escrever data e horário da gravação no cabeçalho (3.3). Padrão `America/Fortaleza` (Campina Grande, UTC−3). |
@@ -581,7 +591,8 @@ async function waitForJob(id) {
 ## 8. Garantias e limitações
 
 - Jobs e seus arquivos persistem em SQLite e em disco; sobrevivem a reinício da API. Jobs que estavam `running` quando a API caiu voltam como `failed` (`internal`, "interrupted by restart").
-- Jobs são executados **um por vez** na ordem de criação (fila única). Um `record_and_generate` em andamento não bloqueia a criação de outros jobs, mas eles só rodam depois dele.
+- Gravações rodam em paralelo (até `MAX_CONCURRENT_RECORDINGS`); todo o resto (transcrição, LLM, `.docx`) roda **um job por vez**, na ordem em que ficou pronto para isso. Uma reunião sendo gravada não atrasa os jobs `from_transcript` e `from_recording`.
+- Um job que já terminou de gravar (`waiting`) continua depois de um reinício da API; os que estavam gravando ou processando viram `failed` (`internal`, "interrupted by restart").
 - A autenticação é uma chave única compartilhada (`API_KEY`), sem usuários nem permissões por projeto. Quem tem a chave pode listar qualquer projeto e mandar o bot a qualquer reunião: ela deve ficar só no servidor do SGL. O `project_id` organiza as atas, mas não protege; o controle de quem vê o quê fica no SGL. Mesmo com chave, a API deve ficar em rede interna.
 - Os nomes dos participantes vêm do nome de exibição no Teams. Fala de duas pessoas no mesmo instante pode ser atribuída à pessoa errada; identificação por voz é a Parte 2 do projeto.
 - O LLM é instruído a não inventar conteúdo, mas pode errar. A ata deve ser revisada por uma pessoa antes de ser distribuída; o campo "Ata gerada automaticamente pelo GravAI" no rodapé existe para isso.

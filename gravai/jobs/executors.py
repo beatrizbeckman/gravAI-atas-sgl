@@ -7,6 +7,10 @@ The three job kinds of the contract, as executors for JobWorker.
 
 All of them end in generate_minutes(); the first two differ only in where the
 utterances come from, the third also records and transcribes first.
+
+record_and_generate has a preparer too (PREPARERS): the recording itself, which the
+worker runs in its own thread so several meetings can be recorded at once, while
+transcription and generation stay one job at a time.
 """
 
 import json
@@ -16,7 +20,7 @@ from datetime import UTC, datetime
 
 from gravai.config import Settings
 from gravai.jobs.models import Job
-from gravai.jobs.worker import ExecutionOutcome
+from gravai.jobs.worker import ExecutionOutcome, Prepared
 from gravai.minutes.generate import (
     GenerationResult,
     MinutesError,
@@ -27,7 +31,6 @@ from gravai.minutes.generate import (
 from gravai.minutes.meeting_time import fill_meeting_time, recording_span
 from gravai.minutes.transcript_normalizer import normalize_session
 from gravai.recording import pipeline
-from gravai.recording.pipeline import RECORDING_LOCK  # noqa: F401  (re-exported: tests and the API lock on it)
 
 Progress = Callable[[str], None]
 
@@ -53,13 +56,23 @@ def run_from_recording(job: Job, progress: Progress) -> ExecutionOutcome:
     return _generate(job, utterances, progress)
 
 
-def run_record_and_generate(job: Job, progress: Progress) -> ExecutionOutcome:
+def record_meeting_step(job: Job, progress: Progress) -> Prepared:
+    """The recording part of record_and_generate: the meeting folder and the header with date/time."""
     started = datetime.now(UTC)
     tracks_dir = _record(job, progress)
     # When the bot was inside the meeting; the job's own clock if the recorder left no timeline.
     start, end = recording_span(tracks_dir) or (started, datetime.now(UTC))
     template = resolve_template(job.template, job.params.get("custom"))
     header = fill_meeting_time(template, job.header, start, end, Settings().TIMEZONE)
+    return Prepared(params={"tracks_dir": tracks_dir}, header=header)
+
+
+def run_record_and_generate(job: Job, progress: Progress) -> ExecutionOutcome:
+    if "tracks_dir" in job.params:  # recorded already by the preparer
+        tracks_dir, header = job.params["tracks_dir"], job.header
+    else:
+        prepared = record_meeting_step(job, progress)
+        tracks_dir, header = prepared.params["tracks_dir"], prepared.header
     progress("transcribing")
     _transcribe(tracks_dir)
     progress("normalizing")
@@ -71,6 +84,10 @@ EXECUTORS = {
     "from_transcript": run_from_transcript,
     "from_recording": run_from_recording,
     "record_and_generate": run_record_and_generate,
+}
+
+PREPARERS = {
+    "record_and_generate": record_meeting_step,
 }
 
 
@@ -119,9 +136,11 @@ def _normalize(tracks_dir: str) -> list:
 def _record(job: Job, progress: Progress) -> str:
     progress("recording")
     try:
-        return pipeline.record_meeting(job.params["meeting_url"], max_seconds=job.params.get("max_recording_seconds"))
+        return pipeline.record_meeting(
+            job.params["meeting_url"], max_seconds=job.params.get("max_recording_seconds"), key=job.id
+        )
     except pipeline.RecordingBusy as exc:
-        raise MinutesError("recording_failed", "another meeting is being recorded") from exc
+        raise MinutesError("recording_failed", f"no recorder available: {exc}") from exc
     except Exception as exc:
         raise MinutesError("recording_failed", f"{exc.__class__.__name__}: {exc}") from exc
 

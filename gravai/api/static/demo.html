@@ -313,7 +313,7 @@ Ou um JSON: [{&quot;speaker&quot;: &quot;Ana&quot;, &quot;start&quot;: 0, &quot;
   $("generate").addEventListener("click", submit);
 
   // ------------------------------------------------------------- polling
-  const STAGES = { recording: "gravando a reunião", transcribing: "transcrevendo (whisper)", normalizing: "organizando a transcrição", generating: "gerando a ata (LLM)", rendering: "montando o .docx" };
+  const STAGES = { recording: "gravando a reunião", waiting: "gravada, esperando a vez de transcrever", transcribing: "transcrevendo (whisper)", normalizing: "organizando a transcrição", generating: "gerando a ata (LLM)", rendering: "montando o .docx" };
   const STATUS = { queued: "na fila", running: "em andamento", done: "ata pronta", failed: "falhou" };
   let timer = null;
 

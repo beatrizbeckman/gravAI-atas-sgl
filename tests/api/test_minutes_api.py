@@ -6,7 +6,6 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from gravai.api.minutes import router
-from gravai.jobs import executors
 from gravai.jobs.runtime import JobsRuntime
 from gravai.jobs.store import JobStore
 
@@ -239,12 +238,6 @@ def test_record_and_generate_validations_and_queueing(client, runtime):
     )
     assert client.post("/minutes/record-and-generate", json={**body, "max_recording_seconds": 5}).status_code == 422
 
-    executors.RECORDING_LOCK.acquire()
-    try:
-        assert client.post("/minutes/record-and-generate", json=body).status_code == 409
-    finally:
-        executors.RECORDING_LOCK.release()
-
     created = client.post("/minutes/record-and-generate", json=body)
     assert created.status_code == 202, created.text
     job = runtime.store.get(created.json()["id"])
@@ -253,7 +246,21 @@ def test_record_and_generate_validations_and_queueing(client, runtime):
         "max_recording_seconds": 900,
     }
 
-    # A second one while the first is still queued is refused.
+
+def test_several_meetings_at_once_up_to_the_recorder_limit(client, runtime, monkeypatch):
+    monkeypatch.setenv("MAX_CONCURRENT_RECORDINGS", "2")
+    body = {"template": "dell", "header": {"projeto": "X"}, "meeting_url": "https://teams.live.com/meet/1"}
+
+    # Two meetings of different projects at the same time are accepted...
+    assert client.post("/minutes/record-and-generate", json={**body, "project_id": "a"}).status_code == 202
+    assert client.post("/minutes/record-and-generate", json={**body, "project_id": "b"}).status_code == 202
+    # ...the third finds every recorder taken (queued jobs count, they will record).
+    busy = client.post("/minutes/record-and-generate", json={**body, "project_id": "c"})
+    assert busy.status_code == 409 and "All 2 recorders" in busy.json()["detail"]
+
+    # Recordings from the legacy endpoints count too.
+    monkeypatch.setenv("MAX_CONCURRENT_RECORDINGS", "3")
+    monkeypatch.setattr("gravai.recording.pipeline.active_recordings", lambda: 1)
     assert client.post("/minutes/record-and-generate", json=body).status_code == 409
 
 
@@ -284,14 +291,14 @@ def test_stop_ends_the_recording_of_a_running_job(client, runtime, monkeypatch):
     }
     job_id = client.post("/minutes/record-and-generate", json=body).json()["id"]
     calls = []
-    monkeypatch.setattr("gravai.recording.pipeline.request_stop", lambda: calls.append(1) or True)
+    monkeypatch.setattr("gravai.recording.pipeline.request_stop", lambda key: calls.append(key) or True)
 
     # Still queued: nothing to stop yet.
     assert client.post(f"/minutes/jobs/{job_id}/stop").status_code == 409
     runtime.store.update(job_id, status="running", stage="recording")
     stopped = client.post(f"/minutes/jobs/{job_id}/stop")
     assert stopped.status_code == 202 and stopped.json()["id"] == job_id
-    assert calls == [1]
+    assert calls == [job_id]  # only this meeting is stopped
 
     # Already past the recording, or a job that never records.
     runtime.store.update(job_id, stage="transcribing")
@@ -305,7 +312,7 @@ def test_stop_ends_the_recording_of_a_running_job(client, runtime, monkeypatch):
 def test_stop_while_the_bot_is_still_starting_asks_to_retry(client, runtime, monkeypatch):
     job = runtime.store.create("record_and_generate", "daily", {}, {"meeting_url": "https://teams.live.com/meet/1"})
     runtime.store.update(job.id, status="running", stage="recording")
-    monkeypatch.setattr("gravai.recording.pipeline.request_stop", lambda: False)
+    monkeypatch.setattr("gravai.recording.pipeline.request_stop", lambda key: False)
     response = client.post(f"/minutes/jobs/{job.id}/stop")
     assert response.status_code == 409 and "try again" in response.json()["detail"]
 

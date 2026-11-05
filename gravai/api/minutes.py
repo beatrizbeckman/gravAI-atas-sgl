@@ -21,7 +21,6 @@ from gravai.minutes.template_draft import draft_custom_template
 from gravai.minutes.templates import available_templates, load_template
 from gravai.minutes.transcript_normalizer import SESSION_TRANSCRIPTION_FILE
 from gravai.recording import pipeline as recording_pipeline
-from gravai.recording.pipeline import RECORDING_LOCK
 from gravai.recording.utils import is_teams_meeting_url
 
 router = APIRouter(prefix="/minutes", tags=["minutes"], dependencies=[Depends(require_api_key)])
@@ -138,12 +137,13 @@ def _has_transcription(tracks_dir: str) -> bool:
     return has_tracks and os.path.isfile(os.path.join(tracks_dir, "vad_timeline.json"))
 
 
-def _recording_in_progress(runtime: JobsRuntime) -> bool:
-    if RECORDING_LOCK.locked():
-        return True
-    return any(j.kind == "record_and_generate" for j in runtime.store.list(limit=100, status="queued")) or any(
-        j.kind == "record_and_generate" for j in runtime.store.list(limit=100, status="running")
-    )
+def _recorders_full(runtime: JobsRuntime) -> bool:
+    """
+    True when a new meeting would find no recorder: the ones recording now (jobs and the
+    legacy endpoints) plus the recording jobs still in the queue fill MAX_CONCURRENT_RECORDINGS.
+    """
+    waiting = sum(j.kind == "record_and_generate" for j in runtime.store.list(limit=100, status="queued"))
+    return recording_pipeline.active_recordings() + waiting >= recording_pipeline.max_recordings()
 
 
 # ------------------------------------------------------------- endpoints
@@ -199,10 +199,13 @@ def record_and_generate(body: RecordAndGenerateRequest, request: Request) -> dic
             detail="Only Teams meetings are supported: the url must contain 'teams.live.com' or 'teams.microsoft.com'.",
         )
     runtime = _jobs(request)
-    if _recording_in_progress(runtime):
+    if _recorders_full(runtime):
         raise HTTPException(
             status_code=409,
-            detail="A meeting is already being recorded (or waiting to be). Try again when that job finishes.",
+            detail=(
+                f"All {recording_pipeline.max_recordings()} recorders are busy with other meetings. "
+                "Try again when one of them finishes."
+            ),
         )
     params = {**body.job_params(), "meeting_url": body.meeting_url}
     if body.max_recording_seconds:
@@ -236,7 +239,7 @@ def stop_recording(job_id: str, request: Request) -> dict:
             status_code=409,
             detail=f"job is not recording a meeting (kind {job.kind}, status {job.status}, stage {job.stage})",
         )
-    if not recording_pipeline.request_stop():
+    if not recording_pipeline.request_stop(job.id):
         raise HTTPException(
             status_code=409, detail="the bot is still starting the recording; try again in a few seconds"
         )

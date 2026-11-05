@@ -113,17 +113,21 @@ class JobStore:
     def recover_on_startup(self) -> list[str]:
         """
         Called once when the API starts. Jobs left in 'running' by a previous
-        process can never finish, so they become failed; jobs still 'queued'
-        are returned so the worker can pick them up again, oldest first.
+        process can never finish, so they become failed, except the ones already
+        recorded and waiting for transcription (stage 'waiting'): their meeting is
+        on disk, so they go on. Those and the jobs still 'queued' are returned so
+        the worker can pick them up again, oldest first.
         """
         with self._lock:
             self._conn.execute(
-                "UPDATE jobs SET status = 'failed', stage = NULL, finished_at = ?, updated_at = ?, error = ? WHERE status = 'running'",
+                "UPDATE jobs SET status = 'failed', stage = NULL, finished_at = ?, updated_at = ?, error = ? "
+                "WHERE status = 'running' AND (stage IS NULL OR stage != 'waiting')",
                 [utcnow(), utcnow(), json.dumps({"code": "internal", "message": "interrupted by restart"})],
             )
             self._conn.commit()
             rows = self._conn.execute(
-                "SELECT id FROM jobs WHERE status = 'queued' ORDER BY created_at, rowid"
+                "SELECT id FROM jobs WHERE status = 'queued' OR (status = 'running' AND stage = 'waiting') "
+                "ORDER BY created_at, rowid"
             ).fetchall()
         return [r["id"] for r in rows]
 

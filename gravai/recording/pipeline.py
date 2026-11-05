@@ -11,49 +11,70 @@ import json
 import multiprocessing as mp
 import os
 import threading
+import uuid
 
+from gravai.config import Settings
 from gravai.models import Session, TranscriptedSession
 
 SESSION_METADATA_FILE = "session_metadata.json"
 SESSION_TRANSCRIPTION_FILE = "session_transcription.json"
 
-# The WS audio server and the Playwright recorder support a single meeting at a time.
-RECORDING_LOCK = threading.Lock()
-# Set while a recording runs: request_stop() sets it and the recorder process leaves the meeting.
-_stop_event = None
+# Recordings in progress, by key (the job id for minutes jobs), each with the event that
+# makes its recorder process leave the meeting. Several meetings can be recorded at once:
+# each one has its own Chromium process and its own session folder in the WS audio server.
+_ACTIVE_LOCK = threading.Lock()
+_active: dict[str, object] = {}
 
 
 class RecordingBusy(RuntimeError):
-    """Another meeting is being recorded right now."""
+    """Every recorder slot (MAX_CONCURRENT_RECORDINGS) is in use right now."""
 
 
-def record_meeting(meeting_url: str, max_seconds: int | None = None) -> str:
-    """Joins the meeting with the bot and records it until it ends. Returns the tracks folder."""
+def max_recordings() -> int:
+    return Settings().MAX_CONCURRENT_RECORDINGS
+
+
+def active_recordings() -> int:
+    with _ACTIVE_LOCK:
+        return len(_active)
+
+
+def record_meeting(meeting_url: str, max_seconds: int | None = None, key: str | None = None) -> str:
+    """
+    Joins the meeting with the bot and records it until it ends or request_stop(key) is
+    called. Returns the tracks folder. Raises RecordingBusy when all slots are taken.
+    """
     # Imported here: Playwright and the WS server are heavy and only needed for this step.
     from gravai.recording.teams import TeamsMeetingRecorder
 
-    global _stop_event
-    if not RECORDING_LOCK.acquire(blocking=False):
-        raise RecordingBusy("A meeting is already being recorded. Try again when it finishes.")
+    key = key or uuid.uuid4().hex
     # The recorder runs in a spawned process, so the event must come from the same start method.
-    _stop_event = mp.get_context("spawn").Event()
+    stop_event = mp.get_context("spawn").Event()
+    with _ACTIVE_LOCK:
+        limit = max_recordings()
+        if len(_active) >= limit:
+            raise RecordingBusy(f"All {limit} recorders are busy. Try again when a meeting finishes.")
+        if key in _active:
+            raise RecordingBusy(f"Recording '{key}' is already running.")
+        _active[key] = stop_event
     try:
         return TeamsMeetingRecorder().record_meeting_with_ws_audio_server(
-            meeting_url, max_seconds=max_seconds, stop_event=_stop_event
+            meeting_url, max_seconds=max_seconds, stop_event=stop_event
         )
     finally:
-        _stop_event = None
-        RECORDING_LOCK.release()
+        with _ACTIVE_LOCK:
+            _active.pop(key, None)
 
 
-def request_stop() -> bool:
+def request_stop(key: str) -> bool:
     """
-    Asks the recording in progress to leave the meeting now; what was recorded is kept
-    and the next steps (slicing, whisper, minutes) run as usual. The recorder checks
-    the request about once a second, once it is inside the meeting. False when no
-    recording is running.
+    Asks the recording with this key to leave the meeting now; what was recorded is kept
+    and the next steps (slicing, whisper, minutes) run as usual. The recorder checks the
+    request about once a second, once it is inside the meeting. False when that recording
+    is not running.
     """
-    event = _stop_event
+    with _ACTIVE_LOCK:
+        event = _active.get(key)
     if event is None:
         return False
     event.set()

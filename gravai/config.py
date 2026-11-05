@@ -65,6 +65,25 @@ class Settings(BaseSettings):
         description="Stop recording after this many seconds if the meeting end is not detected",
         alias="MAX_RECORDING_SECONDS",
     )
+    LEAVE_WHEN_ALONE_SECONDS: int = Field(
+        120,
+        ge=0,
+        description=(
+            "The bot leaves the meeting after being alone in it this long, once someone else had been there "
+            "(everyone left without ending the meeting). An empty meeting gets at least 15 min for people to "
+            "arrive. 0 disables it: the bot then stays until the meeting ends or MAX_RECORDING_SECONDS"
+        ),
+        alias="LEAVE_WHEN_ALONE_SECONDS",
+    )
+    MAX_CONCURRENT_RECORDINGS: int = Field(
+        3,
+        ge=1,
+        description=(
+            "Meetings the bot can record at the same time (one headless Chromium each, ~0.5 GB of RAM). "
+            "Transcription and minutes still run one at a time after each recording"
+        ),
+        alias="MAX_CONCURRENT_RECORDINGS",
+    )
     TIMEZONE: str = Field(
         "America/Fortaleza",
         description=(

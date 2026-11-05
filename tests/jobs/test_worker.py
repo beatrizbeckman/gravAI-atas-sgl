@@ -1,9 +1,10 @@
 import threading
+import time
 
 import pytest
 
 from gravai.jobs.store import JobStore
-from gravai.jobs.worker import ExecutionOutcome, JobWorker
+from gravai.jobs.worker import ExecutionOutcome, JobWorker, Prepared
 from gravai.minutes.generate import MinutesError
 
 
@@ -132,3 +133,67 @@ def test_worker_thread_survives_a_crashing_run(store, monkeypatch):
     worker.stop(timeout=5)
     assert calls == [a.id, b.id]
     assert store.get(b.id).status == "done"
+
+
+def test_recordings_of_different_meetings_overlap_and_processing_stays_one_at_a_time(store):
+    both_recording = threading.Barrier(3)  # two preparers + the test
+    finish_recording = threading.Event()
+    processing, overlaps = [], []
+
+    def record(job, progress):
+        progress("recording")
+        both_recording.wait(timeout=5)
+        finish_recording.wait(timeout=5)
+        return Prepared(params={"tracks_dir": f"/tmp/{job.id}"}, header=job.header)
+
+    def process(job, progress):
+        processing.append(job.id)
+        overlaps.append(len(processing))
+        processing.pop()
+        return outcome(job)
+
+    worker = JobWorker(
+        store, {"record_and_generate": process}, preparers={"record_and_generate": record}, preparing_threads=2
+    )
+    a = store.create("record_and_generate", "dell", {}, {})
+    b = store.create("record_and_generate", "dell", {}, {})
+    worker.start()
+    worker.submit(a.id)
+    worker.submit(b.id)
+
+    both_recording.wait(timeout=5)  # both meetings are being recorded at the same time
+    assert {store.get(a.id).stage, store.get(b.id).stage} == {"recording"}
+    finish_recording.set()
+    deadline = time.time() + 5
+    while time.time() < deadline and {store.get(a.id).status, store.get(b.id).status} != {"done"}:
+        time.sleep(0.02)
+    worker.stop(timeout=5)
+
+    assert store.get(a.id).status == "done" and store.get(b.id).status == "done"
+    assert overlaps == [1, 1]  # never two in processing at once
+
+
+def test_a_failed_recording_fires_the_webhook(store):
+    notified = []
+
+    def record(job, progress):
+        raise MinutesError("recording_failed", "rejected")
+
+    worker = JobWorker(
+        store, {}, notify=lambda url, job: notified.append(job["status"]), preparers={"record_and_generate": record}
+    )
+    job = store.create("record_and_generate", "dell", {}, {"callback_url": "http://sgl/hook"})
+    assert worker.run(job.id).error.code == "recording_failed"
+    assert notified == ["failed"]
+
+
+def test_a_recorded_job_survives_a_restart_and_goes_on(store):
+    worker = JobWorker(store, {"record_and_generate": lambda job, progress: outcome(job)})
+    recorded = store.create("record_and_generate", "dell", {}, {"tracks_dir": "/tmp/x"})
+    store.update(recorded.id, status="running", stage="waiting")
+    interrupted = store.create("record_and_generate", "dell", {}, {})
+    store.update(interrupted.id, status="running", stage="recording")
+
+    assert store.recover_on_startup() == [recorded.id]
+    assert store.get(interrupted.id).status == "failed"
+    assert worker.run(recorded.id).status == "done"

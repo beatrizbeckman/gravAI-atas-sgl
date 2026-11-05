@@ -17,7 +17,7 @@ from pydantic import BaseModel, model_validator
 
 from gravai.config import Settings
 from gravai.models import Session
-from gravai.recording.utils import _load_text, _meeting_origin, _write_vad_timeline
+from gravai.recording.utils import AloneWatcher, _load_text, _meeting_origin, _write_vad_timeline, page_says_alone
 
 _WS_PROC: subprocess.Popen | None = None
 _WS_LOCK = threading.Lock()
@@ -41,6 +41,7 @@ _LAUNCH_BUTTON = re.compile(r"continue on this browser|join on the web|join from
 _NO_AV_BUTTON = re.compile(r"continue without audio or video", re.IGNORECASE)
 _LOBBY_TEXT = re.compile(r"let you in", re.IGNORECASE)
 _PREJOIN_TIMEOUT_S = 150
+_ALONE_CHECK_EVERY_S = 5
 _ERROR_SCREEN_GRACE_S = 20
 
 
@@ -356,10 +357,9 @@ class TeamsMeetingRecorder(MeetingRecorder):
                         "--autoplay-policy=no-user-gesture-required",
                         "--disable-dev-shm-usage",
                         "--disable-http2",
-                        "--enable-logging",
-                        "--v=1",
-                        "--vmodule=*webrtc*=3,*libjingle*=3",
-                    ],
+                    ]
+                    # Verbose WebRTC logging costs CPU and disk in every browser; only worth it when debugging.
+                    + (["--enable-logging", "--v=1", "--vmodule=*webrtc*=3,*libjingle*=3"] if debug else []),
                 )
                 context = browser.new_context(bypass_csp=True, ignore_https_errors=True)
                 context.add_init_script(intercept_js)
@@ -405,12 +405,31 @@ class TeamsMeetingRecorder(MeetingRecorder):
                 rejoin_button_locator = page.get_by_role("button", name=re.compile(r"^rejoin$", re.IGNORECASE))
                 rejected_h1_locator = page.locator("h1[id='calling-retry-screen-title']")
 
-                deadline = time.time() + (max_seconds or Settings().MAX_RECORDING_SECONDS)
+                settings = Settings()
+                deadline = time.time() + (max_seconds or settings.MAX_RECORDING_SECONDS)
+                alone = AloneWatcher(settings.LEAVE_WHEN_ALONE_SECONDS)
+                next_alone_check = 0.0
+                vad_meta["end_reason"] = "meeting_ended"
                 while True:
                     _drain_vad_events()
                     if stop_event is not None and stop_event.is_set():
                         print("Stop requested by the API, leaving the meeting.")
+                        vad_meta["end_reason"] = "stop_requested"
                         break
+                    now = time.time()
+                    if now >= next_alone_check:
+                        next_alone_check = now + _ALONE_CHECK_EVERY_S
+                        try:
+                            is_alone = page_says_alone(
+                                page.evaluate("() => document.body ? document.body.innerText : ''")
+                            )
+                        except Exception:
+                            is_alone = False  # page navigating: decide on the next check
+                        if alone.update(is_alone, now):
+                            print("Alone in the meeting, leaving.")
+                            _screenshot(page, output_dir, "left_alone")
+                            vad_meta["end_reason"] = "alone"
+                            break
                     try:
                         rejected_h1_locator.wait_for(state="visible", timeout=200)
                     except Exception:
@@ -426,6 +445,7 @@ class TeamsMeetingRecorder(MeetingRecorder):
                     except Exception:
                         if time.time() >= deadline:
                             print("Meeting end span not detected, closing after timeout.")
+                            vad_meta["end_reason"] = "timeout"
                             break
 
                 _drain_vad_events()

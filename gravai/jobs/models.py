@@ -10,7 +10,8 @@ from pydantic import BaseModel, Field
 
 JobKind = Literal["from_transcript", "from_recording", "record_and_generate"]
 JobStatus = Literal["queued", "running", "done", "failed"]
-JobStage = Literal["recording", "transcribing", "normalizing", "generating", "rendering"]
+# "waiting": recorded, waiting for its turn to be transcribed (transcription and generation run one job at a time).
+JobStage = Literal["recording", "waiting", "transcribing", "normalizing", "generating", "rendering"]
 
 STATUSES: tuple[str, ...] = ("queued", "running", "done", "failed")
 
