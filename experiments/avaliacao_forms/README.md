@@ -2,21 +2,21 @@
 
 Guia para aplicar a avaliação da geração de atas: pessoas leem trechos da reunião e dizem se cada ata está coerente com eles e qual LLM agiu melhor. Os resultados entram no TCC.
 
-**As atas ainda não foram geradas nem testadas: essa etapa é sua.** Este guia traz a reunião, os trechos, as perguntas do formulário e como analisar as respostas.
+**Situação em 04/11:** as atas foram geradas em 03/11 e três entram no formulário (A, B e C); o `qwen` falhou (ver [Gerar as atas](#gerar-as-atas)). O sorteio está feito e o formulário está montado. Este guia traz a reunião, os trechos, as perguntas do formulário e como analisar as respostas.
 
 ## Passo a passo
 
-1. Gere as quatro atas (próxima seção).
+1. ~~Gere as atas (próxima seção).~~ Feito em 03/11: três atas, o `qwen` falhou.
 2. Confira se elas saíram completas, sem corrigir nada. Se uma falhar, registre a falha.
-3. Sorteie qual modelo será a Ata A, a B, a C e a D e anote na [chave](#chave-da-avaliação), sem mostrar a ninguém.
-4. Exporte as atas em PDF com os nomes `Ata A.pdf`, `Ata B.pdf`, `Ata C.pdf` e `Ata D.pdf`, e confira se o nome do modelo não aparece no texto nem nas propriedades do arquivo.
-5. Monte o Google Forms com as [perguntas](#perguntas-do-formulário) e responda você mesma a um teste.
-6. Faça um piloto com uma pessoa, cronometre e ajuste o que ela não entender.
+3. ~~Sorteie qual modelo será a Ata A, a B e a C.~~ Feito: o resultado está em `chave_avaliacao.md`, fora do repositório e fora do que for compartilhado.
+4. ~~Monte o formulário.~~ Feito: é um formulário próprio que mostra as atas dentro da página, então não há PDF nem Drive. Confira se o texto das atas na página é igual ao `ata.docx`, seção por seção, e se nenhum modelo é citado.
+5. Abra o link numa janela anônima e no celular, faça um envio completo de teste, confira a linha na planilha e depois apague ou marque esse teste.
+6. Faça um piloto com uma pessoa, veja o tempo registrado e ajuste o que ela não entender.
 7. Envie o formulário e analise as respostas como descrito em [Análise](#análise-para-o-tcc).
 
 ## Gerar as atas
 
-A reunião é a **ES2004a**, kickoff de um projeto de controle remoto, com 298 falas e cerca de 19 min. Foi escolhida por ser a mais curta do dataset e ter decisões, propostas em aberto, conversa fora do assunto e um gabarito humano. Os quatro modelos cobrem casos diferentes:
+A reunião é a **ES2004a**, kickoff de um projeto de controle remoto, com 298 falas e cerca de 19 min. Foi escolhida por ser a mais curta do dataset e ter decisões, propostas em aberto, conversa fora do assunto e um gabarito humano. Quatro modelos foram testados, cobrindo casos diferentes:
 
 | Modelo | Por que entra |
 |---|---|
@@ -35,7 +35,20 @@ uv run python experiments/run_experiments.py \
 
 O Gemini precisa da variável `GEMINI_API_KEY` no `.env`.
 
-Com `--max-chars 24000`, a reunião não é dividida em partes. Isso importa porque a divisão já fez esta reunião perder decisões em testes anteriores. Se o limite de 1 000 tokens de saída por minuto impedir o `qwen`, ou se a cota gratuita do Gemini acabar (já acabou na rodada de 02/11), rode de novo com o mesmo `--out` (o que já deu certo é pulado); para o Gemini, espere a cota renovar no dia seguinte. Se continuar falhando, gere as quatro com `--max-chars 12000`, para manter as mesmas condições, e registre isso no TCC.
+Com `--max-chars 24000`, a reunião não é dividida em partes. Isso importa porque a divisão já fez esta reunião perder decisões em testes anteriores. Se a cota gratuita do Gemini acabar (já acabou na rodada de 02/11), rode de novo com o mesmo `--out` no dia seguinte (o que já deu certo é pulado).
+
+### Resultado da rodada de 03/11
+
+| Modelo | Status | Partes | Tempo (s) | Tokens in+out |
+|---|---|---|---|---|
+| `gemini-3-flash-preview` | ok | 1 | 13,2 | 8 719 + 1 069 |
+| `openai/gpt-oss-120b` | ok | 1 | 4,4 | 7 770 + 1 519 |
+| `liquid/lfm-2.5-2.6b:free` | ok | 1 | 9,9 | 8 379 + 3 313 |
+| `qwen/qwen3.8-27b` | falhou (`llm_unreachable`, 413) | | | |
+
+As três que deram certo foram geradas sem dividir a reunião, com o prompt atual (depois da troca do exemplo de nome), e nenhuma resposta foi cortada (`finish_reason: stop`).
+
+**O `qwen` ficou de fora do formulário.** No plano gratuito do Groq, esse modelo aceita no máximo 7 000 tokens de entrada por minuto, e o pedido com a reunião inteira tem 8 758. Não é cota que renova: rodar de novo não resolve. Para ele caber, todas as atas teriam que ser geradas com `--max-chars 12000`, em partes, que é justamente o que fez esta reunião perder decisões antes. Preferi manter as três atas na reunião inteira e registrar a falha como resultado: o modelo não comporta uma reunião de 19 min no plano gratuito.
 
 A ata da ES2004a que já existe em `experiments/results/gemini/` não serve aqui: foi gerada em duas partes de 12 mil caracteres e com o prompt anterior ao ajuste do exemplo de nome.
 
@@ -43,17 +56,21 @@ Cada ata fica em `experiments/results/avaliacao_forms/ES2004a__<provedor>__<mode
 
 ## Montar o formulário
 
-- **Às cegas:** chame as atas só de A, B, C e D e não cite os modelos.
-- **Ordem:** ative "Embaralhar ordem das linhas" nas grades, para a Ata A não ser sempre a primeira.
-- **Acesso às atas:** coloque os links dos PDFs no início e em cada seção. No Drive, use "qualquer pessoa com o link: leitor".
-- **Trecho:** cole o trecho em cada seção como descrição, com os números das falas.
-- **Tempo:** com 7 trechos e quatro atas, a estimativa é de 20 a 30 min. Se o piloto passar disso, corte primeiro o T7 e depois o T6.
+O formulário não é o Google Forms: é uma página própria que reproduz as funções que importam para a análise e grava as respostas numa planilha.
+
+- **Às cegas:** as atas se chamam só A, B e C, e nem o formulário nem o código citam os modelos.
+- **Ordem:** as linhas das grades são embaralhadas para cada pessoa, para a Ata A não ser sempre a primeira. A ordem que cada pessoa viu fica gravada na planilha.
+- **Acesso às atas:** as atas aparecem dentro do formulário, num painel ao lado no computador e no botão "Ler as atas" no celular.
+- **Trecho:** cada seção mostra o trecho, com os números das falas.
+- **Tempo:** cada resposta registra quantos minutos a pessoa levou. Com 7 trechos e três atas, a estimativa é de 15 a 20 min; confirme no piloto. Se passar muito disso, corte primeiro o T7 e depois o T6. Como o rascunho é salvo, quem fecha a página e volta depois fica com um tempo inflado: na análise use a mediana e descarte os tempos absurdos.
+- **Rascunho:** quem fecha a página no meio continua de onde parou, no mesmo navegador.
+- **Login:** confira numa janela anônima que o link abre sem pedir conta.
 - **Dados pessoais:** não colete e-mail nem nome.
 - **Avaliadores:** convide quem participa de reuniões de projeto, como colegas do lab e gerentes. Tente reunir pelo menos 8 respostas e não participe como respondente, porque você conhece os modelos.
 
 ### Texto de abertura
 
-> Este formulário faz parte de um Trabalho de Conclusão de Curso sobre geração automática de atas de reunião. Você vai comparar trechos de uma reunião com quatro atas geradas por sistemas diferentes (A, B, C e D). Não existe resposta certa: queremos sua opinião. Leva cerca de 25 minutos. A participação é voluntária e anônima, e as respostas serão usadas de forma agregada. Ao continuar, você concorda em participar. A reunião vem de um conjunto público de pesquisa, traduzido para o português, e pode ter marcas da fala e da tradução.
+> Este formulário faz parte de um Trabalho de Conclusão de Curso sobre geração automática de atas de reunião. Você vai comparar trechos de uma reunião com três atas geradas por sistemas diferentes (A, B e C). Não existe resposta certa: queremos sua opinião. Leva cerca de 20 minutos. A participação é voluntária e anônima, e as respostas serão usadas de forma agregada. Ao continuar, você concorda em participar. A reunião vem de um conjunto público de pesquisa, traduzido para o português, e pode ter marcas da fala e da tradução.
 
 ## Perguntas do formulário
 
@@ -61,13 +78,13 @@ Cada ata fica em `experiments/results/avaliacao_forms/ES2004a__<provedor>__<mode
 
 1. **Com que frequência você participa de reuniões de projeto?** Múltipla escolha: quase todo dia / toda semana / algumas vezes por mês / raramente.
 2. **Você já escreveu atas de reunião?** Múltipla escolha: nunca / poucas vezes / muitas vezes.
-3. **Qual é o seu papel principal hoje?** Múltipla escolha: estudante / desenvolvedor(a) / gerente ou coordenador(a) / professor(a) / outro.
+3. **Qual é o seu papel principal hoje?** Múltipla escolha: estudante / desenvolvedor(a) / gerente ou coordenador(a) / professor(a) / outro (com campo de texto).
 
 ### Seções 2 a 8 · Uma seção por trecho
 
 Cole o trecho e repita estas perguntas:
 
-- **A. "A ata está coerente com este trecho."** Grade obrigatória, uma linha por ata (A, B, C, D). Colunas:
+- **A. "A ata está coerente com este trecho."** Grade obrigatória, uma linha por ata (A, B, C). Colunas:
   - 1 · Discordo totalmente
   - 2 · Discordo
   - 3 · Nem concordo nem discordo
@@ -80,15 +97,15 @@ Cole o trecho e repita estas perguntas:
 
 ### Seção 9 · Comparação das atas inteiras
 
-4. **Avalie cada ata.** Uma grade por afirmação, com linhas A, B, C e D e escala de 1 a 5:
+4. **Avalie cada ata.** Uma grade por afirmação, com linhas A, B e C e escala de 1 a 5:
    - "A ata traz o que foi importante na reunião." *(completude)*
    - "A ata não traz informações que não foram ditas." *(fidelidade)*
    - "Decisões, ideias em aberto e tarefas estão nas seções certas." *(organização)*
    - "O texto é claro e tem linguagem de ata." *(clareza)*
    - "Eu usaria esta ata com poucos ajustes." *(utilidade)*
-5. **Ordene as atas da melhor para a pior.** Grade com linhas 1º, 2º, 3º e 4º lugar e colunas A, B, C e D. Ative "Limitar a uma resposta por coluna".
+5. **Ordene as atas da melhor para a pior.** Linhas 1º, 2º e 3º lugar e colunas A, B e C, com uma ata por lugar.
 6. **Por que você escolheu a primeira colocada?** Resposta curta, obrigatória.
-7. **Encontrou alguma informação inventada?** Caixas de seleção: Ata A / Ata B / Ata C / Ata D / não encontrei. Acrescente: "Se sim, qual?" (opcional).
+7. **Encontrou alguma informação inventada?** Obrigatória. Caixas de seleção: Ata A / Ata B / Ata C / não encontrei. Acrescente: "Se sim, qual?" (opcional). Se alguém marcar "não encontrei" junto com uma ata, conte só a ata.
 8. **Quanto tempo você levaria para deixar a melhor ata pronta para enviar?** Múltipla escolha: nada a ajustar / até 5 min / 5 a 15 min / mais de 15 min / seria mais rápido escrever do zero.
 9. **O que mais faltou nas atas?** Parágrafo, opcional.
 
@@ -368,22 +385,25 @@ Use se quiser substituir algum trecho depois do piloto.
 
 **Por ata e por critério (pergunta 4):** mediana e distribuição das respostas em completude, fidelidade, organização, clareza e utilidade.
 
-**Comparação entre LLMs (pergunta 5):** quantas vezes cada ata ficou em 1º, 2º, 3º e 4º e a posição média. Só depois de fechar esses números abra a chave. Com ao menos uns 10 respondentes, o teste de Friedman pode indicar se a diferença é maior do que o acaso; com menos, apresente só a estatística descritiva.
+**Comparação entre LLMs (pergunta 5):** quantas vezes cada ata ficou em 1º, 2º e 3º e a posição média. Só depois de fechar esses números abra a chave. Com ao menos uns 10 respondentes, o teste de Friedman pode indicar se a diferença é maior do que o acaso; com menos, apresente só a estatística descritiva.
 
 **Comentários:** agrupe por tipo (omissão, informação inventada, seção errada, atribuição errada) e confira cada caso na transcrição. Se alguém apontar uma invenção que está na transcrição, conte como erro do avaliador, não da ata.
 
 **Tabelas sugeridas:**
 
-| Trecho | Ata A (mediana, % 4 ou 5) | Ata B | Ata C | Ata D | % "não trata" |
-|---|---|---|---|---|---|
-| T1 a T7 | | | | | |
-
-| Critério | Ata A | Ata B | Ata C | Ata D |
+| Trecho | Ata A (mediana, % 4 ou 5) | Ata B | Ata C | % "não trata" |
 |---|---|---|---|---|
-| Completude, fidelidade, organização, clareza, utilidade | | | | |
+| T1 a T7 | | | | |
+
+| Critério | Ata A | Ata B | Ata C |
+|---|---|---|---|
+| Completude, fidelidade, organização, clareza, utilidade | | | |
+
+**Tempo de resposta:** mediana dos minutos registrados, sem os tempos absurdos de quem saiu e voltou depois.
 
 **Limitações a declarar no TCC:**
 - há uma só reunião e uma só execução por modelo, então o resultado não generaliza para outros tipos de reunião;
+- o `qwen3.8-27b`, o melhor nos testes iniciais, ficou de fora porque não coube no limite gratuito do Groq com a reunião inteira;
 - a reunião é traduzida e não passou pelo Whisper, então não mede erros de transcrição;
 - os respondentes não estavam na reunião e avaliam o que está no trecho;
 - os respondentes são uma amostra por conveniência;
@@ -392,14 +412,13 @@ Use se quiser substituir algum trecho depois do piloto.
 
 ## Chave da avaliação
 
-Preencha depois do sorteio e não compartilhe. Se este arquivo for versionado, guarde a chave fora do repositório até terminar a coleta.
+O sorteio está em `chave_avaliacao.md`, fora do repositório e fora do que for compartilhado com o formulário. Só abra a chave depois de fechar os números da análise; aí copie a tabela abaixo para cá.
 
 | Ata | Modelo | Status | Tempo (s) | Observação |
 |---|---|---|---|---|
 | A | | | | |
 | B | | | | |
 | C | | | | |
-| D | | | | |
 
 ## Reunião completa (ES2004a)
 
