@@ -19,11 +19,14 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.whisper
+      args:
+        # large-v3 on the server; large-v3-turbo needs about half the RAM and is faster on a notebook.
+        WHISPER_MODEL: ${WHISPER_MODEL:-large-v3}
     container_name: whisper
     ports:
       - "8080:8080"
     volumes:
       - ../.env:/app/.env
     restart: unless-stopped
-    entrypoint: ["./build/bin/whisper-server", "-m", "models/ggml-large-v3.bin", "--host", "0.0.0.0", "--language", "${WHISPER_LANGUAGE:-pt}", "--threads", "${WHISPER_THREADS:-12}", "--port", "8080"]
+    entrypoint: ["./build/bin/whisper-server", "-m", "models/ggml-${WHISPER_MODEL:-large-v3}.bin", "--host", "0.0.0.0", "--language", "${WHISPER_LANGUAGE:-pt}", "--threads", "${WHISPER_THREADS:-12}", "--port", "8080"]
     
