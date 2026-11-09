@@ -247,3 +247,34 @@ def test_openai_chat_reports_non_transient_error_inside_200_body(monkeypatch):
 
     with pytest.raises(RuntimeError, match=r"\(400\).*Invalid model"):
         llm.openai_chat("s", "u", **CFG)
+
+
+GROQ_TOO_LARGE = (
+    '{"error":{"message":"Request too large for model `openai/gpt-oss-120b` in organization `org_1` service tier '
+    '`on_demand` on tokens per minute (TPM): Limit 8000, Requested 8164, please reduce your message size and try again."}}'
+)
+
+
+def test_request_bigger_than_the_per_minute_limit_fails_at_once(monkeypatch):
+    # Measured on 09/11/2026: with 24k characters per request a 19-min meeting needed 8,164 tokens on the
+    # Groq free tier (limit 8,000). Waiting never makes it fit, so it is not retried for ~5 minutes.
+    calls = []
+
+    def fake_post(*a, **k):
+        calls.append(1)
+        return FakeResponse(413, text=GROQ_TOO_LARGE)
+
+    monkeypatch.setattr(requests, "post", fake_post)
+    waited = []
+    monkeypatch.setattr(llm.time, "sleep", waited.append)
+
+    with pytest.raises(RuntimeError, match=r"needs 8164 tokens, more than the 8000.*LLM_MAX_CHARS"):
+        llm.openai_chat_retrying("s", "u", waits=(1, 2), log=lambda m: None, **CFG)
+    assert waited == [] and len(calls) == 1
+
+
+def test_request_exceeds_limit_only_when_requested_is_bigger():
+    assert llm.request_exceeds_limit("Limit 8000, Requested 8164") == (8000, 8164)
+    assert llm.request_exceeds_limit("Limit 8000, Used 7000, Requested 1500") is None  # budget used up: wait
+    assert llm.request_exceeds_limit("Limit 8000, Requested 1500") is None
+    assert llm.request_exceeds_limit("slow down") is None

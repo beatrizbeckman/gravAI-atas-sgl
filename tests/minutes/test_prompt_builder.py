@@ -65,7 +65,8 @@ def test_user_prompt_has_header_participants_and_timestamps(dell, speakers):
 
 def test_split_keeps_one_part_for_short_meetings_and_balances_long_ones(dell):
     _, _, utterances = dell
-    assert split_transcript(utterances) == [utterances]
+    assert split_transcript(utterances, max_chars=24_000) == [utterances]  # ES2004a has ~13k characters
+    assert len(split_transcript(utterances)) == 2  # the default (12k) fits the Groq free tier
 
     parts = split_transcript(utterances, max_chars=2000)
     assert len(parts) > 1

@@ -106,6 +106,7 @@ def _generate(job: Job, utterances: list, progress: Progress, header: dict | Non
         output_path,
         participants=job.params.get("participants"),
         custom=job.params.get("custom"),
+        max_chars=Settings().LLM_MAX_CHARS,
         progress=progress,
     )
     # Terminal report + one row in <SAVE_DIR>/llm_usage.csv, to size the LLM plan per meeting.

@@ -54,6 +54,7 @@ def test_generation_reports_usage_and_meeting_size(tmp_path, meeting, filled_rep
         meeting["utterances"],
         str(tmp_path / "ata.docx"),
         call_llm=lambda system, user: reply(filled_reply, 5000, 900, 300),
+        max_chars=24_000,
     )
 
     assert result.usage.total_tokens == 5900
@@ -102,6 +103,7 @@ def result(tmp_path, meeting, filled_reply, monkeypatch):
         meeting["utterances"],
         str(tmp_path / "ata.docx"),
         call_llm=lambda system, user: reply(filled_reply, 5000, 900),
+        max_chars=24_000,
     )
 
 

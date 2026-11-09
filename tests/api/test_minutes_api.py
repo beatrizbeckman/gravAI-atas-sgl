@@ -103,7 +103,9 @@ def test_from_transcript_full_cycle(client, runtime, dell_body, speakers):
     assert done["status"] == "done" and done["error"] is None and done["finished_at"]
     assert done["result"]["download_url"] == f"/minutes/jobs/{job['id']}/download"
     assert done["result"]["participants"] == speakers
-    assert done["result"]["llm_model"] == "fake" and done["result"]["parts"] == 1
+    assert (
+        done["result"]["llm_model"] == "fake" and done["result"]["parts"] == 2
+    )  # ES2004a (~13k chars) in parts of LLM_MAX_CHARS=12k
     assert done["result"]["utterances"] == len(dell_body["utterances"])
 
     result = client.get(f"/minutes/jobs/{job['id']}/result").json()

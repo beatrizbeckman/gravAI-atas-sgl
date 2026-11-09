@@ -53,7 +53,8 @@ def test_from_transcript_writes_the_docx_under_save_dir(env, store, worker, meet
     done = worker.run(job.id)
 
     assert done.status == "done", done.error
-    assert done.result.llm_model == "fake" and done.result.parts == 1
+    assert done.result.llm_model == "fake" and done.result.parts == 2  # ~13k chars, LLM_MAX_CHARS 12k
+    assert done.result.llm_calls == 3 and done.result.llm_usage["estimated"] is True  # fake: no usage reported
     assert done.result.participants == speakers
     assert done.result.download_url == f"/minutes/jobs/{job.id}/download"
     assert done.result.filename.startswith("ata_dell_") and done.result.filename.endswith(
@@ -242,3 +243,13 @@ def test_llm_failure_in_a_job_keeps_the_contract_code(env, store, worker, monkey
     job = store.create("from_transcript", "dell", short_meeting["header"], {"utterances": short_meeting["utterances"]})
     failed = worker.run(job.id)
     assert failed.status == "failed" and failed.error.code == "llm_unreachable"
+
+
+def test_jobs_split_the_transcript_by_llm_max_chars(env, store, worker, meeting, monkeypatch):
+    # On a paid plan LLM_MAX_CHARS can go up and the same meeting fits in one request.
+    monkeypatch.setenv("LLM_MAX_CHARS", "24000")
+    job = store.create("from_transcript", "dell", meeting["header"], {"utterances": meeting["utterances"]})
+    done = worker.run(job.id)
+    assert done.status == "done", done.error
+    assert done.result.parts == 1 and done.result.llm_calls == 1
+    assert (env / "llm_usage.csv").exists()  # one row per minutes, under SAVE_DIR

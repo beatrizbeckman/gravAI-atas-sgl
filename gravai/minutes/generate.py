@@ -24,6 +24,7 @@ from dataclasses import dataclass, field
 
 import requests
 
+from gravai.config import Settings
 from gravai.minutes import llm
 from gravai.minutes.custom_template import CustomSpec, build_custom_template
 from gravai.minutes.docx_writer import write_minutes
@@ -412,8 +413,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--max-chars",
         type=int,
-        default=DEFAULT_MAX_CHARS,
-        help="transcript characters per LLM request before splitting",
+        default=None,
+        help=f"transcript characters per LLM request before splitting (default: LLM_MAX_CHARS in .env, {DEFAULT_MAX_CHARS})",
     )
     parser.add_argument("--json", action="store_true", help="also print the minutes JSON")
     args = parser.parse_args()
@@ -431,7 +432,7 @@ if __name__ == "__main__":
             output,
             participants=fixture.get("participants"),
             custom=fixture.get("custom"),
-            max_chars=args.max_chars,
+            max_chars=args.max_chars or Settings().LLM_MAX_CHARS,
             progress=lambda stage: print(f"[{stage}]", file=sys.stderr),
         )
     except MinutesError as exc:

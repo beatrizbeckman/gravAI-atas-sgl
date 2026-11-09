@@ -142,6 +142,17 @@ class Settings(BaseSettings):
         description="Reply cap sent to the online provider; reasoning models spend part of it thinking, so keep it generous",
         alias="LLM_MAX_TOKENS",
     )
+    LLM_MAX_CHARS: int = Field(
+        # 12k fits the Groq free tier (8k input tokens per minute per request); 24k sends a
+        # meeting of up to ~30 min in one request, which needs a paid plan.
+        12_000,
+        gt=0,
+        description=(
+            "Transcript characters per LLM request; longer meetings are split into parts and merged. "
+            "Each request has to fit the provider plan's tokens-per-minute limit"
+        ),
+        alias="LLM_MAX_CHARS",
+    )
     LLM_TIMEOUT_SECONDS: int = Field(
         600, description="Give up on a single LLM request after this many seconds", alias="LLM_TIMEOUT_SECONDS"
     )

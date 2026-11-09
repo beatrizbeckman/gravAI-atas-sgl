@@ -216,11 +216,34 @@ def openai_chat(
 RATE_LIMIT_WAITS = (20, 40, 60, 90, 120)
 
 
+class RequestTooLarge(RuntimeError):
+    """One request is bigger than the plan's tokens-per-minute limit: it never fits, so it is not retried."""
+
+
+_LIMIT_REQUESTED = re.compile(r"Limit\s+(\d+),\s*Requested\s+(\d+)", re.IGNORECASE)
+
+
+def request_exceeds_limit(text: str) -> tuple[int, int] | None:
+    """
+    (limit, requested) when the provider says one request is bigger than the plan's
+    tokens-per-minute limit (Groq: "... (TPM): Limit 8000, Requested 8164"). Such a
+    request never fits, however long the caller waits.
+    """
+    match = _LIMIT_REQUESTED.search(text)
+    if not match:
+        return None
+    limit, requested = int(match.group(1)), int(match.group(2))
+    return (limit, requested) if requested > limit else None
+
+
 def is_rate_limit_error(exc: Exception) -> bool:
     """
     Worth waiting and trying again: 429, the 413 Groq answers when the per-minute
-    budget is nearly used up, and the 5xx a saturated free upstream returns.
+    budget is nearly used up, and the 5xx a saturated free upstream returns. Not
+    a request that is bigger than the per-minute limit itself: waiting does not help.
     """
+    if isinstance(exc, RequestTooLarge):
+        return False
     text = str(exc)
     return any(f"({code})" in text or f"error {code}" in text for code in (429, 413, 500, 502, 503, 504))
 
@@ -254,6 +277,13 @@ def _raise_for_provider_error(response, model: str, base_url: str) -> None:
         )
     if status == 404 or (status == 400 and "model" in detail.lower()):
         raise RuntimeError(f"The LLM provider does not serve model '{model}' ({status}): {detail}")
+    if status in (413, 429) and (too_big := request_exceeds_limit(detail)):
+        limit, requested = too_big
+        raise RequestTooLarge(
+            f"One request to model {model!r} needs {requested} tokens, more than the {limit} tokens per minute "
+            f"the provider plan allows ({status}): it will never fit, so it is not retried. Lower LLM_MAX_CHARS "
+            f"in .env (transcript characters per request) or move to a plan with a higher tokens-per-minute limit."
+        )
     if status == 413:
         # Groq also answers 413 when the request would exceed what is left of the per-minute budget, so callers retry it like a 429.
         raise RuntimeError(

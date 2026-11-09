@@ -49,7 +49,13 @@ def test_happy_path_writes_docx_and_reports_metrics(tmp_path, meeting, speakers,
     stages = []
 
     result = generate_minutes(
-        "dell", meeting["header"], meeting["utterances"], str(out), progress=stages.append, call_llm=fake
+        "dell",
+        meeting["header"],
+        meeting["utterances"],
+        str(out),
+        progress=stages.append,
+        call_llm=fake,
+        max_chars=24_000,  # the whole meeting in one request
     )
 
     assert out.exists() and out.stat().st_size > 0
