@@ -34,6 +34,9 @@ class JobResult(BaseModel):
     parts: int
     llm_model: str
     generation_seconds: float
+    # Requests sent to the LLM (parts + merge + retries) and the tokens they used; absent on jobs from before 1.5.
+    llm_calls: int | None = None
+    llm_usage: dict | None = None
 
 
 class Job(BaseModel):

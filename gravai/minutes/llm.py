@@ -20,7 +20,17 @@ def generate(system: str, user: str, rate_limit_waits: tuple[int, ...] | None = 
     rate_limit_waits are the pauses in seconds, RATE_LIMIT_WAITS by default
     (fine for background jobs); callers with a person waiting pass shorter ones.
     """
+    return generate_reply(system, user, rate_limit_waits).content
+
+
+def generate_reply(system: str, user: str, rate_limit_waits: tuple[int, ...] | None = None) -> "ChatReply":
+    """
+    generate() with the token usage the provider reported: what the minutes jobs
+    use, so every meeting logs how many tokens it cost. The fake and legacy groq
+    providers report no usage (empty dict).
+    """
     settings = Settings()
+    started = time.monotonic()
     if settings.LLM_PROVIDER == "openai_compatible":
         return openai_chat_retrying(
             system,
@@ -31,9 +41,9 @@ def generate(system: str, user: str, rate_limit_waits: tuple[int, ...] | None = 
             model=settings.LLM_MODEL,
             timeout=settings.LLM_TIMEOUT_SECONDS,
             max_tokens=settings.LLM_MAX_TOKENS,
-        ).content
+        )
     if settings.LLM_PROVIDER == "ollama":
-        return ollama_generate(
+        return ollama_chat(
             system,
             user,
             host=settings.OLLAMA_HOST,
@@ -45,12 +55,14 @@ def generate(system: str, user: str, rate_limit_waits: tuple[int, ...] | None = 
         # Imported lazily: the groq package and its key are only needed for this provider.
         from gravai.legacy.llm_analyser.groq_config import call_groq
 
-        return call_groq(user, system)
-    if settings.LLM_PROVIDER == "fake":
-        return fake_generate(system, user)
-    raise ValueError(
-        f"Unknown LLM_PROVIDER '{settings.LLM_PROVIDER}' (expected 'openai_compatible', 'ollama', 'groq' or 'fake')"
-    )
+        content = call_groq(user, system)
+    elif settings.LLM_PROVIDER == "fake":
+        content = fake_generate(system, user)
+    else:
+        raise ValueError(
+            f"Unknown LLM_PROVIDER '{settings.LLM_PROVIDER}' (expected 'openai_compatible', 'ollama', 'groq' or 'fake')"
+        )
+    return ChatReply(content=content, model=model_name(), seconds=round(time.monotonic() - started, 2))
 
 
 def model_name() -> str:
@@ -255,6 +267,12 @@ def _raise_for_provider_error(response, model: str, base_url: str) -> None:
 
 
 def ollama_generate(system: str, user: str, host: str, model: str, num_ctx: int, timeout: int) -> str:
+    return ollama_chat(system, user, host, model, num_ctx, timeout).content
+
+
+def ollama_chat(system: str, user: str, host: str, model: str, num_ctx: int, timeout: int) -> ChatReply:
+    """One request to the local Ollama; its prompt_eval_count/eval_count become the usual usage keys."""
+    started = time.monotonic()
     payload = {
         "model": model,
         "messages": [
@@ -279,7 +297,14 @@ def ollama_generate(system: str, user: str, host: str, model: str, num_ctx: int,
     if response.status_code != 200:
         raise RuntimeError(f"Ollama error {response.status_code}: {response.text[:300]}")
 
-    content = response.json().get("message", {}).get("content", "")
+    body = response.json()
+    content = body.get("message", {}).get("content", "")
     if not content.strip():
         raise RuntimeError("Ollama returned an empty reply")
-    return content
+    usage = {}
+    if body.get("prompt_eval_count") is not None or body.get("eval_count") is not None:
+        prompt, completion = body.get("prompt_eval_count") or 0, body.get("eval_count") or 0
+        usage = {"prompt_tokens": prompt, "completion_tokens": completion, "total_tokens": prompt + completion}
+    return ChatReply(
+        content=content, model=model, seconds=round(time.monotonic() - started, 2), usage=usage, json_mode=True
+    )

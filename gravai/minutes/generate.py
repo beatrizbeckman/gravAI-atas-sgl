@@ -42,8 +42,83 @@ from gravai.models import Utterance
 ASSETS_DIR = os.path.join(os.path.dirname(__file__), "assets")
 LLM_RETRIES = 2  # extra attempts per prompt after the first one
 
-LLMCallable = Callable[[str, str], str]
+# (system, user) -> reply text, or a reply object with .content and .usage (llm.ChatReply).
+LLMCallable = Callable[[str, str], "str | llm.ChatReply"]
 ProgressCallback = Callable[[str], None]
+
+# Rough size of a token in Portuguese text, used only when the provider reports no usage.
+CHARS_PER_TOKEN = 4
+
+
+@dataclass
+class LLMUsage:
+    """
+    Tokens one minutes generation spent, summed over all its LLM calls (one per
+    transcript part, plus the merge call, plus retries). What a provider plan is
+    sized by: total tokens per meeting, and the largest input of a single call,
+    which has to fit the per-minute token limit of the plan (Groq compares the
+    input of each request with it; the output only uses up the minute's budget).
+    """
+
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    # Part of completion_tokens the model spent thinking (gpt-oss); billed as output.
+    reasoning_tokens: int = 0
+    largest_call_tokens: int = 0
+    largest_prompt_tokens: int = 0
+    # True when at least one call had no usage from the provider and was estimated from characters.
+    estimated: bool = False
+    calls: list[dict] = field(default_factory=list)
+
+    @property
+    def total_tokens(self) -> int:
+        return self.prompt_tokens + self.completion_tokens
+
+    def add(self, system: str, user: str, reply: "str | llm.ChatReply") -> str:
+        """Counts one call and returns its text."""
+        content = reply if isinstance(reply, str) else reply.content
+        usage = {} if isinstance(reply, str) else (reply.usage or {})
+        prompt, completion = usage.get("prompt_tokens"), usage.get("completion_tokens")
+        estimated = prompt is None or completion is None
+        if estimated:
+            prompt = (len(system) + len(user)) // CHARS_PER_TOKEN
+            completion = len(content) // CHARS_PER_TOKEN
+            self.estimated = True
+        reasoning = (usage.get("completion_tokens_details") or {}).get("reasoning_tokens") or 0
+        self.prompt_tokens += prompt
+        self.completion_tokens += completion
+        self.reasoning_tokens += reasoning
+        self.largest_call_tokens = max(self.largest_call_tokens, prompt + completion)
+        self.largest_prompt_tokens = max(self.largest_prompt_tokens, prompt)
+        self.calls.append(
+            {
+                "prompt_tokens": prompt,
+                "completion_tokens": completion,
+                "reasoning_tokens": reasoning,
+                "seconds": None if isinstance(reply, str) else reply.seconds,
+                "estimated": estimated,
+            }
+        )
+        return content
+
+    def summary(self) -> dict:
+        return {
+            "prompt_tokens": self.prompt_tokens,
+            "completion_tokens": self.completion_tokens,
+            "reasoning_tokens": self.reasoning_tokens,
+            "total_tokens": self.total_tokens,
+            "largest_call_tokens": self.largest_call_tokens,
+            "largest_prompt_tokens": self.largest_prompt_tokens,
+            "estimated": self.estimated,
+            "calls": self.calls,
+        }
+
+
+def meeting_minutes(utterances: list[Utterance]) -> float:
+    """How long the transcript lasts, in minutes (first speech to last)."""
+    if not utterances:
+        return 0.0
+    return round((max(u.end for u in utterances) - min(u.start for u in utterances)) / 60, 1)
 
 
 class MinutesError(Exception):
@@ -69,6 +144,10 @@ class GenerationResult:
     llm_calls: int = 0
     retries: int = 0
     partials: list[dict] = field(default_factory=list, repr=False)
+    usage: LLMUsage = field(default_factory=LLMUsage)
+    # Size of the meeting, to relate tokens to meeting length.
+    meeting_minutes: float = 0.0
+    transcript_chars: int = 0
 
 
 # ------------------------------------------------------------- resolution
@@ -218,10 +297,11 @@ def generate_minutes(
 
     - participants: when None, the distinct speakers of the transcript, sorted.
     - progress: called with "generating" and "rendering" so a job can expose its stage.
-    - call_llm: (system, user) -> reply text; defaults to minutes.llm.generate.
+    - call_llm: (system, user) -> reply text or llm.ChatReply; defaults to
+      minutes.llm.generate_reply, whose token usage ends up in result.usage.
     Raises MinutesError(code) for expected failures and ValueError for bad input.
     """
-    call_llm = call_llm or llm.generate
+    call_llm = call_llm or llm.generate_reply
     report = progress or (lambda stage: None)
     started = time.monotonic()
 
@@ -273,6 +353,9 @@ def generate_minutes(
         llm_calls=calls.count,
         retries=calls.retries,
         partials=partials if len(partials) > 1 else [],
+        usage=calls.usage,
+        meeting_minutes=meeting_minutes(utterances),
+        transcript_chars=sum(len(u.text) for u in utterances),
     )
 
 
@@ -281,11 +364,12 @@ class _CallCounter:
         self._call = call_llm
         self.count = 0
         self.retries = 0
+        self.usage = LLMUsage()
 
     def __call__(self, system: str, user: str) -> str:
         self.count += 1
         try:
-            return self._call(system, user)
+            return self.usage.add(system, user, self._call(system, user))
         except (requests.RequestException, RuntimeError) as exc:
             # llm.py turns connection/404/empty replies into RuntimeError; timeouts arrive as requests exceptions.
             raise MinutesError("llm_unreachable", str(exc)) from exc
@@ -358,5 +442,8 @@ if __name__ == "__main__":
         f"{result.docx_path}  ({result.utterances} utterances, {result.parts} part(s), {result.llm_calls} LLM call(s), "
         f"{result.retries} retry(ies), {result.generation_seconds}s, model {result.llm_model})"
     )
+    from gravai.minutes.usage_log import log_generation  # here: usage_log imports this module
+
+    log_generation(result, kind="cli")
     if args.json:
         print(json.dumps(result.minutes, ensure_ascii=False, indent=2))

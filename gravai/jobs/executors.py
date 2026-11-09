@@ -30,6 +30,7 @@ from gravai.minutes.generate import (
 )
 from gravai.minutes.meeting_time import fill_meeting_time, recording_span
 from gravai.minutes.transcript_normalizer import normalize_session
+from gravai.minutes.usage_log import log_generation
 from gravai.recording import pipeline
 
 Progress = Callable[[str], None]
@@ -107,6 +108,11 @@ def _generate(job: Job, utterances: list, progress: Progress, header: dict | Non
         custom=job.params.get("custom"),
         progress=progress,
     )
+    # Terminal report + one row in <SAVE_DIR>/llm_usage.csv, to size the LLM plan per meeting.
+    log_generation(result, job_id=job.id, kind=job.kind, project_id=job.project_id)
+    usage = result.usage.summary()
+    usage.pop("calls")
+    usage["meeting_minutes"] = result.meeting_minutes
     return ExecutionOutcome(
         result={
             "download_url": download_url(job.id),
@@ -116,6 +122,8 @@ def _generate(job: Job, utterances: list, progress: Progress, header: dict | Non
             "parts": result.parts,
             "llm_model": result.llm_model,
             "generation_seconds": result.generation_seconds,
+            "llm_calls": result.llm_calls,
+            "llm_usage": usage,
         },
         docx_path=output_path,
         minutes=result.minutes,
