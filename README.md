@@ -26,6 +26,114 @@ GravAI is a privacy-first system designed to join online meetings, capture per-p
 - More LLM workflows on top of the minutes (summaries across meetings, knowledge base sync).
 - Better observability, retries, and error reporting for long sessions.
 
+### Running the demo, step by step
+
+The back end is the FastAPI app in `gravai/api/`. The front end is two HTML pages in `gravai/api/static/` that the API itself serves, so there is no separate front-end build, no `npm install` and no second server:
+
+| Page | What it is |
+|---|---|
+| [http://localhost:8000/demo](http://localhost:8000/demo) | Minutes generation: template, header, transcript (or a recording, or a Teams link), job progress and `.docx` download. |
+| [http://localhost:8000/demo/sgl](http://localhost:8000/demo/sgl) | The SGL "Reuniões" tab: invite the bot to a Teams meeting, stop it, see the minutes and download the Word file. |
+
+There are two ways to run it. **Part A** needs only Python and shows the minutes being generated from a transcript of the dataset. **Part B** adds Whisper and the headless browser, so the bot can join a real Teams meeting.
+
+#### Part A · Minutes from a transcript (no Teams, no Whisper)
+
+1. **Install the tools (once):** [Git](https://git-scm.com/downloads) and [uv](https://docs.astral.sh/uv/). uv downloads Python 3.12 by itself.
+   ```bash
+   winget install astral-sh.uv                        # Windows
+   curl -LsSf https://astral.sh/uv/install.sh | sh    # Linux / macOS
+   ```
+   Close and reopen the terminal so the `uv` command is found.
+
+2. **Get the code:**
+   ```bash
+   git clone https://github.com/beatrizbeckman/gravAI-atas-sgl.git
+   cd gravAI-atas-sgl
+   ```
+
+3. **Create the `.env`:**
+   ```bash
+   cp .env.example .env              # PowerShell: Copy-Item .env.example .env
+   ```
+   Then open `.env` and choose the LLM that writes the minutes:
+   - **Without any LLM:** `LLM_PROVIDER=fake`. The minutes come out with placeholder text, which is enough to see the whole flow working.
+   - **With real minutes:** keep `LLM_PROVIDER=openai_compatible` and put a key in `LLM_API_KEY` (a free key from [Groq](https://console.groq.com/keys) works with the defaults `LLM_BASE_URL` and `LLM_MODEL`).
+
+   Leave `API_KEY` empty on your own machine. If it is set, both pages ask for it the first time they call the API.
+
+4. **Install the dependencies:**
+   ```bash
+   uv sync
+   ```
+
+5. **Start the back end** (keep this terminal open; `Ctrl+C` stops it):
+   ```bash
+   uv run fastapi dev gravai/api/app.py
+   ```
+   Wait for `Application startup complete`. It listens on port 8000, and on 8765 for the audio of the recordings (`WS_PORT`), so leave both ports free.
+
+   On Windows, if it stops right away with `UnicodeEncodeError: 'charmap' codec can't encode character`, the terminal is not in UTF-8. Run this in the same terminal and start it again:
+   ```powershell
+   $env:PYTHONUTF8 = "1"
+   ```
+
+6. **Open the front end** in the browser: [http://localhost:8000/demo](http://localhost:8000/demo).
+   1. Choose a **Modelo de ata** and fill the header fields marked with `*`.
+   2. In **3. Reunião**, tab **Colar transcrição**, click one of the **Exemplos** under the box (they come from `datasets/reunioes/`) or paste your own, one line per speech: `[00:12] Ana: Bom dia, vamos começar.`
+   3. Click **Gerar ata** and follow the job. With a real LLM it takes from a few seconds to a couple of minutes.
+   4. When it is done, read the minutes on the page or download the `.docx`.
+
+   The API routes are documented at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+#### Part B · Recording a Teams meeting (the SGL tab)
+
+Everything in Part A, plus Whisper (speech to text) and Chromium (the bot that joins the call). Use a real LLM here: with `fake` the minutes do not use what was said.
+
+1. **Chromium for the bot (once):**
+   ```bash
+   uv run playwright install chromium
+   uv run playwright install-deps       # Linux only
+   ```
+
+2. **Start Whisper.** The simplest way is the Whisper container from this repository, with [Docker Desktop](https://www.docker.com/products/docker-desktop/) open. The first build downloads the model and takes a while.
+   ```bash
+   docker compose --env-file .env -f docker/docker-compose-whisper.yaml up -d --build whisper
+   docker logs --tail 5 whisper          # wait for the server to be listening on 8080
+   ```
+   On a notebook, set `WHISPER_MODEL=large-v3-turbo` in `.env` before the build (about half the RAM of `large-v3`), and give Docker at least 5 GB of RAM (on Windows, `memory=5GB` in `%UserProfile%\.wslconfig`, then `wsl --shutdown`).
+
+   Without Docker, build [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and run `whisper-server` on port 8080, as in **Setup** step 2 below.
+
+3. **Point the back end to Whisper** in `.env`: `WHISPER_HOST=127.0.0.1` and `WHISPER_PORT=8080` (the defaults). Restart the back end (step A5) whenever `.env` changes.
+
+4. **Open the SGL tab:** [http://localhost:8000/demo/sgl](http://localhost:8000/demo/sgl). It loads its styles from a CDN, so it needs internet.
+
+5. **Record a meeting:**
+   1. Start a meeting in Microsoft Teams and copy its link (`https://teams.microsoft.com/...` or `https://teams.live.com/meet/...`).
+   2. Click **Registrar reunião**.
+   3. **1 · Modelo de ata:** click a model. The eye icon on the chosen card shows a preview of the minutes; **Personalizar** lets you describe the minutes you want.
+   4. **2 · Reunião:** check the title and paste the Teams link.
+   5. **3 · Quem está na reunião:** tick who is there and add other names if needed.
+   6. Click **Convidar bot para a reunião**.
+   7. In about 40 s, **"GravAI Bot"** asks to join: admit it from the Teams lobby. The list shows **Gravando** with a timer.
+   8. Talk for a few minutes: a topic, a decision, a task with an owner and a deadline.
+   9. Click **Encerrar** in the list (or end the meeting for everyone in Teams). The bot leaves, and the row goes through *Na fila para transcrever → Transcrevendo → Escrevendo a ata → Montando o Word*. You can close the page in the meantime.
+   10. When it shows **Pronta**, click **Ver ata** or **Word**.
+
+   The recordings and transcriptions stay in `tmp/`. If something fails, the row shows why, and the back-end terminal has the details.
+
+#### Everything in Docker (servers)
+
+To run the back end in Docker too, set `WHISPER_HOST=whisper` in `.env` and start both containers. The pages are the same, at port 8000 of the server.
+
+```bash
+docker compose --env-file .env -f docker/docker-compose-whisper.yaml up -d --build
+docker logs -f --tail 20 gravai-app        # wait for "Application startup complete"
+```
+
+After changing `.env`: `docker compose -f docker/docker-compose-whisper.yaml restart app`. After changing the code: `up -d --build app`. More on testing a server the way the SGL calls it in **Testing on a server** below.
+
 ### Setup
 
 1. Copy the env file and define its variables accordingly:

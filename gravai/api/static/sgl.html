@@ -126,7 +126,6 @@
           <div class="bg-base-200 mt-4 flex flex-wrap items-center gap-2 rounded-md px-3 py-2 text-sm">
             <span class="text-base-content/70 mr-1">A IA vai preencher:</span>
             <div id="chips" class="flex flex-1 flex-wrap gap-2"></div>
-            <button type="button" id="ver-previa" class="link link-info text-sm">Ver prévia</button>
           </div>
 
           <!-- Preview of the chosen model -->
@@ -188,12 +187,12 @@
       <div class="border-base-300 flex flex-wrap items-center gap-4 border-t px-6 py-4">
         <p class="text-base-content/80 flex min-w-64 flex-1 gap-2 text-sm">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="text-info mt-0.5 h-4 w-4 flex-none"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/></svg>
-          <span>Depois de enviar, <b class="text-base-content">admita o GravAI no Teams</b>. Ele sai quando a reunião for encerrada para todos ou quando você clicar em Encerrar na lista.</span>
+          <span>Depois de convidar, <b class="text-base-content">admita o GravAI no Teams</b>. Ele sai quando a reunião for encerrada para todos ou quando você clicar em Encerrar na lista.</span>
         </p>
         <button type="button" class="btn" data-fechar>Cancelar</button>
         <button type="submit" id="enviar" class="btn btn-primary">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M15.75 3v1.5M4.5 8.25h15M5.25 6h13.5A1.5 1.5 0 0 1 20.25 7.5v10.5a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V7.5A1.5 1.5 0 0 1 5.25 6Zm4.5 7.5h.008v.008H9.75V13.5Zm4.5 0h.008v.008h-.008V13.5Z"/></svg>
-          Enviar bot para a reunião
+          Convidar bot para a reunião
         </button>
       </div>
     </form>
@@ -311,6 +310,7 @@
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const ICON = {
     olho: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>',
+    olhoFechado: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg>',
     baixar: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>',
     repetir: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>',
     check: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3 w-3"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-8 8a1 1 0 0 1-1.4 0l-4-4a1 1 0 1 1 1.4-1.4L8 12.6l7.3-7.3a1 1 0 0 1 1.4 0Z" clip-rule="evenodd"/></svg>',
@@ -416,6 +416,7 @@
         <div class="relative rounded-md border-2 p-0.5 transition ${ativo ? "border-info" : "hover:border-base-content/30 border-transparent"}">
           ${pagina}
           ${ativo ? `<span class="bg-info text-info-content absolute -right-2.5 -top-2.5 inline-flex h-6 w-6 items-center justify-center rounded-full shadow">${ICON.check}</span>` : ""}
+          ${ativo && o.secoes ? botaoOlho() : ""}
         </div>
         <div class="mt-2 text-sm leading-tight ${ativo ? "font-semibold" : "font-medium"}">${esc(o.nome)}</div>
         ${o.selo ? `<div class="text-info text-xs">${esc(o.selo)}</div>` : ""}
@@ -431,15 +432,16 @@
     $("chips").innerHTML = secoes.length
       ? secoes.map((s) => `<span class="bg-base-300 rounded px-2 py-1 text-xs">${esc(legivel(s.title))}${s.type === "table" ? " (tabela)" : ""}</span>`).join("")
       : '<span class="text-base-content/60 text-xs">—</span>';
-    $("ver-previa").classList.toggle("hidden", !secoes.length);
     if (previaAberta && secoes.length) mostrarPrevia(); else fecharPrevia();
   }
 
   $("galeria").addEventListener("click", (e) => {
+    if (e.target.closest("[data-previa]")) return alternarPrevia();
     const card = e.target.closest("[data-escolha]");
     if (card) escolher(card.dataset.escolha);
   });
   $("galeria").addEventListener("keydown", (e) => {
+    if (e.target.closest("[data-previa]")) return; // the eye is a real button: Enter/Space already click it
     const card = e.target.closest("[data-escolha]");
     if (card && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); escolher(card.dataset.escolha); }
   });
@@ -477,6 +479,20 @@
       }`).join("")}</div>`;
   }
   let previaAberta = false;
+  // Eye button on the chosen model's thumbnail: open eye shows the preview, crossed eye hides it.
+  function botaoOlho() {
+    const rotulo = previaAberta ? "Ocultar prévia" : "Ver prévia";
+    return `<button type="button" data-previa class="btn btn-circle btn-xs bg-base-100 border-base-300 text-base-content absolute -bottom-2.5 -right-2.5 h-7 w-7 shadow" title="${rotulo}" aria-label="${rotulo}" aria-pressed="${previaAberta}">${previaAberta ? ICON.olhoFechado : ICON.olho}</button>`;
+  }
+  function atualizarOlho() {
+    const b = $("galeria").querySelector("[data-previa]");
+    if (b) b.outerHTML = botaoOlho();
+  }
+  function alternarPrevia() {
+    if (previaAberta) { previaAberta = false; return fecharPrevia(); }
+    mostrarPrevia();
+    $("previa").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
   function mostrarPrevia() {
     const o = opcaoAtual();
     if (!o?.secoes) return fecharPrevia();
@@ -485,18 +501,13 @@
     $("previa-desc").textContent = o.desc || o.secoes.map((s) => s.title).join(" · ");
     $("previa-pagina").innerHTML = paginaGrande(o.secoes);
     $("previa").classList.remove("hidden");
-    $("ver-previa").textContent = "Ocultar prévia";
+    atualizarOlho();
   }
   function fecharPrevia() {
     $("previa").classList.add("hidden");
-    $("ver-previa").textContent = "Ver prévia";
+    atualizarOlho();
   }
   $("fechar-previa").addEventListener("click", () => { previaAberta = false; fecharPrevia(); });
-  $("ver-previa").addEventListener("click", () => {
-    if (previaAberta) { previaAberta = false; return fecharPrevia(); }
-    mostrarPrevia();
-    $("previa").scrollIntoView({ behavior: "smooth", block: "nearest" });
-  });
 
   // ------------------------------------------------------ "Personalizar modelo" view
   const TIPOS = [["paragraph", "Parágrafo"], ["bullets", "Lista"], ["topics", "Tópicos"], ["table", "Tabela"]];
