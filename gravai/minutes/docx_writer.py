@@ -40,6 +40,8 @@ def write_minutes(
 
     headings_done: set[str] = set()
     for section in template.sections:
+        if section.synthesis and not minutes.get(section.key):
+            continue  # an empty digest says nothing; every other empty section keeps its "no items" note
         _render_section(doc, section, minutes.get(section.key), headings_done)
 
     _footer(doc, template, header)

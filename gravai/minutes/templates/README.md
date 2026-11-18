@@ -15,7 +15,9 @@ Cada JSON descreve um modelo de ata: o que vai no cabeçalho, quais seções exi
 
 ## Seções
 
-Campos comuns: `key` (chave no JSON de saída do LLM), `title`, `type`, `required`, `allow_empty`, `instructions` (texto que vai para o prompt) e `group` (seções com o mesmo `group` são renderizadas sob esse título, como as bandas escuras abaixo de "RESUMO DA REUNIÃO").
+Campos comuns: `key` (chave no JSON de saída do LLM), `title`, `type`, `required`, `allow_empty`, `instructions` (texto que vai para o prompt), `group` (seções com o mesmo `group` são renderizadas sob esse título, como as bandas escuras abaixo de "RESUMO DA REUNIÃO") e `synthesis` (a seção é uma síntese da reunião inteira: quando a transcrição é dividida em partes, a consolidação refaz a seção em vez de juntar as listas das partes, e no `.docx` ela é omitida se vier vazia).
+
+Os três templates fixos (`dell`, `professores`, `daily`) abrem com `resumo_topicos` ("Resumo em tópicos"): `bullets`, `required: false`, `synthesis: true`, poucos itens curtos e sem texto corrido, para quem só quer bater o olho na ata. Veio de uma sugestão na avaliação das atas.
 
 | `type` | O que o LLM devolve | Campos extras |
 |---|---|---|

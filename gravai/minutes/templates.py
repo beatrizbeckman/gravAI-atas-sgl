@@ -38,6 +38,9 @@ class Section(BaseModel):
     style: Literal["band", "bar"] = "band"
     required: bool = True
     allow_empty: bool = False
+    # A digest of the whole meeting (e.g. the bullet summary at the top): when a long
+    # meeting is split, the merge rewrites it from scratch instead of joining the parts' lists.
+    synthesis: bool = False
     min_items: int | None = None
     id_prefix: str | None = None
     id_label: str = "ID"

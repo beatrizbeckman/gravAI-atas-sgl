@@ -14,6 +14,14 @@
   "participants": {"title": "Time", "label": "Quem estava", "source": "transcript", "inline": true},
   "sections": [
     {
+      "key": "resumo_topicos",
+      "title": "Resumo em tópicos",
+      "type": "bullets",
+      "required": false,
+      "synthesis": true,
+      "instructions": "De 2 a 4 itens bem curtos (até 12 palavras cada), sem texto corrido, com o essencial da daily para quem só vai bater o olho: o que avançou, o que está travado e o que ficou combinado."
+    },
+    {
       "key": "feito",
       "title": "Feito desde a última daily",
       "group": "Como foi",

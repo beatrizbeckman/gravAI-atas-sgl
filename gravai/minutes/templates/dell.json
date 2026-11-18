@@ -17,6 +17,14 @@
   "participants": {"title": "PARTICIPANTES", "source": "transcript"},
   "sections": [
     {
+      "key": "resumo_topicos",
+      "title": "RESUMO EM TÓPICOS",
+      "type": "bullets",
+      "required": false,
+      "synthesis": true,
+      "instructions": "De 3 a 6 itens curtos (até 15 palavras cada), sem texto corrido, com o essencial da reunião para quem só vai bater o olho: assuntos principais, decisões tomadas e próximos passos. Uma ideia por item, sem sub-itens e sem repetir os detalhes das outras seções."
+    },
+    {
       "key": "topicos",
       "title": "TÓPICOS DISCUTIDOS",
       "type": "topics",

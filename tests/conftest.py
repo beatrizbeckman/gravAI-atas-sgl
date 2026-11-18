@@ -16,6 +16,11 @@ MEETING_ID = "ES2004a"  # the shortest meeting of the dataset: 4 speakers, ~19 m
 # A plausible, complete answer for the "dell" template on ES2004a. Table rows
 # carry their ids the way the pipeline numbers them (D1.., A1..).
 FILLED_MINUTES = {
+    "resumo_topicos": [
+        "Kickoff do Controle Remoto Universal: preço de 25 euros, custo de 12,50",
+        "Controle único, fácil de usar, com menu na tela",
+        "Estilo do controle segue em definição",
+    ],
     "topicos": [
         {
             "titulo": "Abertura e apresentação da equipe",

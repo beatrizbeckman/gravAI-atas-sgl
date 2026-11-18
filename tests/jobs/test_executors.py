@@ -63,6 +63,7 @@ def test_from_transcript_writes_the_docx_under_save_dir(env, store, worker, meet
     assert done.docx_path == os.path.join(str(env), "minutes", job.id, done.result.filename)
     assert os.path.getsize(done.docx_path) > 0
     assert set(done.minutes) == {
+        "resumo_topicos",
         "topicos",
         "resumo",
         "finalizado",

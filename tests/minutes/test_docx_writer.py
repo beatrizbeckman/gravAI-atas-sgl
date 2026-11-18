@@ -25,8 +25,18 @@ def test_dell_document_follows_the_pdf_order(tmp_path, meeting, speakers, filled
     texts = paragraph_texts(doc)
 
     assert texts[:2] == ["ATA DE REUNIÃO", "Reunião com Dell Technologies"]
-    order = ["PARTICIPANTES", "TÓPICOS DISCUTIDOS", "RESUMO DA REUNIÃO", "DECISÕES", "PLANO DE AÇÃO", "PRÓXIMA REUNIÃO"]
+    order = [
+        "PARTICIPANTES",
+        "RESUMO EM TÓPICOS",
+        "TÓPICOS DISCUTIDOS",
+        "RESUMO DA REUNIÃO",
+        "DECISÕES",
+        "PLANO DE AÇÃO",
+        "PRÓXIMA REUNIÃO",
+    ]
     assert [t for t in texts if t in order] == order  # each heading once, in this order
+    summary = texts.index("RESUMO EM TÓPICOS")
+    assert texts[summary + 1 : summary + 4] == filled_minutes["resumo_topicos"]
 
     rows = table_texts(doc)
     assert ["Projeto", meeting["header"]["projeto"], "Ata nº", meeting["header"]["numero"]] in rows
@@ -68,6 +78,7 @@ def test_empty_sections_show_a_note_instead_of_disappearing(tmp_path):
     rows = table_texts(doc)
 
     assert texts.count(EMPTY_NOTE) == 4  # finalizado, em_andamento, duvidas, pendencias
+    assert "RESUMO EM TÓPICOS" not in texts  # an empty digest is left out instead of saying "no items"
     assert [r for r in rows if r[0] == EMPTY_NOTE]  # empty tables keep their header row plus the note
     assert ["Professor(es)", "Prof. Marcos", "Tipo", ""] in rows
     assert "ATA DE REUNIÃO COM PROFESSORES" in texts
