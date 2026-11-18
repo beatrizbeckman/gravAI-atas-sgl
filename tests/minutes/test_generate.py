@@ -169,6 +169,64 @@ def test_long_transcript_is_split_and_merged(tmp_path, meeting, filled_reply):
     assert "Consolide tudo" in users[-1] and f"Parte {expected_parts}" in users[-1]
 
 
+class MergeAwareLLM:
+    """Answers transcript parts, intermediate merges and the final merge with different replies."""
+
+    def __init__(self, partial: str, merged: str, final: str):
+        self.partial, self.merged, self.final = partial, merged, final
+        self.calls: list[str] = []
+
+    def __call__(self, system: str, user: str) -> str:
+        self.calls.append(user)
+        if "Gere o JSON final da ata." in user:
+            return self.final
+        if "Gere o JSON consolidado destas partes." in user:
+            return self.merged
+        return self.partial
+
+
+def _partial(size: int) -> str:
+    return json.dumps({"topicos": [{"titulo": "Parte", "resumo": "x" * size}], "resumo": "parte"})
+
+
+def test_merge_runs_in_steps_when_the_partials_do_not_fit(tmp_path, meeting, filled_reply):
+    # Partial JSONs of ~1,100 chars: all of them together exceed max_chars, so the merge needs several steps.
+    max_chars = 2500
+    parts = len(split_transcript(prepare_utterances(meeting["utterances"]), max_chars))
+    assert parts >= 5
+    fake = MergeAwareLLM(_partial(1000), _partial(1000), filled_reply)
+
+    result = generate_minutes(
+        "dell", meeting["header"], meeting["utterances"], str(tmp_path / "a.docx"), max_chars=max_chars, call_llm=fake
+    )
+
+    merges = fake.calls[parts:]
+    assert len(merges) >= 2 and result.llm_calls == parts + len(merges)
+    # Only the last step asks for the final minutes; the others cover just their parts.
+    assert all("Gere o JSON consolidado destas partes." in m for m in merges[:-1])
+    assert "Gere o JSON final da ata." in merges[-1] and "reunião inteira" in merges[-1]
+    # The running result stays first, labelled with the parts it covers, and the last part reaches the end.
+    assert all(m.split("Consolide tudo", 1)[1].count("Partes 1 a ") == 1 for m in merges[1:])
+    assert f"Parte {parts}\n" in merges[-1]
+    # Each request carries at most what fits in max_chars (two JSONs when even two do not fit).
+    for m in merges:
+        payload = m.split("Consolide tudo", 1)[1]
+        assert len(payload) < max_chars + 1000
+    assert result.minutes["topicos"] and result.minutes["topicos"][0]["titulo"] != "Parte"  # the final reply won
+
+
+def test_merge_is_a_single_call_when_everything_fits(tmp_path, meeting, filled_reply):
+    max_chars = 5000
+    parts = len(split_transcript(prepare_utterances(meeting["utterances"]), max_chars))
+    assert parts >= 2
+    fake = MergeAwareLLM(_partial(10), _partial(10), filled_reply)
+    result = generate_minutes(
+        "dell", meeting["header"], meeting["utterances"], str(tmp_path / "a.docx"), max_chars=max_chars, call_llm=fake
+    )
+    assert result.llm_calls == parts + 1
+    assert "Partes 1 a" not in fake.calls[-1] and "Gere o JSON final da ata." in fake.calls[-1]
+
+
 def test_custom_template_goes_through_the_same_path(tmp_path, short_meeting):
     custom = {"instructions": "Resuma a reunião em um parágrafo."}
     fake = RecordingLLM(json.dumps({"conteudo": "Reunião resumida."}))

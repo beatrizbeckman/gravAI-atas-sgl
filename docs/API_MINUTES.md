@@ -70,6 +70,7 @@ Lista os modelos de ata disponíveis e os campos de cabeçalho que cada um esper
       ],
       "participants": {"source": "transcript", "label": "Participantes"},
       "sections": [
+        {"key": "resumo_topicos", "title": "RESUMO EM TÓPICOS", "type": "bullets", "columns": []},
         {"key": "topicos",   "title": "TÓPICOS DISCUTIDOS", "type": "topics",    "columns": []},
         {"key": "resumo",    "title": "RESUMO DA REUNIÃO",  "type": "paragraph", "columns": []},
         {"key": "decisoes",  "title": "DECISÕES",           "type": "table", "columns": [{"key": "id", "label": "Nº"}, {"key": "decisao", "label": "Decisão"}, {"key": "aprovada_por", "label": "Aprovada por"}]},
@@ -402,7 +403,7 @@ Todas as respostas que envolvem job têm este formato:
 | `stage` | Só quando `running`: `recording`, `waiting` (gravada, esperando a vez de transcrever), `transcribing`, `normalizing`, `generating` (LLM), `rendering` (docx). `null` nos outros status. |
 | `template`, `header`, `project_id` | Ecos da requisição (`project_id` é `null` quando não foi enviado). |
 | `created_at`, `updated_at`, `finished_at` | ISO 8601 em UTC. `finished_at` é `null` até `done`/`failed`. |
-| `result` | `null` até `done`. `parts` é em quantas partes a transcrição foi dividida para o LLM (1 = coube de uma vez; partes de até `LLM_MAX_CHARS` caracteres, 12 mil por padrão). `llm_calls` conta os pedidos ao LLM (uma por parte, mais a junção quando há mais de uma, mais as novas tentativas). `llm_usage` soma os tokens desses pedidos, como o provedor informou: `prompt_tokens` (entrada), `completion_tokens` (saída, incluindo `reasoning_tokens`, o raciocínio dos modelos gpt-oss), `total_tokens`, `largest_call_tokens` (o maior pedido, entrada mais saída), `largest_prompt_tokens` (a maior entrada de um pedido, que precisa caber no limite de tokens por minuto do plano: 8.000 no gratuito da Groq) e `meeting_minutes` (duração da transcrição). `estimated: true` quando o provedor não informou o uso (provedor `fake`) e os números foram estimados por caracteres (cerca de 4 por token). Jobs anteriores à 1.5 não têm esses dois campos. |
+| `result` | `null` até `done`. `parts` é em quantas partes a transcrição foi dividida para o LLM (1 = coube de uma vez; partes de até `LLM_MAX_CHARS` caracteres, 12 mil por padrão). `llm_calls` conta os pedidos ao LLM (uma por parte, mais a junção quando há mais de uma, que pode ter várias etapas em reuniões longas, mais as novas tentativas). `llm_usage` soma os tokens desses pedidos, como o provedor informou: `prompt_tokens` (entrada), `completion_tokens` (saída, incluindo `reasoning_tokens`, o raciocínio dos modelos gpt-oss), `total_tokens`, `largest_call_tokens` (o maior pedido, entrada mais saída), `largest_prompt_tokens` (a maior entrada de um pedido, que precisa caber no limite de tokens por minuto do plano: 8.000 no gratuito da Groq) e `meeting_minutes` (duração da transcrição). `estimated: true` quando o provedor não informou o uso (provedor `fake`) e os números foram estimados por caracteres (cerca de 4 por token). Jobs anteriores à 1.5 não têm esses dois campos. |
 | `error` | `null` exceto em `failed`. Objeto `{"code": "...", "message": "..."}`. |
 
 Códigos de `error.code`:
@@ -441,6 +442,7 @@ Devolve o **conteúdo da ata em JSON**, no formato das seções do template, ant
   "header": {"..."},
   "participants": ["Ana", "Bruno", "Carla", "Diego"],
   "minutes": {
+    "resumo_topicos": ["Integração com a API de chamados aprovada", "..."],
     "topicos": [{"titulo": "Integração com a API de chamados", "resumo": "..."}],
     "resumo": "Reunião de acompanhamento do projeto...",
     "finalizado": ["..."],

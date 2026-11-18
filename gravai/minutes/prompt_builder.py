@@ -197,21 +197,54 @@ def build_user_prompt(
     return "\n\n".join(blocks)
 
 
-def build_merge_prompt(template: MinutesTemplate, partials: list[dict], header: dict, participants: list[str]) -> str:
-    """Second pass for long meetings: consolidates the JSONs of each part into one."""
-    parts = "\n\n".join(f"Parte {i}\n{json.dumps(p, ensure_ascii=False, indent=2)}" for i, p in enumerate(partials, 1))
+def merge_parts_text(partials: list[dict], labels: list[str] | None = None) -> str:
+    """The partial JSONs as they go into the merge prompt, each under its label ("Parte 1", "Partes 1 a 3"...)."""
+    labels = labels or [f"Parte {i}" for i in range(1, len(partials) + 1)]
+    return "\n\n".join(
+        f"{label}\n{json.dumps(p, ensure_ascii=False, indent=2)}" for label, p in zip(labels, partials, strict=True)
+    )
+
+
+def build_merge_prompt(
+    template: MinutesTemplate,
+    partials: list[dict],
+    header: dict,
+    participants: list[str],
+    labels: list[str] | None = None,
+    final: bool = True,
+) -> str:
+    """
+    Second pass for long meetings: consolidates the JSONs of consecutive parts into one.
+
+    When the JSONs do not fit in one request, the merge runs in steps (see
+    generate._merge): labels then say which parts each JSON covers, and every
+    step but the last has final=False, so the text describes only those parts.
+    """
+    scope = (
+        'reescreva o texto corrido para cobrir a reunião inteira, sem mencionar "partes".'
+        if final
+        else 'reescreva o texto corrido para cobrir só estas partes, sem mencionar "partes"; '
+        "o resultado será juntado depois com o restante da reunião."
+    )
+    # Digest sections (synthesis) are rewritten, otherwise the merge just joins every part's list.
+    for s in (s for s in template.sections if s.synthesis):
+        scope += (
+            f'\n- "{s.key}" é uma síntese: refaça-a para cobrir {"a reunião inteira" if final else "só estas partes"}, '
+            "dentro do limite de itens das instruções, em vez de juntar as listas das partes."
+        )
+    closing = "Gere o JSON final da ata." if final else "Gere o JSON consolidado destas partes."
     return f"""{_header_block(template, header, participants)}
 
-Abaixo estão {len(partials)} JSONs gerados a partir de partes consecutivas da mesma reunião. Consolide tudo em um único JSON final com as mesmas chaves:
+Abaixo estão {len(partials)} JSONs gerados a partir de partes consecutivas da mesma reunião. Consolide tudo em um único JSON com as mesmas chaves:
 - mantenha a ordem cronológica dos itens;
 - junte itens repetidos entre as partes em um só;
 - quando uma parte posterior atualiza algo de uma parte anterior (status, prazo, responsável), vale a versão mais recente;
 - uma ideia de uma parte que foi aceita em outra vira decisão; uma decisão desfeita ou mudada depois fica só na versão final;
-- reescreva o texto corrido para cobrir a reunião inteira, sem mencionar "partes".
+- {scope}
 
-{parts}
+{merge_parts_text(partials, labels)}
 
-Gere o JSON final da ata."""
+{closing}"""
 
 
 # ---------------------------------------------------------------- response

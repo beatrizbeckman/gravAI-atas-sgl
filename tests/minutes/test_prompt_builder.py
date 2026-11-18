@@ -79,6 +79,33 @@ def test_merge_prompt_lists_every_part(dell, speakers):
     template, header, _ = dell
     prompt = build_merge_prompt(template, [{"resumo": "a"}, {"resumo": "b"}], header, speakers)
     assert "2 JSONs" in prompt and "Parte 1" in prompt and "Parte 2" in prompt
+    assert "reunião inteira" in prompt and prompt.endswith("Gere o JSON final da ata.")
+
+
+def test_intermediate_merge_prompt_covers_only_its_parts(dell, speakers):
+    template, header, _ = dell
+    prompt = build_merge_prompt(
+        template, [{"resumo": "a"}, {"resumo": "b"}], header, speakers, labels=["Partes 1 a 3", "Parte 4"], final=False
+    )
+    assert "Partes 1 a 3\n" in prompt and "Parte 4\n" in prompt
+    assert "só estas partes" in prompt and "juntado depois" in prompt
+    assert "reunião inteira" not in prompt and prompt.endswith("Gere o JSON consolidado destas partes.")
+    assert '"resumo_topicos" é uma síntese: refaça-a para cobrir só estas partes' in prompt
+
+
+def test_merge_prompt_rewrites_the_bullet_summary_instead_of_joining_the_lists(dell, speakers):
+    template, header, _ = dell
+    prompt = build_merge_prompt(template, [{"resumo_topicos": ["a"]}, {"resumo_topicos": ["b"]}], header, speakers)
+    assert '"resumo_topicos" é uma síntese: refaça-a para cobrir a reunião inteira' in prompt
+    assert "em vez de juntar as listas das partes" in prompt
+    assert '"topicos" é uma síntese' not in prompt  # the other lists keep joining normally
+
+
+def test_bullet_summary_is_optional_and_never_blocks_the_minutes():
+    template = load_template("dell")
+    reply = {"topicos": [{"titulo": "x", "resumo": "y"}], "resumo": "z"}  # the model left the summary out
+    assert parse_response(template, json.dumps(reply))["resumo_topicos"] == []
+    assert "sem texto corrido" in build_system_prompt(template)
 
 
 def test_parse_response_fills_missing_sections_numbers_rows_and_strips_fences():

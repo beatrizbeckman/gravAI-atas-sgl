@@ -198,14 +198,16 @@ Os cinco tipos de seção e o que o LLM devolve para cada um:
 | `type` | O LLM devolve | Exemplo no template Dell |
 |---|---|---|
 | `paragraph` | um texto | Resumo da reunião |
-| `bullets` | lista de textos curtos | Finalizado, Em andamento, Dúvidas |
+| `bullets` | lista de textos curtos | Resumo em tópicos, Finalizado, Em andamento, Dúvidas |
 | `topics` | lista de `{titulo, resumo}` | Tópicos discutidos |
 | `table` | lista de linhas com as `columns` | Decisões, Plano de ação |
 | `record` | um único objeto com `fields` | Próxima reunião |
 
-Flags que importam: `required` e `allow_empty`. Uma seção `required` com `allow_empty: true` **sempre aparece na ata, mesmo vazia**, e o modelo é instruído a não inventar conteúdo para preenchê-la. `min_items` força um mínimo. `id_prefix` faz o código, e não o LLM, numerar as linhas: D1, D2, A1, A2.
+Flags que importam: `required` e `allow_empty`. Uma seção `required` com `allow_empty: true` **sempre aparece na ata, mesmo vazia**, e o modelo é instruído a não inventar conteúdo para preenchê-la. `min_items` força um mínimo. `id_prefix` faz o código, e não o LLM, numerar as linhas: D1, D2, A1, A2. `synthesis` marca uma seção que resume a reunião inteira: na consolidação de reuniões longas ela é refeita, e não concatenada parte a parte, e no `.docx` some quando vem vazia.
 
 Os quatro templates que existem:
+
+Os três templates fixos abrem com **Resumo em tópicos** (`resumo_topicos`): de 3 a 6 itens curtos (2 a 4 na daily), sem texto corrido, para bater o olho. É opcional (`required: false`), então nunca reprova a resposta do modelo.
 
 - **`dell.json`**: ata corporativa. Tópicos, resumo com cinco sub-blocos (finalizado, em andamento, ideias, dúvidas, pendências), decisões, plano de ação, próxima reunião. Cabeçalho: projeto, nº, data, horário.
 - **`professores.json`**: mesma estrutura, com "feedback dos professores" no lugar de ideias e tom acadêmico. Cabeçalho ganha `professores` e `tipo` (Orientação ou Apresentação).
@@ -237,7 +239,7 @@ Este arquivo faz a tradução nos dois sentidos: template para texto de prompt, 
 
 **Prompt de usuário** (`build_user_prompt`), um por requisição, com os dados do cabeçalho, a lista de participantes e a transcrição formatada como `[mm:ss] Nome: texto`. Quando o cabeçalho tem a data, entram também o **dia da semana** da reunião e um **calendário dos 14 dias seguintes** ("quinta-feira 29/10; sexta-feira 30/10; ..."): sem isso, o modelo errava o dia da semana e todos os prazos saíam um dia depois. Os tempos ajudam o modelo a ordenar e calcular, mas ele é instruído a não colocá-los na ata.
 
-**Transcrição longa.** `split_transcript` divide a lista de falas em partes de até `LLM_MAX_CHARS` caracteres (12 mil por padrão, uns 3,5 mil tokens em português, para cada pedido caber no limite de 8 mil tokens por minuto do plano gratuito da Groq; num plano pago pode subir para 24 mil). Quando há mais de uma parte, cada prompt diz "esta é a parte i de n, preencha só com o que aparece aqui", e depois um **prompt de consolidação** (`build_merge_prompt`) recebe os JSONs parciais e pede um JSON final: ordem cronológica, juntar repetidos, versão mais recente vence quando um status muda. Essa é a estratégia "sumariza e depois gera" do desenho do co-orientador, já implementada numa forma simples.
+**Transcrição longa.** `split_transcript` divide a lista de falas em partes de até `LLM_MAX_CHARS` caracteres (12 mil por padrão, uns 3,5 mil tokens em português, para cada pedido caber no limite de 8 mil tokens por minuto do plano gratuito da Groq; num plano pago pode subir para 24 mil). Quando há mais de uma parte, cada prompt diz "esta é a parte i de n, preencha só com o que aparece aqui", e depois um **prompt de consolidação** (`build_merge_prompt`) recebe os JSONs parciais e pede um JSON final: ordem cronológica, juntar repetidos, versão mais recente vence quando um status muda. Quando os JSONs parciais juntos passam de `LLM_MAX_CHARS`, a consolidação é feita **em etapas** (`generate._merge`): cada pedido leva só os JSONs consecutivos que cabem nesse limite (no mínimo dois), e o resultado volta para a frente da fila como "Partes 1 a k" até sobrar um só; só a última etapa pede a ata final. Sem isso, a junção das 5 partes da ES2004d (43 min) pedia cerca de 9 mil tokens e estourava o limite de 8 mil por minuto do plano gratuito. Essa é a estratégia "sumariza e depois gera" do desenho do co-orientador, já implementada numa forma simples.
 
 **Leitura da resposta** (`parse_response`). Modelos erram o formato. Então o parser é tolerante: extrai o JSON mesmo que venha dentro de um bloco de código markdown ou com um bloco `<think>`, aceita string onde era lista e lista onde era string, aplica o `default` das colunas, descarta linhas vazias de tabela e numera as linhas com o `id_prefix`. O que ele não perdoa: JSON inválido ou seção obrigatória vazia. Nesses casos lança `ResponseValidationError`, que o orquestrador usa para pedir de novo.
 
@@ -263,7 +265,7 @@ Um arquivo pequeno de propósito. A função `generate(system, user) -> str` é 
 4. **Define participantes**: os que vieram na requisição ou os falantes distintos da transcrição.
 5. **Divide em partes** e, para cada uma, chama `_ask`.
 6. **`_ask` é o laço de tentativas.** Chama o LLM, tenta `parse_response`. Se falhar, manda o mesmo prompt de novo com "a resposta anterior foi rejeitada porque X, responda novamente com JSON válido". Isso importa porque com `temperature 0` um modelo repetiria o mesmo erro se o prompt fosse idêntico. Até duas tentativas extras. Depois disso, `MinutesError("llm_invalid_response")`.
-7. **Consolida** quando houve mais de uma parte.
+7. **Consolida** quando houve mais de uma parte (em etapas, se os JSONs parciais não cabem num pedido).
 8. **Corrige o que o modelo ainda erra, no código:** uma célula de tabela que é só parte do nome de um participante ("Clara") vira o nome completo ("Ana Clara Lima"), se não houver ambiguidade (`full_participant_names`); e uma linha de "decisões" que só repete uma ação do plano ou a próxima reunião sai, com a numeração refeita (`drop_repeated_decisions`).
 9. **Renderiza o docx** e devolve métricas: quantas falas, quantas partes, quantas chamadas ao LLM, quantas repetições, segundos gastos, nome do modelo.
 

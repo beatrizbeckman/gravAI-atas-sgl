@@ -34,6 +34,7 @@ from gravai.minutes.prompt_builder import (
     build_merge_prompt,
     build_system_prompt,
     build_user_prompt,
+    merge_parts_text,
     parse_response,
     split_transcript,
 )
@@ -329,7 +330,7 @@ def generate_minutes(
         user = build_user_prompt(template, part, header, participants, part=(i, len(parts)) if len(parts) > 1 else None)
         partials.append(_ask(template, system, user, calls, retries))
     if len(partials) > 1:
-        minutes = _ask(template, system, build_merge_prompt(template, partials, header, participants), calls, retries)
+        minutes = _merge(template, system, partials, header, participants, max_chars, calls, retries)
     else:
         minutes = partials[0]
     minutes = drop_repeated_decisions(full_participant_names(template, minutes, participants))
@@ -374,6 +375,44 @@ class _CallCounter:
         except (requests.RequestException, RuntimeError) as exc:
             # llm.py turns connection/404/empty replies into RuntimeError; timeouts arrive as requests exceptions.
             raise MinutesError("llm_unreachable", str(exc)) from exc
+
+
+def _merge(
+    template: MinutesTemplate,
+    system: str,
+    partials: list[dict],
+    header: dict,
+    participants: list[str],
+    max_chars: int,
+    call: _CallCounter,
+    retries: int,
+) -> dict:
+    """
+    Merges the partial minutes into one, in steps when they do not fit in one request.
+
+    Sending every partial JSON at once can exceed the provider's tokens-per-minute
+    limit (5 parts of a 43 min meeting needed ~9,300 tokens on the Groq free plan,
+    which allows 8,000). Each step takes as many consecutive JSONs as fit in
+    max_chars (the same budget as a transcript part; at least two), merges them
+    and puts the result back at the front, so the chronological order and the
+    "later part wins" rule still hold. With everything fitting, it is one call,
+    as before.
+    """
+    items = list(partials)
+    labels = [f"Parte {i}" for i in range(1, len(partials) + 1)]
+    covered = [(i, i) for i in range(1, len(partials) + 1)]
+    while len(items) > 1:
+        take = 2
+        while take < len(items) and len(merge_parts_text(items[: take + 1], labels[: take + 1])) <= max_chars:
+            take += 1
+        final = take == len(items)
+        prompt = build_merge_prompt(template, items[:take], header, participants, labels[:take], final=final)
+        merged = _ask(template, system, prompt, call, retries)
+        first, last = covered[0][0], covered[take - 1][1]
+        items = [merged, *items[take:]]
+        covered = [(first, last), *covered[take:]]
+        labels = [f"Partes {first} a {last}", *labels[take:]]
+    return items[0]
 
 
 def _ask(template: MinutesTemplate, system: str, user: str, call: _CallCounter, retries: int) -> dict:
