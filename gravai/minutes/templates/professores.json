@@ -11,9 +11,7 @@
     {"key": "projeto", "label": "Projeto", "source": "request", "required": true},
     {"key": "numero", "label": "Ata nº", "source": "request", "format": "000"},
     {"key": "data", "label": "Data", "source": "request", "format": "DD/MM/AAAA", "required": true},
-    {"key": "horario", "label": "Horário", "source": "request", "format": "HH:MM – HH:MM"},
-    {"key": "professores", "label": "Professor(es)", "source": "request", "required": true},
-    {"key": "tipo", "label": "Tipo", "source": "request", "values": ["Orientação", "Apresentação"], "default": "Orientação"}
+    {"key": "horario", "label": "Horário", "source": "request", "format": "HH:MM – HH:MM"}
   ],
   "participants": {"title": "PARTICIPANTES", "source": "transcript"},
   "sections": [
