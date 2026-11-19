@@ -65,8 +65,7 @@ def test_templates_lists_every_template_with_its_header_fields(client):
     assert dell["participants"] == {"source": "transcript", "label": "Participantes"}
     assert {s["key"] for s in dell["sections"]} >= {"topicos", "decisoes", "plano_acao"}
     prof = next(t for t in data if t["id"] == "professores")
-    tipo = next(h for h in prof["header"] if h["key"] == "tipo")
-    assert tipo["values"] == ["Orientação", "Apresentação"] and tipo["default"] == "Orientação"
+    assert not {"professores", "tipo"} & {h["key"] for h in prof["header"]}
 
 
 # ------------------------------------------------------- from-transcript

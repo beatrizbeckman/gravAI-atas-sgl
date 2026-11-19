@@ -87,8 +87,8 @@ def test_header_defaults_and_unknown_keys(tmp_path, short_meeting):
     result = generate_minutes(
         "professores", header, short_meeting["utterances"], str(tmp_path / "p.docx"), call_llm=llm.fake_generate
     )
-    assert result.header["tipo"] == "Orientação"  # template default
     assert "lixo" not in result.header
+    assert "professores" not in result.header and "tipo" not in result.header  # no longer header fields
 
 
 def test_missing_required_header_is_a_value_error(tmp_path, short_meeting):

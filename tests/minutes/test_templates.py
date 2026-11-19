@@ -35,7 +35,7 @@ def test_dell_and_professores_differ_only_where_the_pdfs_do():
     assert [s.key for s in dell.sections if s.key != "ideias_propostas"] == [
         s.key for s in prof.sections if s.key != "feedback_professores"
     ]
-    assert {h.key for h in prof.header} - {h.key for h in dell.header} == {"professores", "tipo"}
+    assert [h.key for h in prof.header] == [h.key for h in dell.header]
 
 
 def test_unknown_template_lists_the_available_ones():

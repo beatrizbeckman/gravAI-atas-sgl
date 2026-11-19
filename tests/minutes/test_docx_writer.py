@@ -80,7 +80,7 @@ def test_empty_sections_show_a_note_instead_of_disappearing(tmp_path):
     assert texts.count(EMPTY_NOTE) == 4  # finalizado, em_andamento, duvidas, pendencias
     assert "RESUMO EM TÓPICOS" not in texts  # an empty digest is left out instead of saying "no items"
     assert [r for r in rows if r[0] == EMPTY_NOTE]  # empty tables keep their header row plus the note
-    assert ["Professor(es)", "Prof. Marcos", "Tipo", ""] in rows
+    assert not [r for r in rows if "Professor(es)" in r or "Tipo" in r]
     assert "ATA DE REUNIÃO COM PROFESSORES" in texts
 
 
