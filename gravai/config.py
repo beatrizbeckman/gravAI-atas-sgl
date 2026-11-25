@@ -54,6 +54,18 @@ class Settings(BaseSettings):
         description="Beam search width; 5 makes fewer word mistakes than greedy decoding (1) and is slower on CPU",
         alias="WHISPER_BEAM_SIZE",
     )
+    TRACK_PAD_BEFORE_S: float = Field(
+        0.7,
+        ge=0,
+        description="Seconds of audio kept before each speaking window when a participant's track is cut; Teams lights the speaking outline late and the first word was lost",
+        alias="TRACK_PAD_BEFORE_S",
+    )
+    TRACK_PAD_AFTER_S: float = Field(
+        0.5,
+        ge=0,
+        description="Seconds of audio kept after each speaking window when a participant's track is cut",
+        alias="TRACK_PAD_AFTER_S",
+    )
 
     RECORDING_DEBUG: bool = Field(
         False,

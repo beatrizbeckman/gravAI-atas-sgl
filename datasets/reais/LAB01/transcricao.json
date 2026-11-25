@@ -1,0 +1,19 @@
+{
+ "template": "professores",
+ "header": {
+  "projeto": "Projeto de teste do SGL",
+  "numero": "001",
+  "data": "25/11/2026",
+  "horario": "02:39 – 02:41"
+ },
+ "utterances": [
+  {"speaker": "Rafael", "start": 1.0, "end": 3.0, "text": "Como está o andamento do TCC?"},
+  {"speaker": "Beatriz", "start": 4.0, "end": 16.0, "text": "A geração automática de ata e a integração com o SGL. Agora eu estou implementando a parte de identificar a voz de pessoal de locutores, Mas ainda tenho dúvidas sobre limiar de singularidade."},
+  {"speaker": "Rafael", "start": 17.0, "end": 26.0, "text": "Eu sugiro que você tente testar diferentes valores utilizando a base AME. E também precisamos finalizar o termo de consentimento, né?"},
+  {"speaker": "Beatriz", "start": 27.0, "end": 36.0, "text": "O termo de consentimento ainda está pendente. Eu vou preparar os documentos e finalizar os testes até o dia 30 de novembro."},
+  {"speaker": "Rafael", "start": 37.0, "end": 47.0, "text": "Certo, então fica decidido que vamos utilizar a base AME para avaliação inicial ou realizar o tempo de consentimento até o dia 2 de dezembro."},
+  {"speaker": "Beatriz", "start": 48.0, "end": 49.5, "text": "...profissão."},
+  {"speaker": "Rafael", "start": 50.0, "end": 62.0, "text": "A última reunião vai ser no dia 4 de dezembro de para a gente ver os resultados dos testes e revisar o tempo. Tá certo?"},
+  {"speaker": "Beatriz", "start": 63.0, "end": 66.0, "text": "Pronto, confirmado. Obrigada."}
+ ]
+}

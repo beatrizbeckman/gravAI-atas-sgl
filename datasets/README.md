@@ -31,6 +31,18 @@ assuntos que vão e voltam, mas com roteiro de projeto dado aos participantes.
 Os testes automatizados usam a reunião ES2004a (a mais curta) como dado de entrada;
 não existem mais transcrições inventadas no repositório.
 
+## Reuniões reais do laboratório (`reais/`)
+
+Ficam fora de `reunioes/` para não entrar nas rodadas padrão do
+`experiments/run_experiments.py`, que comparam modelos só no AMI.
+
+| Pasta | Data | Pessoas | Duração | Observação |
+|---|---|---|---|---|
+| `reais/LAB01` | 25/11/2026 | 2 | 2 min | roteiro lido, modelo `professores`, texto do Whisper com os erros reais; `gabarito.md` traz o roteiro e o que a ata deve ter |
+
+Para gerar a ata de uma delas:
+`uv run python -m gravai.minutes.generate datasets/reais/LAB01/transcricao.json -o tmp/ata_lab01.docx --json`.
+
 ## Formato de cada pasta
 
 - `transcricao.json`: `{template, header, utterances, meta}`. É exatamente o que

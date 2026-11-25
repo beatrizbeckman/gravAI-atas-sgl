@@ -5,6 +5,7 @@ import time
 from collections import defaultdict
 from datetime import datetime
 
+from gravai.config import Settings
 from gravai.models import ActionType, ParticipantData, Session, SessionDataDTO, Track, TrackInfoDTO
 
 
@@ -136,7 +137,25 @@ def slice_audio_tracks(slice_audio_tracks: str):
     return session
 
 
+def widen_segments(segments: list[tuple[float, float]], before_s: float, after_s: float) -> list[tuple[float, float]]:
+    """Open each speaking window a bit earlier and close it a bit later.
+
+    Teams lights the speaking outline only after the voice is already on, so a window that
+    starts exactly at the outline cuts the first word of the turn ("Finalizei a geração..."
+    became "A geração..." in the first real meeting). Windows that touch after widening are
+    merged, and nothing starts before 0."""
+    widened = sorted((max(0.0, start - before_s), end + after_s) for start, end in segments)
+    merged: list[tuple[float, float]] = []
+    for start, end in widened:
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    return merged
+
+
 def create_session(slice_audio_tracks, session_data, all_participants_data, participants_tracks_locations):
+    settings = Settings()
     participants_tracks = {}
     # Create an audio track that is the same size as the main track original and put zero audio outside of the desired track from the participant (so only the participant audio is present in the track, but it is aligned with the main track timeline)
     for participant_id, track_changes in participants_tracks_locations.items():
@@ -151,6 +170,8 @@ def create_session(slice_audio_tracks, session_data, all_participants_data, part
                 end_time = change[1].total_seconds()
                 segments.append((start_time, end_time))
                 start_time = None
+
+        segments = widen_segments(segments, settings.TRACK_PAD_BEFORE_S, settings.TRACK_PAD_AFTER_S)
 
         if segments:
             active_expr = " + ".join(f"between(t,{start},{end})" for start, end in segments)
