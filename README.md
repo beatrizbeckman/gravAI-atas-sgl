@@ -101,7 +101,7 @@ Everything in Part A, plus Whisper (speech to text) and Chromium (the bot that j
    docker compose --env-file .env -f docker/docker-compose-whisper.yaml up -d --build whisper
    docker logs --tail 5 whisper          # wait for the server to be listening on 8080
    ```
-   On a notebook, set `WHISPER_MODEL=large-v3-turbo` in `.env` before the build (about half the RAM of `large-v3`), and give Docker at least 5 GB of RAM (on Windows, `memory=5GB` in `%UserProfile%\.wslconfig`, then `wsl --shutdown`).
+   The server uses `WHISPER_THREADS` CPU threads (default 12; lower it on a machine with fewer cores). On a notebook, set `WHISPER_MODEL=large-v3-turbo` in `.env` before the build (about half the RAM of `large-v3`), and give Docker at least 5 GB of RAM (on Windows, `memory=5GB` in `%UserProfile%\.wslconfig`, then `wsl --shutdown`).
 
    Without Docker, build [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and run `whisper-server` on port 8080, as in **Setup** step 2 below.
 
@@ -118,7 +118,7 @@ Everything in Part A, plus Whisper (speech to text) and Chromium (the bot that j
    6. Click **Convidar bot para a reunião**.
    7. In about 40 s, **"GravAI Bot"** asks to join: admit it from the Teams lobby. The list shows **Gravando** with a timer.
    8. Talk for a few minutes: a topic, a decision, a task with an owner and a deadline.
-   9. Click **Encerrar** in the list (or end the meeting for everyone in Teams). The bot leaves, and the row goes through *Na fila para transcrever → Transcrevendo → Escrevendo a ata → Montando o Word*. You can close the page in the meantime.
+   9. Click **Encerrar** in the list (or end the meeting for everyone in Teams; if everyone just leaves the call, the bot leaves by itself after 2 min alone). The bot leaves, and the row goes through *Na fila para transcrever → Transcrevendo → Escrevendo a ata → Montando o Word*. You can close the page in the meantime.
    10. When it shows **Pronta**, click **Ver ata** or **Word**.
 
    The recordings and transcriptions stay in `tmp/`. If something fails, the row shows why, and the back-end terminal has the details.
@@ -227,7 +227,7 @@ uv run python -m gravai.minutes.docx_writer datasets/reunioes/ES2004a/transcrica
 uv run python experiments/run_experiments.py --max-chars 12000
 ```
 
-The LLM is configured in `.env` (`LLM_PROVIDER` and the `LLM_*` / `OLLAMA_*` variables). `openai_compatible` calls an online API in the OpenAI format (Groq, DeepInfra, OpenAI...), `ollama` a local server, and `fake` fills every section with placeholder text so the pipeline can be exercised without any LLM. Templates live in `gravai/minutes/templates/`, see the README there. The HTTP contract for generating minutes is in `docs/API_MINUTES.md`. Generation runs as background jobs (`gravai/jobs/`: SQLite store, one worker thread, one executor per job kind) so HTTP clients only poll:
+The LLM is configured in `.env` (`LLM_PROVIDER` and the `LLM_*` / `OLLAMA_*` variables). `openai_compatible` calls an online API in the OpenAI format (Groq, DeepInfra, OpenAI...), `ollama` a local server, and `fake` fills every section with placeholder text so the pipeline can be exercised without any LLM. Templates live in `gravai/minutes/templates/`, see the README there. The three fixed templates (`dell`, `professores`, `daily`) open with an optional bullet summary (`resumo_topicos`), rewritten when the parts of a long meeting are merged and left out of the `.docx` when empty. The HTTP contract for generating minutes is in `docs/API_MINUTES.md`. Generation runs as background jobs (`gravai/jobs/`: SQLite store, one worker thread, one executor per job kind) so HTTP clients only poll:
 
 ```bash
 # API with the fake LLM (no LLM needed)
@@ -239,7 +239,7 @@ curl http://localhost:8000/minutes/jobs/<id>            # poll until status is d
 curl -OJ http://localhost:8000/minutes/jobs/<id>/download
 ```
 
-**Tokens per meeting.** Every minutes generation (API jobs and the `generate` CLI) prints an `LLM usage` block to the terminal (`docker logs gravai-app` in Docker) and appends one row to `<SAVE_DIR>/llm_usage.csv` (`tmp/llm_usage.csv` in Docker): meeting length, characters, parts, LLM calls, input/output/reasoning tokens, total, tokens per hour of meeting and the largest input of a single request. That input is what has to fit a provider plan's tokens-per-minute limit (8,000 on the Groq free tier for `openai/gpt-oss-120b`). `LLM_MAX_CHARS` in `.env` (default 12000) sets the transcript characters per request; 12000 fits the free tier, 24000 needs a paid plan. A request bigger than the plan's limit fails at once instead of being retried. The same numbers are in `result.llm_usage` of each job. Rows marked `tokens_estimated=True` came from a provider that reports no usage (`fake`) and are estimates.
+**Tokens per meeting.** Every minutes generation (API jobs and the `generate` CLI) prints an `LLM usage` block to the terminal (`docker logs gravai-app` in Docker) and appends one row to `<SAVE_DIR>/llm_usage.csv` (`tmp/llm_usage.csv` in Docker): meeting length, characters, parts, LLM calls, input/output/reasoning tokens, total, tokens per hour of meeting and the largest input of a single request. That input is what has to fit a provider plan's tokens-per-minute limit (8,000 on the Groq free tier for `openai/gpt-oss-120b`). `LLM_MAX_CHARS` in `.env` (default 12000) sets the transcript characters per request; 12000 fits the free tier, 24000 needs a paid plan. When the partial minutes of a long meeting do not fit in one request either, they are merged in steps. A request bigger than the plan's limit fails at once instead of being retried. The same numbers are in `result.llm_usage` of each job. Rows marked `tokens_estimated=True` came from a provider that reports no usage (`fake`) and are estimates.
 
 A demonstration page that drives the same endpoints is served at [http://localhost:8000/demo](http://localhost:8000/demo): pick a template, fill the header, paste a transcript (or point to a recording, or give a Teams link), follow the job and download the `.docx`.
 
@@ -322,7 +322,7 @@ acompanhar $JOB                                   # transcribing -> generating -
 curl -sS -H "X-API-Key: $KEY" $API/minutes/jobs/$JOB | python3 -m json.tool | grep -A4 '"header"'   # date and time filled
 ```
 
-Ending the meeting for everyone in Teams also makes the bot leave. If everyone only leaves the call, it stays until `MAX_RECORDING_SECONDS`.
+Ending the meeting for everyone in Teams also makes the bot leave. If everyone only leaves the call, the bot leaves after `LEAVE_WHEN_ALONE_SECONDS` alone (default 120); `MAX_RECORDING_SECONDS` is the last resort.
 
 **7. Minutes of a project** (what the SGL tab lists):
 

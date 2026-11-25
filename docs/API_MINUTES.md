@@ -2,7 +2,7 @@
 
 Contrato HTTP para gerar atas de reunião (`.docx`) a partir de transcrições ou gravações feitas pelo GravAI. Este documento é a referência para qualquer cliente da API: a página de demonstração do próprio GravAI, o SGL ou um script.
 
-Versão do contrato: **1.5** (09/11/2026). Mudanças incompatíveis sobem a versão principal (2.0); acréscimos que não quebram clientes antigos sobem a secundária. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
+Versão do contrato: **1.6** (19/11/2026). Mudanças incompatíveis sobem a versão principal (2.0); acréscimos que não quebram clientes antigos sobem a secundária. Implementado em `gravai/api/minutes.py`; o Swagger em `/docs` mostra os schemas exatos.
 
 | Versão | O que mudou |
 |---|---|
@@ -12,6 +12,7 @@ Versão do contrato: **1.5** (09/11/2026). Mudanças incompatíveis sobem a vers
 | 1.3 (27/10/2026) | Modelo de ata a partir de uma descrição em texto (`POST /minutes/templates/draft`, 3.7). As chamadas ao LLM passam a esperar e tentar de novo quando o provedor limita o uso (429), em vez de falhar o job na hora (`llm_unreachable` só depois das novas tentativas). Nada que funcionava na 1.2 mudou. |
 | 1.4 (05/11/2026) | O bot sai sozinho quando fica só na chamada (`LEAVE_WHEN_ALONE_SECONDS`, 3.3). Várias reuniões gravadas ao mesmo tempo, até `MAX_CONCURRENT_RECORDINGS` (3.3, 7); etapa nova `waiting` (gravada, esperando a vez de transcrever; 4.1); jobs já gravados sobrevivem a um reinício da API (8). O `409` de `record-and-generate` passa a significar "todos os gravadores ocupados". |
 | 1.5 (09/11/2026) | `result` traz `llm_calls` e `llm_usage`: os tokens que a ata gastou no LLM (4.1). Cada ata também aparece no log da API e numa linha de `<SAVE_DIR>/llm_usage.csv`. Tamanho de cada parte da transcrição configurável (`LLM_MAX_CHARS`, padrão 12 mil caracteres, antes 24 mil fixos), para caber no plano gratuito da Groq; um pedido maior que o limite por minuto do plano falha na hora com `llm_unreachable`, em vez de esperar as novas tentativas. |
+| 1.6 (19/11/2026) | Os três templates fixos abrem com a seção opcional `resumo_topicos` (lista curta de tópicos; 2, 4.4): na junção das partes ela é refeita, não concatenada, e no `.docx` não aparece quando vem vazia. O template `professores` deixou de ter os campos de cabeçalho `professores` e `tipo` (2); se vierem, são ignorados. Quando as atas parciais não cabem num pedido, a junção é feita em etapas (`llm_calls` conta cada etapa, 4.1). |
 
 ---
 
@@ -89,7 +90,7 @@ Campos de cabeçalho por template (fonte: `gravai/minutes/templates/*.json`):
 | Template | Campos (`*` = obrigatório) |
 |---|---|
 | `dell` | `projeto*`, `numero`, `data*`, `horario` |
-| `professores` | `projeto*`, `numero`, `data*`, `horario`, `professores*`, `tipo` (`Orientação` \| `Apresentação`, padrão `Orientação`) |
+| `professores` | `projeto*`, `numero`, `data*`, `horario` |
 | `daily` | `projeto*`, `data*` (formato `DD/MM/AAAA · HH:MM – HH:MM`) |
 | `custom` | `projeto*`, `data*`, `horario` |
 
@@ -457,7 +458,7 @@ Devolve o **conteúdo da ata em JSON**, no formato das seções do template, ant
 }
 ```
 
-Formato de cada valor conforme o `type` da seção: `paragraph` → string; `bullets` → lista de strings; `topics` → lista de `{titulo, resumo}`; `table` → lista de objetos com as colunas (+ `id` quando o template numera); `record` → objeto com os campos. Mesmos códigos de erro de 4.3.
+`resumo_topicos` (desde a 1.6) é opcional: pode vir `[]`, e então não aparece no `.docx`. Formato de cada valor conforme o `type` da seção: `paragraph` → string; `bullets` → lista de strings; `topics` → lista de `{titulo, resumo}`; `table` → lista de objetos com as colunas (+ `id` quando o template numera); `record` → objeto com os campos. Mesmos códigos de erro de 4.3.
 
 ### 4.5 `GET /minutes/jobs`
 
