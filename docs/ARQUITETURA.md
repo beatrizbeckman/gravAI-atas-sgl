@@ -2,7 +2,7 @@
 
 Documento de apoio para a orientação do TCC. A ideia aqui é explicar, de forma prática, o que cada parte do código faz, como as partes se conectam e o que acontece de verdade quando alguém pede uma ata. Está escrito para quem conhece o problema, mas não leu o código.
 
-Estado do repositório em 01/10/2026, branch `feat/minutes-part1`. Tudo o que está descrito aqui existe e roda. A seção 13 diz o que ainda falta.
+Estado do repositório em 26/11/2026, branch `docs/part1-update`. Tudo o que está descrito aqui existe e roda. A seção 13 diz o que ainda falta.
 
 ---
 
@@ -72,7 +72,7 @@ Duas coisas para guardar desse desenho:
 | `docker/Dockerfile`, `docker-compose*.yaml`, `Makefile` | Empacotamento e comandos | GravAI original, ajustado |
 | `tmp/` | Gravações, docx gerados e o SQLite dos jobs. Não vai para o git | runtime |
 
-Teste automatizado: 159 testes em `tests/` (`tests/minutes`, `tests/jobs`, `tests/api`, dados em `tests/conftest.py` vindos do dataset), todos passando sem precisar de LLM, Whisper ou Teams. Reorganização de 07/10/2026: todo o código ficou dentro do pacote `gravai/`, os testes em `tests/`, os arquivos Docker em `docker/`.
+Teste automatizado: 195 testes em `tests/` (`tests/minutes`, `tests/jobs`, `tests/api`, dados em `tests/conftest.py` vindos do dataset), todos passando sem precisar de LLM, Whisper ou Teams. Reorganização de 07/10/2026: todo o código ficou dentro do pacote `gravai/`, os testes em `tests/`, os arquivos Docker em `docker/`.
 
 ---
 
@@ -89,7 +89,7 @@ O Teams não dá o áudio da reunião para ninguém. A saída do GravAI é entra
 3. **O servidor Python, `gravai/recording/ws_audio_server.py`, grava o áudio em disco.** Roda como um processo separado, aberto quando a API sobe. Cada trilha vira um arquivo `track_<id>.wav` dentro de `tmp/<session_id>_tracks/`. Quando a trilha fecha, ele roda ffmpeg para corrigir o pitch, porque o áudio chega numa taxa que o navegador reporta errado, e escreve um arquivo `session_sidecar.json` com início e fim de cada trilha.
 4. **O segundo script, `gravai/recording/teams/vad_observer.js`, observa quem está falando.** Isso é a parte mais criativa do GravAI. O Teams desenha um contorno animado no quadrado de quem está falando. Esse contorno é um `div` com `data-tid="voice-level-stream-outline"`, e o Teams adiciona classes CSS nele enquanto a pessoa fala. O script usa um `MutationObserver` para registrar toda mudança nessas classes, com o nome do participante e o timestamp. Em termos práticos: é um detector de atividade de voz feito a partir da interface, sem processar áudio.
 5. **`teams.py` cuida da entrada na reunião.** Abre o link, clica em "continuar no navegador", fecha o diálogo de "continuar sem áudio ou vídeo", preenche o nome "GravAI Bot", clica em "Join now" e espera ser admitido da sala de espera. Tem tratamento para a tela de erro que o Teams mostra dentro do Docker e tira screenshots quando `RECORDING_DEBUG=true`.
-6. **Durante a reunião**, a cada segundo ele esvazia a lista de eventos de voz da página e vigia três sinais de fim: "Did you leave by mistake?", "You've been removed" ou um botão "Rejoin". Tem também um teto de segurança, `MAX_RECORDING_SECONDS`, padrão duas horas.
+6. **Durante a reunião**, a cada segundo ele esvazia a lista de eventos de voz da página e vigia três sinais de fim: "Did you leave by mistake?", "You've been removed" ou um botão "Rejoin". Se todo mundo sai sem encerrar a reunião, o bot sai sozinho depois de `LEAVE_WHEN_ALONE_SECONDS` (padrão 120 s) sem ninguém na chamada (`AloneWatcher` em `gravai/recording/utils.py`); numa reunião em que ainda não entrou ninguém, ele espera pelo menos 15 minutos. Tem também um teto de segurança, `MAX_RECORDING_SECONDS`, padrão duas horas.
 7. **Ao terminar**, grava `vad_timeline.json` com todos os eventos e fecha o navegador. O servidor WebSocket fecha os wavs e escreve o sidecar.
 
 ### O que fica no disco ao final
@@ -106,7 +106,7 @@ Ponto importante: **o Teams entrega uma única trilha de áudio com todos mistur
 
 ### Limitações conhecidas
 
-- Uma reunião por vez. Existe uma trava, `RECORDING_LOCK` em `gravai/jobs/executors.py`, compartilhada entre os endpoints antigos e os jobs novos.
+- Até `MAX_CONCURRENT_RECORDINGS` reuniões gravadas ao mesmo tempo (padrão 3, um Chromium de ~0,5 GB cada; ver seção 9). Transcrição e ata continuam uma por vez.
 - Entrar na reunião leva de 40 segundos a dois minutos e meio dentro do Docker.
 - Se duas pessoas falam ao mesmo tempo, as duas janelas de fala se sobrepõem e o áudio das duas aparece nas duas trilhas. Isso é tratado depois, na normalização, e é exatamente o motivo da Parte 2 do TCC.
 
@@ -210,7 +210,7 @@ Os quatro templates que existem:
 Os três templates fixos abrem com **Resumo em tópicos** (`resumo_topicos`): de 3 a 6 itens curtos (2 a 4 na daily), sem texto corrido, para bater o olho. É opcional (`required: false`), então nunca reprova a resposta do modelo.
 
 - **`dell.json`**: ata corporativa. Tópicos, resumo com cinco sub-blocos (finalizado, em andamento, ideias, dúvidas, pendências), decisões, plano de ação, próxima reunião. Cabeçalho: projeto, nº, data, horário.
-- **`professores.json`**: mesma estrutura, com "feedback dos professores" no lugar de ideias e tom acadêmico. Cabeçalho ganha `professores` e `tipo` (Orientação ou Apresentação).
+- **`professores.json`**: mesma estrutura, com "feedback dos professores" no lugar de ideias e tom acadêmico. Cabeçalho igual ao da Dell (os campos `professores` e `tipo` saíram em 19/11/2026).
 - **`daily.json`**: curta e informal. Feito, em andamento, ideias, dúvidas, bloqueios, combinados. Participantes numa linha só.
 - **`custom.json`**: só o esqueleto. Nome, tom e seções vêm da requisição.
 
@@ -233,7 +233,7 @@ Este arquivo faz a tradução nos dois sentidos: template para texto de prompt, 
 
 1. Papel: "você redige atas a partir de transcrições automáticas, lidas por quem não estava na reunião".
 2. Nome do modelo de ata, idioma e tom, vindos do JSON.
-3. Oito regras fixas. As mais importantes: usar só o que está na transcrição e deixar vazio o que não foi dito; a transcrição vem de reconhecimento de fala e pode ter erros, então reescrever em texto de ata em vez de copiar; corrigir uma palavra mal reconhecida pela de som parecido que faz sentido; quem está na lista de participantes aparece com o nome completo, mesmo citado só pelo primeiro nome, e quem foi citado mas não estava na chamada aparece com o nome como foi dito; converter dias da semana e "sexta que vem" em data pelo calendário do prompt; tarefa com dono e reunião marcada não são decisão; não numerar tabelas; responder só JSON.
+3. Oito regras fixas. As mais importantes: usar só o que está na transcrição e deixar vazio o que não foi dito; a transcrição vem de reconhecimento de fala e pode ter erros, então reescrever em texto de ata em vez de copiar; corrigir uma palavra mal reconhecida pela de som parecido que faz sentido; quem está na lista de participantes aparece com o nome completo, mesmo citado só pelo primeiro nome, e quem foi citado mas não estava na chamada aparece com o nome como foi dito; converter dias da semana e "sexta que vem" em data pelo calendário do prompt; cada prazo pertence à tarefa e à pessoa da fala em que foi dito; tarefa com dono e reunião marcada não são decisão; uma reunião futura com data é a próxima reunião, mesmo que a fala diga "última"; tarefa sem dono claro (fala cortada) vai em pendências, e não para outra pessoa; não numerar tabelas; responder só JSON.
 4. O **formato de saída**: um JSON de exemplo gerado a partir das seções, com uma dica de tipo no lugar de cada valor. Para uma coluna com `values`, a dica é "Pendente | Em andamento | Concluído".
 5. A descrição de cada seção, com as `instructions` do template, o mínimo de itens e as regras de cada coluna.
 
@@ -249,11 +249,12 @@ CLI: `uv run python -m gravai.minutes.prompt_builder datasets/reunioes/ES2004a/t
 
 Um arquivo pequeno de propósito. A função `generate(system, user) -> str` é a única porta para o modelo. Quem chama não sabe qual provedor está por trás. A escolha é a variável `LLM_PROVIDER` no `.env`:
 
+- **`openai_compatible`** (padrão): `POST {LLM_BASE_URL}/chat/completions` no formato da OpenAI, com `LLM_API_KEY` e `LLM_MODEL` (Groq, OpenRouter, DeepInfra, OpenAI...). Limite de taxa (429) espera e tenta de novo; um pedido que sozinho passa do limite de tokens por minuto do plano falha na hora (`RequestTooLarge`), sem novas tentativas, com a mensagem pedindo para baixar `LLM_MAX_CHARS`.
 - **`ollama`**: `POST {OLLAMA_HOST}/api/chat` com `format: json`, `temperature: 0` e `num_ctx` configurável. O `num_ctx` existe porque o Ollama usa 2 mil tokens de contexto por padrão e **corta o prompt em silêncio** quando passa disso. Erros de conexão e modelo não baixado viram mensagens claras.
 - **`groq`**: reaproveita `gravai/legacy/llm_analyser/groq_config.py`. Existe mas não é o caminho planejado.
 - **`fake`**: não chama LLM nenhum. Lê o formato de saída do próprio prompt de sistema e devolve o JSON com texto de exemplo em cada campo. Com isso a API, os jobs, o docx e a página demo rodam de ponta a ponta numa máquina sem GPU. É o modo em que os testes rodam.
 
-**Aqui entra a recomendação do co-orientador**: adicionar provedores online (DeepInfra, OpenAI, Anthropic) nesta função. Como tudo acima só conhece `generate`, o custo é um `if` a mais e algumas variáveis no `.env`.
+A recomendação do co-orientador, adicionar provedores online, entrou assim: tudo acima só conhece `generate` (e `generate_reply`, que devolve também os tokens que o provedor informou), então o custo foi um `if` a mais e algumas variáveis no `.env`.
 
 ### 7.5 O orquestrador (`gravai/minutes/generate.py`)
 
@@ -267,7 +268,9 @@ Um arquivo pequeno de propósito. A função `generate(system, user) -> str` é 
 6. **`_ask` é o laço de tentativas.** Chama o LLM, tenta `parse_response`. Se falhar, manda o mesmo prompt de novo com "a resposta anterior foi rejeitada porque X, responda novamente com JSON válido". Isso importa porque com `temperature 0` um modelo repetiria o mesmo erro se o prompt fosse idêntico. Até duas tentativas extras. Depois disso, `MinutesError("llm_invalid_response")`.
 7. **Consolida** quando houve mais de uma parte (em etapas, se os JSONs parciais não cabem num pedido).
 8. **Corrige o que o modelo ainda erra, no código:** uma célula de tabela que é só parte do nome de um participante ("Clara") vira o nome completo ("Ana Clara Lima"), se não houver ambiguidade (`full_participant_names`); e uma linha de "decisões" que só repete uma ação do plano ou a próxima reunião sai, com a numeração refeita (`drop_repeated_decisions`).
-9. **Renderiza o docx** e devolve métricas: quantas falas, quantas partes, quantas chamadas ao LLM, quantas repetições, segundos gastos, nome do modelo.
+9. **Renderiza o docx** e devolve métricas: quantas falas, quantas partes, quantas chamadas ao LLM, quantas repetições, segundos gastos, nome do modelo e os tokens de cada chamada.
+
+**Registro de uso do LLM.** Cada geração (jobs da API e a CLI `generate`) imprime um bloco `LLM usage` no terminal e acrescenta uma linha em `<SAVE_DIR>/llm_usage.csv` (`gravai/minutes/usage_log.py`): duração da reunião, caracteres, partes, chamadas, tokens de entrada, saída e raciocínio, total, tokens por hora de reunião e a maior entrada de um único pedido, que é o que precisa caber no limite por minuto do plano. Os mesmos números vão em `result.llm_usage` do job. Com o provedor `fake`, que não informa uso, os tokens são estimados (`tokens_estimated=True`).
 
 Erros são sempre `MinutesError` com um `code` estável, os mesmos códigos que a API devolve: `llm_unreachable`, `llm_invalid_response`, `empty_transcript`, `transcription_failed`, `recording_failed`, `internal`.
 
@@ -283,7 +286,7 @@ CLI: `uv run python -m gravai.minutes.generate datasets/reunioes/ES2004a/transcr
 - Participantes em tabela de três colunas, ou numa linha quando `inline`.
 - Cada seção na ordem do template. Seções com o mesmo `group` ficam sob um único título e cada uma ganha uma faixa escura (Dell, professores) ou uma barra lateral (daily).
 - Tabelas com cabeçalho escuro e letras brancas, larguras calculadas: a primeira coluna de texto livre fica larga, colunas com formato fixo ou lista de valores ficam estreitas, coluna de ID mais estreita ainda.
-- Seção vazia mostra "Nenhum item registrado." em itálico cinza, em vez de sumir.
+- Seção vazia mostra "Nenhum item registrado." em itálico cinza, em vez de sumir. A exceção são as seções `synthesis` (o Resumo em tópicos): vazias, não aparecem.
 - Rodapé com o texto do template, `{projeto}` substituído, e número de página à direita.
 
 CLI: `uv run python -m gravai.minutes.docx_writer datasets/reunioes/ES2004a/transcricao.json <minutes.json> -o ata.docx` renderiza uma ata já preenchida (por exemplo o `minutes.json` de uma rodada de experimentos), sem LLM.
@@ -300,7 +303,7 @@ Gerar uma ata leva de dezenas de segundos a minutos com LLM local. Gravar uma re
 
 - **`gravai/jobs/models.py`**: a classe `Job`. Campos públicos, que a API devolve: `id`, `kind`, `status`, `stage`, `template`, `header`, datas, `result`, `error`. Campos internos: `params` da requisição, `docx_path`, o JSON da ata e os participantes. `status` é `queued`, `running`, `done` ou `failed`. `stage` só existe em `running` e diz em que etapa está: `recording`, `transcribing`, `normalizing`, `generating`, `rendering`.
 - **`gravai/jobs/store.py`**: persistência em **SQLite**, uma tabela, colunas JSON para as partes aninhadas. Arquivo em `tmp/minutes_jobs.sqlite3`. Uma conexão só, protegida por lock, porque a API e o worker rodam em threads diferentes. `recover_on_startup` é chamado quando a API sobe: jobs que estavam `running` quando o processo caiu viram `failed` com "interrupted by restart", e jobs ainda `queued` voltam para a fila.
-- **`gravai/jobs/worker.py`**: **uma thread** que tira jobs de uma fila e roda um por vez, na ordem de criação. Para cada job busca o executor do seu `kind`, marca `running`, passa uma função `progress` para o executor atualizar o `stage`, e no final grava `done` com o resultado ou `failed` com o erro. A thread nunca morre por exceção.
+- **`gravai/jobs/worker.py`**: tira jobs de uma fila e roda na ordem de criação. A etapa de gravar roda numa thread por gravador (até `MAX_CONCURRENT_RECORDINGS`); transcrição, LLM e `.docx` rodam numa thread única, um job por vez (ver seção 9). Para cada job busca o executor do seu `kind`, marca `running`, passa uma função `progress` para o executor atualizar o `stage`, e no final grava `done` com o resultado ou `failed` com o erro. A thread nunca morre por exceção.
 - **`gravai/jobs/executors.py`**: um executor por tipo de job. Os três terminam na mesma função `_generate`, que chama `generate_minutes` e monta o resultado. A diferença é de onde vêm as falas:
   - `from_transcript`: já vieram na requisição.
   - `from_recording`: roda `normalize_session` numa pasta de gravação já transcrita.
@@ -338,7 +341,7 @@ Essa é a interface que o SGL, ou qualquer outro cliente, chama. O contrato comp
 | `POST /minutes/templates/draft` | description, name, tone | a IA transforma a descrição da ata em seções (`custom`) para revisar e salvar; síncrono (`minutes/template_draft.py`) |
 | `POST /minutes/from-transcript` | template, header, utterances, project_id (opcional) | cria job `from_transcript`, devolve 202 |
 | `POST /minutes/from-recording` | template, header, tracks_dir | confere que a pasta tem transcrição, cria job |
-| `POST /minutes/record-and-generate` | template, header, meeting_url | confere que é link do Teams e que não há gravação em curso, cria job |
+| `POST /minutes/record-and-generate` | template, header, meeting_url | confere que é link do Teams e que há gravador livre (`MAX_CONCURRENT_RECORDINGS`; senão 409), cria job |
 | `GET /minutes/jobs` | limit, status, project_id | últimos jobs, opcionalmente só os de um projeto do SGL |
 | `GET /minutes/jobs/{id}` | id | o objeto de job, para polling |
 | `POST /minutes/jobs/{id}/stop` | id | o bot sai da reunião; o job segue para transcrição e ata |
@@ -353,7 +356,7 @@ A versão 1.2 (24/10/2026) fecha o fluxo da aba de reunião do SGL (contrato, se
 
 ### `gravai/api/static/sgl.html` (`/demo/sgl`) — o conteúdo da aba "Reuniões" do SGL
 
-Só o conteúdo da aba de reunião, no tema do SGL (DaisyUI `business`, fonte Figtree), para encaixar na página do projeto que o SGL já tem. Menu lateral, cartão do projeto e as outras abas são do SGL e não são repetidos, para não haver duas versões do que já existe lá. Chama a API real: gravar e encerrar, atas do projeto (ver e Word), editor de modelo personalizado com "Transformar em seções" (`POST /minutes/templates/draft`) e "Salvar como modelo do projeto". O que no SGL ficaria no banco (projetos, títulos das reuniões, modelo de cada projeto) fica no `localStorage` do navegador. Um botão gera a ata a partir de uma reunião do dataset, para demonstrar sem o Teams. Serve de referência visual para o dev do SGL e para a apresentação.
+Só o conteúdo da aba de reunião, no tema do SGL (DaisyUI `business`, fonte Figtree), para encaixar na página do projeto que o SGL já tem. Menu lateral, cartão do projeto e as outras abas são do SGL e não são repetidos, para não haver duas versões do que já existe lá. Chama a API real: gravar e encerrar, atas do projeto (ver e Word), editor de modelo personalizado com "Transformar em seções" (`POST /minutes/templates/draft`) e "Salvar como modelo do projeto". O que no SGL ficaria no banco (projetos, títulos das reuniões, modelo de cada projeto) fica no `localStorage` do navegador. O botão "Convidar bot para a reunião" chama `POST /minutes/record-and-generate`. Para gerar uma ata sem o Teams, a página é a `/demo`, com uma reunião do dataset. Serve de referência visual para o dev do SGL e para a apresentação.
 
 A versão 1.4 do contrato permite **várias reuniões ao mesmo tempo** (projetos diferentes no mesmo horário). O servidor de áudio (WebSocket) já separava cada sessão numa pasta; o que impedia era um cadeado único em `recording/pipeline.py` e a fila de jobs com uma só thread, que ficava presa durante a reunião inteira. Agora `pipeline.record_meeting` aceita até `MAX_CONCURRENT_RECORDINGS` gravações (cada uma com a própria chave e o próprio evento de encerrar) e o `JobWorker` tem duas pistas: uma thread por gravador para a etapa de gravar (`executors.PREPARERS`) e uma thread única para transcrição, LLM e `.docx`, porque Whisper e LLM atendem um pedido por vez. Entre as duas, o job fica em `running · waiting`; nesse estado ele sobrevive a um reinício da API.
 
@@ -373,7 +376,7 @@ Como o SGL pode não existir a tempo, a página `/demo` faz o papel dele. É um 
 
 ## 10. Configuração e infraestrutura
 
-- **`gravai/config.py`**: classe `Settings` com Pydantic, lê o `.env`. Variáveis novas da Parte 1: `LLM_PROVIDER`, `OLLAMA_HOST`, `OLLAMA_MODEL`, `OLLAMA_NUM_CTX`, `LLM_TIMEOUT_SECONDS`, `JOBS_DB_PATH`. As antigas: `WS_HOST`, `WS_PORT`, `SAVE_DIR`, `WHISPER_HOST`, `WHISPER_PORT`, `RECORDING_DEBUG`, `MAX_RECORDING_SECONDS`.
+- **`gravai/config.py`**: classe `Settings` com Pydantic, lê o `.env`. Variáveis novas da Parte 1: `LLM_PROVIDER`, `LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`, `LLM_MAX_TOKENS`, `LLM_MAX_CHARS` (padrão 12000), `OLLAMA_HOST`, `OLLAMA_MODEL`, `OLLAMA_NUM_CTX`, `LLM_TIMEOUT_SECONDS`, `JOBS_DB_PATH`, `API_KEY`, `TIMEZONE`, `WHISPER_LANGUAGE`, `WHISPER_BEAM_SIZE`, `TRACK_PAD_BEFORE_S`, `TRACK_PAD_AFTER_S`, `LEAVE_WHEN_ALONE_SECONDS`, `MAX_CONCURRENT_RECORDINGS`. As antigas: `WS_HOST`, `WS_PORT`, `SAVE_DIR`, `WHISPER_HOST`, `WHISPER_PORT`, `RECORDING_DEBUG`, `MAX_RECORDING_SECONDS`. `WHISPER_MODEL` (padrão `large-v3`; `large-v3-turbo` num notebook) e `WHISPER_THREADS` (padrão 12) são lidas só pelo `docker/docker-compose-whisper.yaml`, que baixa o modelo e sobe o servidor.
 - **`.env.example`**: modelo comentado do `.env`.
 - **`pyproject.toml` + `uv.lock`**: dependências gerenciadas pelo `uv`. Relevantes: `fastapi`, `playwright`, `websockets`, `requests`, `python-docx`, `pytest`.
 - **`docker/Dockerfile`**: imagem Python 3.12 com ffmpeg, PortAudio e Chromium do Playwright. **`docker/Dockerfile.whisper`**: compila whisper.cpp e baixa o modelo. **`docker/docker-compose.yaml`** sobe só a API, para quem tem Whisper fora. **`docker/docker-compose-whisper.yaml`** sobe os dois. A pasta `tmp/` é montada do host para dentro do container, então gravações e atas aparecem na máquina.
@@ -394,7 +397,7 @@ O que acontece, na ordem, quando o SGL chama `POST /minutes/record-and-generate`
 
 | Quando | Onde | O que acontece | `status` / `stage` visto pelo cliente |
 |---|---|---|---|
-| 0 s | `gravai/api/minutes.py` | Valida template, cabeçalho e link. Confere que não há gravação em curso. Cria o job no SQLite e devolve o `id`. | `queued` |
+| 0 s | `gravai/api/minutes.py` | Valida template, cabeçalho e link. Confere que há gravador livre. Cria o job no SQLite e devolve o `id`. | `queued` |
 | 0 s | `gravai/jobs/worker.py` | A thread pega o job, marca `running`, chama o executor `run_record_and_generate`. | `running` |
 | 0 s a 2 min | `gravai/recording/teams.py` | Abre Chromium, entra no Teams, espera admissão. | `running` / `recording` |
 | reunião inteira | `gravai/recording/` | Áudio chega por WebSocket e vai para `track_mainAudio.wav`. Eventos de voz acumulam. | `running` / `recording` |
@@ -427,9 +430,12 @@ Com `from-transcript`, só as três últimas linhas de trabalho acontecem.
 - Primeiras atas geradas com LLM real (Groq, `gpt-oss-20b` e `qwen3.8-27b`) em 06/10/2026.
 - Dataset de 5 reuniões reais do AMI Meeting Corpus traduzidas para pt-BR, com gabarito humano (`datasets/`).
 - Runner de experimentos que registra prompt, saída bruta, ata, docx, tempo, tokens e custo por (transcrição, modelo) (`experiments/`).
-- 159 testes automatizados que rodam sem LLM, Whisper ou Teams.
+- 195 testes automatizados que rodam sem LLM, Whisper ou Teams.
 - Chave de acesso (`API_KEY` / `X-API-Key`), `project_id`, encerrar gravação (`/stop`), aviso de conclusão (`callback_url`) e modelo de ata a partir de uma descrição (`/minutes/templates/draft`), para o SGL.
 - Simulação da aba "Reuniões" do SGL em `/demo/sgl` e guia de integração para o desenvolvedor do SGL.
+- Aba "Reuniões" implementada no próprio SGL: 45 testes Pest passando no berlin e uma reunião real com duas pessoas (25/11/2026), com o bot entrando numa reunião criada por conta institucional da UFCG.
+- Várias reuniões gravadas ao mesmo tempo (`MAX_CONCURRENT_RECORDINGS`) e bot saindo quando fica sozinho (`LEAVE_WHEN_ALONE_SECONDS`); ainda não testados com várias calls reais.
+- Resumo em tópicos no início dos três modelos fixos, junção das partes em etapas e registro de tokens por ata (`llm_usage.csv`).
 - CLIs para cada etapa, para depurar isoladamente.
 
 ### Ainda não feito
@@ -439,7 +445,7 @@ Com `from-transcript`, só as três últimas linhas de trabalho acontecem.
 | **Avaliação das atas por formulário** | Pessoas comparam trechos da reunião com as atas de cada modelo e dizem qual agiu melhor. O resultado entra no artigo. | `experiments/avaliacao_forms/README.md` |
 | **Modelos de 7–8B de verdade** (Llama 3.1 8B, Qwen 2.5 7B, Mistral 7B) | O Groq gratuito só oferece gpt-oss-20b/120b e qwen3.8-27b, com limites apertados por minuto e por dia. Precisa de crédito no DeepInfra (conta criada, sem saldo em 06/10) ou da GPU do laboratório. | `experiments/run_experiments.py --models deepinfra:<modelo>` já funciona |
 | **Front para comparar experimentos** ao lado da `/demo` | O co-orientador pediu para ver prompt, entrada e saída de cada teste. Hoje isso está em arquivos (`prompts/NN_*.txt`) por rodada. | `gravai/api/` lendo `experiments/results/` |
-| **Reunião real gravada pelo GravAI** no dataset | O dataset atual é traduzido do inglês; não tem erros de ASR em português nem fala sobreposta. Uma reunião real valida isso. | gravar com o bot, normalizar, colocar em `datasets/reunioes/` |
+| **Mais reuniões reais gravadas pelo GravAI** | O dataset AMI é traduzido do inglês; não tem erros de ASR em português nem fala sobreposta. A primeira reunião real (25/11/2026, 2 min, duas pessoas) está em `datasets/reais/LAB01/`; falta uma mais longa, com mais pessoas. | gravar com o bot, normalizar, colocar em `datasets/reais/` |
 | **Sumarizar antes de gerar** como estratégia alternativa | Hoje a divisão em partes gera JSON parcial por parte e consolida. A alternativa é resumir cada parte em texto e gerar a ata do resumo. Comparar as duas é parte da avaliação. | `gravai/minutes/generate.py` |
 | **Entrada por arquivo de áudio único** com corte por silêncio | Para reuniões gravadas fora do bot. Sem o indicador do Teams, precisa de diarização, que é a Parte 2. | novo endpoint `from-audio` e módulo de corte |
 | **Lista de pessoas vinda do cliente casada com as vozes** | Parte 2. A API já aceita `participants` opcional. | `POST /speakers` |
