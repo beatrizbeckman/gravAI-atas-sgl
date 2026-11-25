@@ -50,6 +50,17 @@ def test_system_prompt_carries_tone_and_every_section_instruction():
     assert "Não pode ficar vazia" in prompt  # feedback_professores has allow_empty: false
 
 
+@pytest.mark.parametrize("template_id", ["dell", "professores", "daily"])
+def test_system_prompt_has_the_rules_from_the_first_real_meeting(template_id):
+    # 25/11/2026: the minutes took the 02/12 of one task for another one, called the next
+    # meeting "the last one" (Whisper heard "última" for "próxima") and gave a garbled task
+    # to the wrong person.
+    prompt = build_system_prompt(load_template(template_id))
+    assert "Cada prazo pertence à tarefa e à pessoa da fala em que foi dito" in prompt
+    assert 'mesmo que a fala diga "última" ou "final"' in prompt
+    assert "a tarefa vai em pendências, e não para outra pessoa" in prompt
+
+
 def test_user_prompt_has_header_participants_and_timestamps(dell, speakers):
     template, header, utterances = dell
     prompt = build_user_prompt(template, utterances, header, speakers)
